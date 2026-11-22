@@ -300,7 +300,10 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .statusrow{display:flex;align-items:center;gap:10px;width:100%;padding:12px 13px;border-radius:14px;
   background:#fff;border:1px solid var(--line2);margin-bottom:8px}
 .statusrow.on{border-color:var(--green);box-shadow:0 0 0 2px rgba(15,123,74,.12)}
-.sr-i{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+.sr-i{flex:none;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  padding:0;font-size:10.5px;line-height:1.08;font-weight:800;letter-spacing:-.3px;text-align:center;
+  white-space:normal;word-break:keep-all;overflow:hidden}
+.sr-i br{display:block}
 .sr-b{flex:1;min-width:0}
 .sr-t{font-size:14px;font-weight:800}
 .sr-d{font-size:11px;font-weight:600;color:var(--muted);margin-top:1px}
@@ -1006,6 +1009,13 @@ function lessonCard(s){
 /* =========================================================
    레슨 상태 변경
    ========================================================= */
+/* 상태 배지: 4글자 상태(당일취소·일반취소)는 두 줄로 나눠 네모 안에 꼭 맞춘다 */
+function statusBadge(label){
+  if (!label || label.length <= 2) return esc(label);
+  var mid = Math.ceil(label.length / 2);
+  return esc(label.slice(0, mid)) + '<br>' + esc(label.slice(mid));
+}
+
 function openStatusSheet(sid){
   var s = findSession(sid);
   if (!s) return;
@@ -1015,7 +1025,7 @@ function openStatusSheet(sid){
   body += STATUS_KEYS.map(function(k){
     var on = s.status === k;
     return '<button class="statusrow' + (on ? ' on' : '') + '" data-act="status-set" data-sid="' + s.id + '" data-status="' + k + '">' +
-      '<span class="sr-i st st-' + STATUS[k].cls + '">' + STATUS[k].label + '</span>' +
+      '<span class="sr-i st st-' + STATUS[k].cls + '" aria-hidden="true">' + statusBadge(STATUS[k].label) + '</span>' +
       '<span class="sr-b"><div class="sr-t">' + STATUS[k].label + '</div><div class="sr-d">' + STATUS[k].desc + '</div></span>' +
       '<span class="sr-k ' + (STATUS[k].deducted ? 'ded' : 'keep') + '">' + (STATUS[k].deducted ? '차감' : '미차감') + '</span>' +
     '</button>';
