@@ -131,6 +131,8 @@ main::-webkit-scrollbar{width:0}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{padding:7px 12px;border-radius:999px;background:var(--gray-soft);font-size:12.5px;font-weight:800;color:var(--ink2);border:1px solid transparent}
 .chip.on{background:var(--green-soft);color:var(--green-d);border-color:var(--green-mid)}
+.msort{display:flex;gap:6px;margin:0 0 11px}
+.msort .chip{flex:1;padding:8px 6px;font-size:12px;white-space:nowrap}
 /* ---------- calendar ---------- */
 .monhdr{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 10px}
 .monhdr .m{font-size:17px;font-weight:800;letter-spacing:-.4px}
@@ -1722,20 +1724,51 @@ function expiryLabel(p){
   return fmtNum(p.expiryDate) + ' 만료';
 }
 
+/* ---------- 회원목록 정렬 ---------- */
+var MEMBER_SORTS = [
+  { v:'remaining',     label:'잔여 많은 순' },
+  { v:'name',          label:'이름순' },
+  { v:'remaining-asc', label:'잔여 적은 순' }
+];
+function memberSortMode(){
+  var v = state.memberSort;
+  for (var i = 0; i < MEMBER_SORTS.length; i++) if (MEMBER_SORTS[i].v === v) return v;
+  return 'remaining';
+}
+function memberSortLabel(v){
+  for (var i = 0; i < MEMBER_SORTS.length; i++) if (MEMBER_SORTS[i].v === v) return MEMBER_SORTS[i].label;
+  return MEMBER_SORTS[0].label;
+}
+
 function viewMembers(){
+  var mode = memberSortMode();
   var h = '<div class="search">' + ICON.search + '<input id="mSearch" placeholder="이름 · 지역으로 찾기" value="' + esc(ui.search) + '"></div>';
+  h += '<div class="msort" id="mSort">' + MEMBER_SORTS.map(function(s){
+    return '<button class="chip' + (s.v === mode ? ' on' : '') + '" data-act="member-sort" data-v="' + s.v + '">' + s.label + '</button>';
+  }).join('') + '</div>';
   h += '<button class="quickadd" data-act="member-add">' +
     '<span class="qa-ic">' + ICON.spark + '</span>' +
     '<span class="qa-t"><b>한 줄로 회원 추가</b><span class="qa-d">이름 · 횟수 · 성별 · 지역만 적으면 알아서 정리돼요</span></span>' +
     '<span class="chev">' + ICON.chev + '</span></button>';
-  h += '<div class="sec" style="margin-top:4px"><h2>회원 목록</h2><span class="aside">잔여 많은 순</span></div>';
+  h += '<div class="sec" style="margin-top:4px"><h2>회원 목록</h2><span class="aside">' + memberSortLabel(mode) + ' · ' + filteredMembers().length + '명</span></div>';
   h += '<div id="memberList">' + memberRowsHTML(filteredMembers()) + '</div>';
   return h;
 }
 
 function filteredMembers(){
   var q = (ui.search || '').trim().toLowerCase();
-  var list = state.members.slice().sort(function(a,b){ return totalRemaining(b.id) - totalRemaining(a.id); });
+  var mode = memberSortMode();
+  var list = state.members.slice().sort(function(a, b){
+    if (mode === 'name') {
+      var c = String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+      if (c) return c;
+      return totalRemaining(b.id) - totalRemaining(a.id);
+    }
+    var diff = totalRemaining(b.id) - totalRemaining(a.id);
+    if (mode === 'remaining-asc') diff = -diff;
+    if (diff) return diff;
+    return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+  });
   if (q) {
     list = list.filter(function(m){
       return (m.name + ' ' + (m.region || '') + ' ' + (m.phone || '') + ' ' + (m.level || '') + ' ' + (m.memo || '')).toLowerCase().indexOf(q) >= 0;
@@ -1772,7 +1805,6 @@ function memberRowsHTML(list){
    회원 정보창 (레슨 차트 포함)
    ========================================================= */
 var memberCtx = null;
-var recog = null;
 
 function notesByMember(mid){
   var list = (state.notes || []).filter(function(n){ return n.memberId === mid; });
@@ -1786,7 +1818,7 @@ function openMemberSheet(memberId){
   var m = memberById(memberId);
   if (!m) return;
   var sh = openSheet({ title: m.name });
-  memberCtx = { sh: sh, memberId: memberId, noteDate: todayISO(), draft: '', listening: false };
+  memberCtx = { sh: sh, memberId: memberId, noteDate: todayISO(), draft: '', voiceUsed: false };
   sh.footer.style.display = '';
   sh.footer.innerHTML =
     '<div style="display:flex;gap:8px">' +
@@ -2025,54 +2057,286 @@ function refreshNoteDate(){
   }
 }
 
-/* ---------- 음성 입력 ---------- */
-function toggleVoice(){
-  var ta = document.getElementById('noteText');
-  var btn = document.getElementById('voiceBtn');
-  var hint = document.getElementById('noteHint');
-  if (!ta) return;
-  if (recog) { stopVoice(); return; }
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    if (hint) hint.innerHTML = '이 브라우저는 음성 인식을 지원하지 않아요. 타이핑으로 입력해 주세요. (아이폰 사파리·크롬에서는 동작합니다)'.replace('|','');
+/* =========================================================
+   음성 입력 엔진 (레슨 차트 · 캘린더 빠른 추가 공용)
+   iOS 사파리는 stop()만 하면 마이크 세션이 남아 다음 start()가
+   조용히 먹통이 됩니다. 그래서
+     · 멈출 때는 abort()로 확실히 놓아 주고
+     · 시작할 때마다 완전히 새 SpeechRecognition 객체를 만들고
+     · 늦게 도착한 이전 객체의 콜백은 세대(gen) 번호로 무시하며
+     · start()가 실패하거나 조용히 안 되면 새 객체로 몇 번 다시 시도합니다.
+   ========================================================= */
+var voice = {
+  want: false,        /* 사용자가 듣기를 켜 둔 상태 */
+  kind: null,         /* 'note' | 'qa' */
+  inst: null,         /* 현재 SpeechRecognition 객체 */
+  gen: 0,             /* 세대 번호(이전 콜백 무시용) */
+  started: false,
+  base: '',           /* 듣기 시작할 때 이미 있던 글 */
+  committed: '',      /* 확정된 음성 문장 */
+  lastWritten: '',    /* 앱이 마지막으로 넣은 값(사용자가 고쳤는지 판별) */
+  fails: 0,           /* 연속으로 켜지지 못한 횟수 */
+  pauses: 0,
+  retryTimer: null,
+  watchTimer: null,
+  quietUntil: 0
+};
+
+function vrSR(){ return window.SpeechRecognition || window.webkitSpeechRecognition || null; }
+
+function vrEls(kind){
+  if (kind === 'qa') return { ta: document.getElementById('qaLine'), btn: document.getElementById('qaVoiceBtn'), hint: document.getElementById('qaBar') };
+  return { ta: document.getElementById('noteText'), btn: document.getElementById('voiceBtn'), hint: document.getElementById('noteHint') };
+}
+
+function vrPaint(){
+  var on = !!voice.want, kind = voice.kind;
+  var nb = document.getElementById('voiceBtn');
+  if (nb) {
+    if (on && kind === 'note') nb.classList.add('rec'); else nb.classList.remove('rec');
+    nb.textContent = (on && kind === 'note') ? '듣는 중…' : '🎤 음성 입력';
+  }
+  var qb = document.getElementById('qaVoiceBtn');
+  if (qb) {
+    if (on && kind === 'qa') qb.classList.add('rec'); else qb.classList.remove('rec');
+    qb.textContent = (on && kind === 'qa') ? '듣는 중…' : '🎤 음성 입력';
+  }
+  /* 멈춘 뒤에도 입력칸은 항상 열려 있어야 합니다 */
+  var nt = document.getElementById('noteText'), qt = document.getElementById('qaLine');
+  if (nt) { nt.disabled = false; nt.readOnly = false; }
+  if (qt) { qt.disabled = false; qt.readOnly = false; }
+}
+
+/* 인식기에서 손을 떼고 마이크 세션을 반납합니다 */
+function vrDetach(r){
+  if (!r) return;
+  try { r.onstart = null; r.onresult = null; r.onerror = null; r.onend = null; } catch(e){}
+  try { r.abort(); } catch(e){}
+  try { r.stop(); } catch(e){}
+  voice.quietUntil = Date.now() + 250;   /* iOS가 마이크를 놓을 짧은 틈 */
+}
+
+function vrJoin(a, b){
+  a = String(a == null ? '' : a);
+  b = String(b == null ? '' : b);
+  if (!a) return b.replace(/^[ \t]+/, '');
+  if (!b) return a;
+  var sep = (/\s$/.test(a) || /^\s/.test(b)) ? '' : ' ';
+  return (a + sep + b).replace(/[ \t]{2,}/g, ' ');
+}
+
+function vrRefresh(kind){
+  try {
+    if (kind === 'qa') applyQuickParse();
+    else refreshNoteDate();
+  } catch(e){}
+}
+
+function vrTakeResult(e){
+  var kind = voice.kind;
+  var els = vrEls(kind);
+  if (!els.ta) return;
+  var ta = els.ta;
+  /* 듣는 동안 사용자가 직접 고쳤다면 그 글을 새 기준으로 삼습니다(덮어쓰지 않음) */
+  if (ta.value !== voice.lastWritten) {
+    voice.base = ta.value.replace(/\s+$/, '');
+    voice.committed = '';
+  }
+  var finals = '', interim = '';
+  var res = (e && e.results) ? e.results : [];
+  var from = (e && typeof e.resultIndex === 'number') ? e.resultIndex : 0;
+  for (var i = from; i < res.length; i++) {
+    var r = res[i];
+    if (!r) continue;
+    var txt = (r[0] && r[0].transcript) ? r[0].transcript : '';
+    if (!txt) continue;
+    if (r.isFinal) finals += txt; else interim += txt;
+  }
+  if (finals) {
+    voice.committed = vrJoin(voice.committed, finals);
+    if (kind === 'note' && memberCtx) memberCtx.voiceUsed = true;
+  }
+  var next = vrJoin(vrJoin(voice.base, voice.committed), interim);
+  if (ta.value !== next) ta.value = next;
+  voice.lastWritten = ta.value;
+  vrRefresh(kind);
+}
+
+function vrRetry(gen, reason){
+  if (!voice.want || gen !== voice.gen) return;
+  var delay;
+  if (reason === 'end' || reason === 'no-speech') {
+    voice.pauses++;
+    if (voice.pauses > 400) { vrStop(); return; }
+    delay = 200;
+  } else {
+    voice.fails++;
+    if (voice.fails > 3) {
+      var els = vrEls(voice.kind);
+      if (els.hint) els.hint.innerHTML = '음성 인식을 다시 켜지 못했어요. 타이핑으로 적으신 뒤 잠시 뒤 🎤를 다시 눌러 주세요.';
+      vrStop();
+      return;
+    }
+    delay = 300 * voice.fails;
+  }
+  clearTimeout(voice.retryTimer);
+  voice.retryTimer = setTimeout(function(){
+    if (voice.want && gen === voice.gen) vrAttempt(gen);
+  }, delay);
+}
+
+/* 매 시도마다 완전히 새 인식기를 만듭니다 */
+function vrAttempt(gen){
+  if (!voice.want || gen !== voice.gen) return;
+  var SR = vrSR();
+  if (!SR) { vrStop(); return; }
+  var els = vrEls(voice.kind);
+  if (!els.ta) { vrStop(); return; }          /* 창이 닫혔으면 조용히 정리 */
+  var wait = voice.quietUntil - Date.now();
+  if (wait > 0) {
+    clearTimeout(voice.retryTimer);
+    voice.retryTimer = setTimeout(function(){ vrAttempt(gen); }, wait + 20);
+    return;
+  }
+  var rec;
+  try { rec = new SR(); } catch (err0) { vrRetry(gen, 'new'); return; }
+  voice.inst = rec;
+  voice.started = false;
+  try {
+    rec.lang = 'ko-KR';
+    rec.interimResults = true;
+    rec.continuous = true;
+    rec.maxAlternatives = 1;
+  } catch(e){}
+
+  rec.onstart = function(){
+    if (voice.inst !== rec) return;
+    voice.started = true;
+    voice.fails = 0;
+    clearTimeout(voice.watchTimer); voice.watchTimer = null;
+    vrPaint();
+  };
+  rec.onresult = function(e){
+    if (voice.inst !== rec || !voice.want) return;
+    vrTakeResult(e);
+  };
+  rec.onerror = function(e){
+    if (voice.inst !== rec) return;
+    var err = (e && e.error) ? String(e.error) : 'error';
+    if (err === 'aborted') return;            /* 우리가 멈춘 경우: onend가 정리합니다 */
+    if (err === 'no-speech') {                /* 잠깐 조용했을 뿐 — 계속 듣습니다 */
+      var h1 = vrEls(voice.kind).hint;
+      if (h1) h1.innerHTML = '잘 안 들렸어요. 다시 말씀해 주세요. (🎤를 다시 누르면 멈춰요)';
+      voice.inst = null;
+      vrDetach(rec);
+      vrRetry(gen, 'no-speech');
+      return;
+    }
+    if (err === 'not-allowed' || err === 'service-not-allowed') {
+      var h2 = vrEls(voice.kind).hint;
+      if (h2) h2.innerHTML = '마이크 사용이 허용되지 않았어요. 브라우저 설정에서 마이크를 허용한 뒤 🎤를 다시 눌러 주세요.';
+      vrStop();
+      return;
+    }
+    if (err === 'audio-capture') {
+      var h3 = vrEls(voice.kind).hint;
+      if (h3) h3.innerHTML = '마이크를 찾지 못했어요. 다른 앱이 마이크를 쓰고 있지 않은지 확인한 뒤 🎤를 다시 눌러 주세요.';
+      vrStop();
+      return;
+    }
+    var h4 = vrEls(voice.kind).hint;
+    if (h4) h4.innerHTML = '음성 인식이 잠시 멈췄어요(' + esc(err) + '). 🎤를 다시 누르거나 타이핑으로 계속 적어 주세요.';
+    vrStop();
+  };
+  rec.onend = function(){
+    if (voice.inst !== rec) return;
+    voice.inst = null;
+    if (!voice.want) { vrPaint(); return; }
+    /* 사용자가 멈추지 않았는데 끝난 경우(iOS는 문장마다 스스로 끝냅니다) 이어서 듣기 */
+    vrRetry(gen, 'end');
+  };
+
+  try {
+    rec.start();
+  } catch (err1) {
+    /* InvalidStateError 등: 이전 세션이 남아 있을 때 */
+    voice.inst = null;
+    vrDetach(rec);
+    vrRetry(gen, 'start');
+    return;
+  }
+  clearTimeout(voice.watchTimer);
+  voice.watchTimer = setTimeout(function(){
+    if (!voice.want || voice.inst !== rec || voice.started) return;
+    /* start()가 조용히 실패한 경우 — 새 객체로 다시 */
+    voice.inst = null;
+    vrDetach(rec);
+    vrRetry(gen, 'silent');
+  }, 2500);
+}
+
+function vrStart(kind){
+  var els = vrEls(kind);
+  if (!els.ta) return;
+  if (!vrSR()) {
+    if (els.hint) els.hint.innerHTML = '이 브라우저는 음성 인식을 지원하지 않아요. 타이핑으로 입력해 주세요. (아이폰 사파리·크롬에서는 동작합니다)';
     toast('음성 인식을 지원하지 않는 브라우저예요');
     return;
   }
-  try {
-    recog = new SR();
-    recog.lang = 'ko-KR';
-    recog.interimResults = true;
-    recog.continuous = true;
-    memberCtx.voiceBase = ta.value.trim() ? ta.value.replace(/\s*$/, '') + ' ' : '';
-    recog.onresult = function(e){
-      if (!memberCtx) return;
-      var out = '';
-      for (var i = 0; i < e.results.length; i++) out += e.results[i][0].transcript + ' ';
-      ta.value = (memberCtx.voiceBase + out).replace(/\s{2,}/g, ' ');
-      refreshNoteDate();
-    };
-    recog.onerror = function(e){
-      if (hint) hint.innerHTML = '음성 인식이 잠시 멈췄어요(' + esc(e.error || 'error') + '). 타이핑으로 계속 적을 수 있어요.';
-      stopVoice();
-    };
-    recog.onend = function(){ stopVoice(); };
-    recog.start();
-    memberCtx.listening = true;
-    if (btn) { btn.classList.add('rec'); btn.innerHTML = '듣는 중…'; }
-    toast('말씀하세요 · 다시 누르면 멈춰요');
-  } catch (err) {
-    if (hint) hint.innerHTML = '음성 인식을 시작하지 못했어요. 타이핑으로 입력해 주세요.';
-    stopVoice();
-  }
+  if (voice.want) vrStop();
+  var left = voice.inst;
+  voice.inst = null;
+  if (left) vrDetach(left);
+  voice.want = true;
+  voice.kind = kind;
+  voice.gen++;
+  voice.started = false;
+  voice.fails = 0;
+  voice.pauses = 0;
+  voice.base = els.ta.value.replace(/\s+$/, '');
+  voice.committed = '';
+  voice.lastWritten = els.ta.value;
+  if (kind === 'note' && memberCtx) memberCtx.voiceUsed = false;
+  vrPaint();
+  toast('말씀하세요 · 다시 누르면 멈춰요');
+  vrAttempt(voice.gen);
 }
 
-function stopVoice(){
-  if (recog) { try { recog.stop(); } catch(e){} }
-  recog = null;
-  if (memberCtx) memberCtx.listening = false;
-  var btn = document.getElementById('voiceBtn');
-  if (btn) { btn.classList.remove('rec'); btn.innerHTML = '🎤 음성 입력'; }
+function vrStop(){
+  var kind = voice.kind;
+  var r = voice.inst;
+  voice.want = false;
+  voice.kind = null;
+  voice.gen++;
+  voice.inst = null;
+  voice.started = false;
+  voice.fails = 0;
+  voice.pauses = 0;
+  clearTimeout(voice.retryTimer); clearTimeout(voice.watchTimer);
+  voice.retryTimer = null; voice.watchTimer = null;
+  if (r) vrDetach(r);
+  voice.base = '';
+  voice.committed = '';
+  voice.lastWritten = '';
+  vrPaint();
+  return kind;
 }
+
+function toggleVoice(){
+  if (!document.getElementById('noteText')) return;
+  if (voice.want) {
+    var wasNote = (voice.kind === 'note');
+    vrStop();
+    if (wasNote) {
+      var h = document.getElementById('noteHint');
+      if (h) h.innerHTML = '음성 입력을 멈췄어요. 🎤를 다시 누르면 이어서 들을 수 있어요.';
+    }
+    return;
+  }
+  vrStart('note');
+}
+
+function stopVoice(){ vrStop(); }
 
 function saveNote(){
   if (!memberCtx) return;
@@ -2083,7 +2347,7 @@ function saveNote(){
   var p = parseDateFromText(raw);
   var date = (dEl && dEl.value) ? dEl.value : (p.date || todayISO());
   var text = p.cleaned || raw;
-  var wasVoice = !!recog || (memberCtx.listening === true);
+  var wasVoice = !!(memberCtx.voiceUsed || (voice.want && voice.kind === 'note'));
   state.notes.push({
     id: uid('note'), memberId: memberCtx.memberId, date: date, text: text,
     createdAt: nowLocalISO(), source: wasVoice ? 'voice' : 'text', raw: raw
@@ -2091,6 +2355,7 @@ function saveNote(){
   save();
   memberCtx.draft = '';
   memberCtx.noteDate = todayISO();
+  memberCtx.voiceUsed = false;
   stopVoice();
   paintMemberSheet();
   render(true);
@@ -2776,7 +3041,6 @@ function roadmapStep(cls, title, desc){
    캘린더 + 버튼 · 한 줄 음성/타이핑 레슨 추가
    ========================================================= */
 var qaCtx = null;
-var qaRecog = null;
 
 var QA_EXAMPLES = [
   '내일 오후 3시 김민준 55분 분당',
@@ -3010,50 +3274,20 @@ function saveQuickLesson(){
 }
 
 function toggleQaVoice(){
-  var ta = document.getElementById('qaLine');
-  var btn = document.getElementById('qaVoiceBtn');
-  var bar = document.getElementById('qaBar');
-  if (!ta) return;
-  if (qaRecog) { stopQaVoice(); return; }
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    if (bar) bar.innerHTML = '이 브라우저는 음성 인식을 지원하지 않아요. 타이핑으로 입력해 주세요. (아이폰 사파리 · 크롬에서 동작)'.replace('|','');
-    toast('음성 인식을 지원하지 않는 브라우저예요');
+  if (!document.getElementById('qaLine')) return;
+  if (voice.want) {
+    var wasQa = (voice.kind === 'qa');
+    vrStop();
+    if (wasQa) {
+      var bar = document.getElementById('qaBar');
+      if (bar) bar.innerHTML = '음성 입력을 멈췄어요. 🎤를 다시 누르면 이어서 들을 수 있어요.';
+    }
     return;
   }
-  try {
-    qaRecog = new SR();
-    qaRecog.lang = 'ko-KR';
-    qaRecog.interimResults = true;
-    qaRecog.continuous = true;
-    qaCtx.voiceBase = ta.value.trim() ? ta.value.trim() + ' ' : '';
-    qaRecog.onresult = function(e){
-      if (!qaCtx) return;
-      var out = '';
-      for (var i = 0; i < e.results.length; i++) out += e.results[i][0].transcript + ' ';
-      ta.value = (qaCtx.voiceBase + out).replace(/\s{2,}/g, ' ');
-      applyQuickParse();
-    };
-    qaRecog.onerror = function(e){
-      if (bar) bar.innerHTML = '음성 인식이 멈췄어요(' + esc(e.error || 'error') + '). 타이핑으로 계속할 수 있어요.';
-      stopQaVoice();
-    };
-    qaRecog.onend = function(){ stopQaVoice(); };
-    qaRecog.start();
-    if (btn) { btn.classList.add('rec'); btn.innerHTML = '듣는 중…'; }
-    toast('말씀하세요 · 다시 누르면 멈춰요');
-  } catch (err) {
-    if (bar) bar.innerHTML = '음성 인식을 시작하지 못했어요. 타이핑으로 입력해 주세요.';
-    stopQaVoice();
-  }
+  vrStart('qa');
 }
 
-function stopQaVoice(){
-  if (qaRecog) { try { qaRecog.stop(); } catch(e){} }
-  qaRecog = null;
-  var b = document.getElementById('qaVoiceBtn');
-  if (b) { b.classList.remove('rec'); b.innerHTML = '🎤 음성 입력'; }
-}
+function stopQaVoice(){ vrStop(); }
 
 /* =========================================================
    이벤트
@@ -3120,6 +3354,16 @@ function onClick(e){
       ui.tab = el.getAttribute('data-tab');
       render();
       break;
+
+    case 'member-sort': {
+      var sm = el.getAttribute('data-v') || 'remaining';
+      if (memberSortMode() === sm) break;
+      state.memberSort = sm;
+      save();
+      render(true);
+      toast('회원 목록 · ' + memberSortLabel(sm));
+      break;
+    }
 
     case 'day':
       ui.date = el.getAttribute('data-date');
@@ -3558,6 +3802,8 @@ document.addEventListener('change', onFieldChange);
 document.addEventListener('keydown', function(e){
   if (e.key === 'Escape') closeTopSheet();
 });
+/* 앱을 떠날 때는 마이크를 확실히 반납합니다 */
+window.addEventListener('pagehide', function(){ if (voice.want || voice.inst) vrStop(); });
 
 init();
 
