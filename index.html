@@ -986,8 +986,8 @@ var PICK_META = {
   pkMonths: { title:'유효기간', sub:'시작일부터 이 기간이 지나면 만료로 표시돼요.' }
 };
 
-function pickOptHTML(o){
-  return '<b>' + esc(o.label) + '</b>' + (o.sub ? '<span class="sub">' + esc(o.sub) + '</span>' : '');
+function pickOptHTML(o, inField){
+  return '<b>' + esc(o.label) + '</b>' + (o.sub && !inField ? '<span class="sub">' + esc(o.sub) + '</span>' : '');
 }
 
 function pickFieldHTML(id, opts, value){
@@ -995,7 +995,7 @@ function pickFieldHTML(id, opts, value){
   var cur = null;
   for (var i = 0; i < pickerFields[id].length; i++) if (String(pickerFields[id][i].v) === String(value)) cur = pickerFields[id][i];
   return '<button class="input pickfield" id="' + id + 'Btn" data-act="pick" data-field="' + id + '" type="button">' +
-      '<span class="pv" id="' + id + 'Lbl">' + (cur ? pickOptHTML(cur) : '<span class="ph">골라주세요</span>') + '</span>' +
+      '<span class="pv" id="' + id + 'Lbl">' + (cur ? pickOptHTML(cur, true) : '<span class="ph">골라주세요</span>') + '</span>' +
       '<span class="pchev">' + ICON.chevD + '</span></button>' +
     '<input type="hidden" id="' + id + '" value="' + esc(value === undefined || value === null ? '' : value) + '">';
 }
@@ -1007,7 +1007,7 @@ function syncPickLabel(id){
   if (!hidden) { lbl.innerHTML = '<span class="ph">골라주세요</span>'; return; }
   var opts = pickerFields[id] || [], cur = null;
   for (var i = 0; i < opts.length; i++) if (String(opts[i].v) === String(hidden.value)) cur = opts[i];
-  lbl.innerHTML = cur ? pickOptHTML(cur) : '<span class="ph">골라주세요</span>';
+  lbl.innerHTML = cur ? pickOptHTML(cur, true) : '<span class="ph">골라주세요</span>';
 }
 
 function setPickOptions(id, opts, value){
@@ -1055,7 +1055,9 @@ var dpCtx = null, tpCtx = null;
 
 function dateFieldLabel(v, short){
   if (!v) return '';
-  return short ? fmtShort(v) : fmtLong(v);
+  if (short) return fmtShort(v);
+  var d = parseISO(v);
+  return d.getFullYear() + '.' + (d.getMonth() + 1) + '.' + d.getDate() + ' (' + WEEK[d.getDay()] + ')';
 }
 
 function dateFieldHTML(id, value, short, cls){
@@ -1136,7 +1138,7 @@ function paintDatePick(){
     '</div></div>' +
     '<div class="cal dpcal"><div class="wk">' + WEEK.map(function(w){ return '<div>' + w + '</div>'; }).join('') + '</div>' +
       '<div class="grid">' + cells + '</div></div>' +
-    '<div class="crow mt10" style="margin-top:12px"><button class="btn btn-ghost btn-block" data-act="dp-today">오늘로</button></div>' +
+    '<div class="crow mt10" style="margin-top:12px"><button class="btn btn-outline btn-block" data-act="dp-today">오늘로</button></div>' +
     '<div class="hint">날짜를 누르면 정해지고 창이 닫혀요.</div>';
 }
 
