@@ -813,7 +813,7 @@ function renderHeader(){
     h = '<div class="hd-left"><div><h1>캘린더</h1><div class="sub">25분 · 55분 레슨 일정</div></div></div>' +
         '<button class="iconbtn" data-act="book-open" aria-label="레슨 예약">' + ICON.plus + '</button>';
   } else if (ui.tab === 'members') {
-    h = '<div class="hd-left"><div><h1>회원</h1><div class="sub">' + state.members.length + '명 · 활성 수강권 ' + activePkgCount() + '개</div></div></div>' +
+    h = '<div class="hd-left"><div><h1>회원목록</h1><div class="sub">' + state.members.length + '명 · 활성 수강권 ' + activePkgCount() + '개</div></div></div>' +
         '<button class="iconbtn" data-act="member-add" aria-label="회원 추가">' + ICON.plus + '</button>';
   } else {
     h = '<div class="hd-left"><div><h1>통계</h1><div class="sub">' + monthLabel(ui.month) + ' 운영 현황</div></div></div>';
@@ -822,7 +822,7 @@ function renderHeader(){
 }
 
 function renderTabbar(){
-  var tabs = [['today','오늘','sun'],['calendar','캘린더','cal'],['members','회원','users'],['stats','통계','chart']];
+  var tabs = [['today','오늘','sun'],['calendar','캘린더','cal'],['members','회원목록','users'],['stats','통계','chart']];
   document.getElementById('tabbar').innerHTML = tabs.map(function(t){
     return '<button class="' + (ui.tab === t[0] ? 'on' : '') + '" data-act="tab" data-tab="' + t[0] + '">' +
       ICON[t[2]] + '<span>' + t[1] + '</span></button>';
@@ -1426,7 +1426,7 @@ function saveBooking(){
 }
 
 /* =========================================================
-   회원 탭
+   회원목록 탭
    ========================================================= */
 function genderLabel(g){ return g === 'male' ? '남' : (g === 'female' ? '여' : ''); }
 function avatarClass(m){
