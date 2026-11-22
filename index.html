@@ -446,6 +446,21 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .foot{margin:22px 4px 4px;font-size:11px;font-weight:600;color:#B0B5BD;text-align:center;line-height:1.6}
 .legend{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
 .legend .lg{font-size:10.5px;font-weight:700;color:var(--muted);background:var(--gray-soft);border-radius:7px;padding:3px 7px}
+/* ---------- 오늘 탭 하단 정산 기준 (참고용 가이드) ---------- */
+.sguide{margin-top:16px;padding:11px 13px 10px;border-radius:15px;background:#FAFBFC;border:1px solid var(--line)}
+.sguide-hd{display:flex;align-items:center;gap:5px;margin:0 0 7px 1px}
+.sguide-hd svg{width:12px;height:12px;flex:none;color:#A8ADB5}
+.sguide-hd .t{font-size:11px;font-weight:800;color:#7C828B;letter-spacing:-.1px}
+.sguide-row{display:grid;grid-template-columns:78px 1fr;align-items:center;gap:9px;padding:6px 0}
+.sguide-row+.sguide-row{border-top:1px solid var(--line2)}
+.sguide-badge{justify-self:start;display:inline-flex;align-items:center;gap:4px;height:21px;padding:0 8px;
+  border-radius:7px;font-size:10.5px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+.sguide-badge:before{content:"";width:4px;height:4px;border-radius:50%;background:currentColor}
+.sguide-badge.ded{background:var(--amber-soft);color:#8A5200;box-shadow:inset 0 0 0 1px var(--amber-line)}
+.sguide-badge.keep{background:var(--green-soft);color:var(--green-d);box-shadow:inset 0 0 0 1px var(--green-mid)}
+.sguide-items{font-size:11.5px;font-weight:700;color:var(--ink2);letter-spacing:-.2px;line-height:1.35}
+.sguide-items .sep{color:#C4C9D0;font-weight:500;margin:0 1px}
+.sguide-note{margin-top:7px;padding-top:7px;border-top:1px solid var(--line2);font-size:10.5px;font-weight:600;color:var(--muted);line-height:1.4;letter-spacing:-.1px}
 .big-num{font-size:27px;font-weight:800;letter-spacing:-1px;line-height:1.1}
 .divider{height:1px;background:var(--line2);margin:12px 0}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -1233,12 +1248,14 @@ function viewToday(){
     '</div>';
   }
 
-  h += '<div class="sec"><h2>정산 기준</h2></div><div class="card">' +
-    '<div class="legend" style="margin-top:0">' +
-      '<span class="lg">완료 · 차감</span><span class="lg">당일취소 · 차감</span><span class="lg">노쇼 · 차감</span>' +
-      '<span class="lg">일반취소 · 미차감</span><span class="lg">보강 · 미차감</span>' +
-    '</div>' +
-    '<div class="hint">하루가 끝나면 마감 정산에서 오늘 레슨을 한 번에 확정하세요. 정산 전에는 <b>미정</b>으로 남습니다.</div>' +
+  h += '<div class="sguide">' +
+    '<div class="sguide-hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.4"/><circle cx="12" cy="8.1" r=".9" fill="currentColor" stroke="none"/></svg>' +
+      '<span class="t">정산 기준</span></div>' +
+    '<div class="sguide-row"><span class="sguide-badge ded">1회 차감</span>' +
+      '<span class="sguide-items">완료<span class="sep">·</span>당일취소<span class="sep">·</span>노쇼</span></div>' +
+    '<div class="sguide-row"><span class="sguide-badge keep">미차감</span>' +
+      '<span class="sguide-items">일반취소<span class="sep">·</span>보강</span></div>' +
+    '<div class="sguide-note">하루가 끝나면 마감 정산에서 한 번에 확정해요.</div>' +
   '</div>';
 
   return h;
