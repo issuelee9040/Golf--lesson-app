@@ -245,6 +245,70 @@ main::-webkit-scrollbar{width:0}
 .rm .rt{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .rm .rd{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px;line-height:1.5}
 .rnow{font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--green-soft);color:var(--green-d)}
+/* ---------- 수입 정산 ---------- */
+.statsseg{margin:2px 0 14px}
+.rvhero .big{font-size:29px;letter-spacing:-1px}
+.rvhero .big small{font-size:15px;font-weight:800;opacity:.8;margin-left:2px;letter-spacing:0}
+.rvunit{margin:0 0 2px}
+.rvchart{margin-top:14px}
+.rvchart .wcol{padding:0;background:none;display:flex}
+.rvchart .wval,.rvchart .wlab,.rvchart .wbar{display:block}
+.rvchart .wval.on,.rvchart .wlab.on{color:var(--green-d)}
+.rvlist{background:#fff;border-radius:18px;border:1px solid rgba(16,24,40,.035);box-shadow:var(--shadow);padding:0 15px}
+.rvitem{border-bottom:1px solid var(--line2)}
+.rvitem:last-child{border-bottom:0}
+.rvrow{display:flex;align-items:center;gap:9px;width:100%;padding:12px 0}
+.rvrow .rvmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.rvtitle{font-size:13.5px;font-weight:800;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rvmeta{font-size:11.5px;font-weight:600;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rvright{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.rvamt{font-size:14px;font-weight:800;letter-spacing:-.3px;white-space:nowrap}
+.rvcnt{font-size:10.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.rvchev{flex:none;display:flex;color:#C2C7CF}
+.rvchev svg{width:15px;height:15px;transition:transform .18s}
+.rvrow[data-open="1"] .rvchev svg{transform:rotate(90deg)}
+.rvdetail{padding:0 0 12px}
+.rvline{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;font-size:11.5px;font-weight:700;padding:5px 0 5px 9px;border-left:2px solid var(--green-mid);margin:0 0 4px 2px}
+.rvline .n{font-size:12px;font-weight:800;min-width:0}
+.rvline .n .t{display:block;font-size:10.5px;font-weight:700;color:var(--muted);margin-top:1px}
+.rvline .a{flex:none;color:var(--ink2);white-space:nowrap}
+.rvline.miss{border-left-color:var(--amber-line)}
+.rvline .a.miss{color:var(--amber)}
+.rvmem{display:block;width:100%;padding:11px 0;border-bottom:1px solid var(--line2);text-align:left}
+.rvmem:last-child{border-bottom:0}
+.rvmemhead{display:flex;align-items:center;gap:8px}
+.rvmemhead .n{flex:1;min-width:0;font-size:13px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rvmemhead .c{flex:none;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}
+.rvmemhead .a{flex:none;font-size:13px;font-weight:800;white-space:nowrap}
+.rvshare{display:block;height:5px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:7px}
+.rvshare>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#17A466,#0F7B4A)}
+.rvmiss{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:15px;padding:12px 13px;margin-top:12px;color:#6B4400}
+.rvmiss .t{font-size:12.5px;font-weight:800}
+.rvmiss .d{font-size:11.5px;font-weight:600;margin-top:2px;opacity:.85;line-height:1.45}
+.rvmiss .mrow{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--amber-line)}
+.rvmiss .mrow .n{flex:1;min-width:0;font-size:12.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rvmiss .mrow .c{flex:none;font-size:11px;font-weight:700;opacity:.8}
+.rvmiss .btn{flex:none;height:28px;padding:0 10px;font-size:11.5px;border-radius:9px;background:#fff;border:1px solid var(--amber-line);color:var(--amber)}
+/* ---------- 선택 필드 · 피커 ---------- */
+.pickfield{display:flex;align-items:center;justify-content:space-between;gap:8px;line-height:1.2}
+.pickfield .pv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:600}
+.pickfield .pv .ph{color:#A3A9B1;font-weight:600}
+.pickfield .pv .sub{color:var(--muted);font-size:11.5px;font-weight:700;margin-left:6px}
+.pickfield .pchev{flex:none;display:flex;color:var(--muted)}
+.pickfield .pchev svg{width:18px;height:18px}
+.pklist{display:flex;flex-direction:column;gap:8px}
+.pkopt{display:flex;align-items:center;gap:10px;width:100%;padding:12px 13px;border-radius:14px;
+  background:#fff;border:1.5px solid var(--line2);text-align:left}
+.pkopt .pt{flex:1;min-width:0}
+.pkopt .pt b{display:block;font-size:14.5px;font-weight:800;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pkopt .pt span{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pkopt .pc{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:transparent}
+.pkopt .pc svg{width:14px;height:14px}
+.pkopt.on{border-color:var(--green);box-shadow:0 0 0 3px rgba(15,123,74,.1)}
+.pkopt.on .pc{background:var(--green);border-color:var(--green);color:#fff}
+.pkopt .pt b .plus{color:var(--green-d)}
+.pkempty{padding:22px 4px;text-align:center;font-size:12.5px;font-weight:700;color:var(--muted)}
 /* ---------- tabbar ---------- */
 .tabbar{flex:none;display:flex;background:rgba(255,255,255,.96);border-top:1px solid var(--line);
   padding:6px 6px calc(6px + env(safe-area-inset-bottom));-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -272,8 +336,6 @@ main::-webkit-scrollbar{width:0}
 .field>label{display:block;font-size:11.5px;font-weight:800;color:var(--muted);margin:0 0 5px 3px;letter-spacing:.1px}
 .input{width:100%;height:45px;border-radius:13px;border:1px solid var(--line);background:#fff;padding:0 12px;
   font-size:15px;font-weight:600;-webkit-appearance:none;appearance:none}
-select.input{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238A9099' stroke-width='2.2' stroke-linecap='round'><path d='M7 10l5 5 5-5'/></svg>");
-  background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:34px}
 .input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(15,123,74,.12)}
 textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;resize:vertical}
 .row2{display:flex;gap:9px}
@@ -427,6 +489,7 @@ var ICON = {
   gear: svg('<circle cx="12" cy="12" r="3.2"/><path d="M19.4 14.6a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2A1.7 1.7 0 0 0 4.7 8.8a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9.2A1.7 1.7 0 0 0 10.3 3V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1z"/>'),
   edit: svg('<path d="M4 20h4l10.2-10.2a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.4 6.6l4 4"/>'),
   chev: svg('<path d="M9.5 5.5 16 12l-6.5 6.5"/>', 2.1),
+  chevD:svg('<path d="M6 9.5 12 15.5 18 9.5"/>', 2.1),
   search:svg('<circle cx="11" cy="11" r="6.4"/><path d="M16 16l4.2 4.2"/>', 2.1),
   spark:svg('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/><path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>'),
   bell: svg('<path d="M18 15.5V11a6 6 0 1 0-12 0v4.5L4.5 18h15L18 15.5z"/><path d="M10 21h4"/>'),
@@ -471,7 +534,8 @@ function sum(arr, f){ var s = 0; for (var i = 0; i < arr.length; i++) s += f(arr
 
 /* ---------- 상태 ---------- */
 var state = null;
-var ui = { tab:'today', date: todayISO(), memberId: null, search:'', month: todayISO().slice(0,7) };
+var ui = { tab:'today', date: todayISO(), memberId: null, search:'', month: todayISO().slice(0,7),
+  stats:'lesson', revUnit:'month', revOpen:'' };
 
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
 function load(){
@@ -546,28 +610,28 @@ function buildDemo(){
     { name:'김도현', gender:'male',   region:'분당', level:'중급', phone:'010-2451-7782',
       since: addDays(today, -112),
       memo:'드라이버 헤드 스피드 46m/s. 백스윙 톱에서 왼팔이 접히는 습관 → 테이크어웨이 때 오른팔 펴기 유지. 목표 90타 깨기.',
-      pkg:{ dur:55, start:addDays(today, -38), price:800000, remaining:4 },
+      pkg:{ dur:55, start:addDays(today, -38), unit:100000, remaining:4 },
       plan:{ dows:[2,4], time:'07:00', n:7, loc:'분당 실내연습장' },
       sts:['completed','completed','same_day_cancel','completed','excused_cancel','no_show','completed'] },
 
     { name:'박서연', gender:'female', region:'판교', level:'초급', phone:'010-8832-1145',
       since: addDays(today, -78),
       memo:'아이언 어프로치 거리감 위주. 슬라이스 교정 중(페이스 열림) → 그립 압력 3/10 유지.',
-      pkg:{ dur:25, start:addDays(today, -42), price:700000, remaining:2 },
+      pkg:{ dur:25, start:addDays(today, -42), unit:70000, remaining:2 },
       plan:{ dows:[1,3,5], time:'10:30', n:18, loc:'판교 스크린레슨장' },
       sts:['completed','completed','completed','completed','same_day_cancel','completed','completed','completed','completed','completed','no_show','completed','completed','completed','completed','completed','completed','completed'] },
 
     { name:'정민재', gender:'male',   region:'강남', level:'중급', phone:'010-3319-6027',
       since: addDays(today, -44),
       memo:'12월 첫 필드 라운드 준비. 우드 샷 일관성과 벙커 탈출 위주. 라운드 후 피드백 공유함.',
-      pkg:{ dur:55, start:addDays(today, -30), price:640000, remaining:3 },
+      pkg:{ dur:55, start:addDays(today, -30), unit:100000, remaining:3 },
       plan:{ dows:[3,6], time:'19:00', n:7, loc:'강남 인도어스튜디오' },
       sts:['completed','makeup','completed','completed','same_day_cancel','completed','excused_cancel'] },
 
     { name:'이하늘', gender:'female', region:'수원', level:'입문', phone:'010-5567-2244',
       since: addDays(today, -18),
       memo:'숏게임 위주 25분 레슨. 30m 이내 어프로치 거리 조절. 그립·셋업 교정부터 시작.',
-      pkg:{ dur:25, start:addDays(today, -14), price:350000, remaining:6 },
+      pkg:{ dur:25, start:addDays(today, -14), unit:0, remaining:6 },
       plan:{ dows:[2,5], time:'14:00', n:4, loc:'수원 그린 연습장' },
       sts:['completed','completed','no_show','completed'] }
   ];
@@ -586,7 +650,7 @@ function buildDemo(){
       id: uid('pkg'), memberId: m.id, durationMinutes: def.pkg.dur,
       totalSessions: total, remainingSessions: total,
       startDate: def.pkg.start, expiryDate: addMonths(today, 5),
-      price: def.pkg.price, note: ''
+      price: (def.pkg.unit || 0) * total, note: ''
     };
     st.packages.push(pkg);
     dates.forEach(function(d, i){
@@ -819,7 +883,7 @@ function renderHeader(){
     h = '<div class="hd-left"><div><h1>회원목록</h1><div class="sub">' + state.members.length + '명 · 활성 수강권 ' + activePkgCount() + '개</div></div></div>' +
         '<button class="iconbtn" data-act="member-add" aria-label="회원 추가">' + ICON.plus + '</button>';
   } else {
-    h = '<div class="hd-left"><div><h1>통계</h1><div class="sub">' + monthLabel(ui.month) + ' 운영 현황</div></div></div>';
+    h = '<div class="hd-left"><div><h1>통계</h1><div class="sub">' + monthLabel(ui.month) + (ui.stats === 'revenue' ? ' 수입 정산' : ' 운영 현황') + '</div></div></div>';
   }
   document.getElementById('hd').innerHTML = h;
 }
@@ -880,6 +944,8 @@ function closeSheetEl(wrap){
   if (bookCtx && bookCtx.sh && bookCtx.sh.el === wrap) bookCtx = null;
   if (pkgCtx && pkgCtx.sh && pkgCtx.sh.el === wrap) pkgCtx = null;
   if (qaCtx && qaCtx.sh && qaCtx.sh.el === wrap) { stopQaVoice(); qaCtx = null; }
+  if (priceCtx && priceCtx.sh && priceCtx.sh.el === wrap) priceCtx = null;
+  if (pickCtx && pickCtx.sh && pickCtx.sh.el === wrap) pickCtx = null;
 }
 function closeTopSheet(){
   if (!sheetStack.length) return;
@@ -893,6 +959,84 @@ function findSession(id){
   return null;
 }
 function timeOfISO(x){ return String(x || '').slice(11, 16); }
+
+/* =========================================================
+   앱 안 피커 (iOS 기본 select 대신 쓰는 통일된 선택 시트)
+   ========================================================= */
+var pickerFields = {};   /* fieldId → [{v, label, sub}] */
+var pickCtx = null;
+var PICK_META = {
+  bkMember: { title:'회원', sub:'이름 옆에 남은 횟수를 같이 보여드려요.' },
+  bkPkg:    { title:'차감할 수강권', sub:'예약해 두고, 정산에서 차감될 때 이 수강권을 씁니다.' },
+  qaMember: { title:'회원', sub:'목록에 없으면 맨 아래에서 새 회원으로 추가할 수 있어요.' },
+  mfLevel:  { title:'레벨', sub:'회원 목록에 함께 표시돼요.' },
+  mfMonths: { title:'유효기간', sub:'시작일부터 이 기간이 지나면 만료로 표시돼요.' },
+  pkMonths: { title:'유효기간', sub:'시작일부터 이 기간이 지나면 만료로 표시돼요.' }
+};
+
+function pickOptHTML(o){
+  return '<b>' + esc(o.label) + '</b>' + (o.sub ? '<span>' + esc(o.sub) + '</span>' : '');
+}
+
+function pickFieldHTML(id, opts, value){
+  pickerFields[id] = opts || [];
+  var cur = null;
+  for (var i = 0; i < pickerFields[id].length; i++) if (String(pickerFields[id][i].v) === String(value)) cur = pickerFields[id][i];
+  return '<button class="input pickfield" id="' + id + 'Btn" data-act="pick" data-field="' + id + '" type="button">' +
+      '<span class="pv" id="' + id + 'Lbl">' + (cur ? pickOptHTML(cur) : '<span class="ph">골라주세요</span>') + '</span>' +
+      '<span class="pchev">' + ICON.chevD + '</span></button>' +
+    '<input type="hidden" id="' + id + '" value="' + esc(value === undefined || value === null ? '' : value) + '">';
+}
+
+function syncPickLabel(id){
+  var lbl = document.getElementById(id + 'Lbl');
+  var hidden = document.getElementById(id);
+  if (!lbl) return;
+  if (!hidden) { lbl.innerHTML = '<span class="ph">골라주세요</span>'; return; }
+  var opts = pickerFields[id] || [], cur = null;
+  for (var i = 0; i < opts.length; i++) if (String(opts[i].v) === String(hidden.value)) cur = opts[i];
+  lbl.innerHTML = cur ? pickOptHTML(cur) : '<span class="ph">골라주세요</span>';
+}
+
+function setPickOptions(id, opts, value){
+  pickerFields[id] = opts || [];
+  var hidden = document.getElementById(id);
+  if (hidden && value !== undefined) hidden.value = value;
+  syncPickLabel(id);
+}
+
+function openPick(fieldId){
+  var opts = pickerFields[fieldId] || [];
+  var meta = PICK_META[fieldId] || { title:'골라주세요', sub:'' };
+  var hidden = document.getElementById(fieldId);
+  var curVal = hidden ? hidden.value : '';
+  var sh = openSheet({ title: meta.title, sub: meta.sub });
+  pickCtx = { sh: sh, field: fieldId, opts: opts, value: curVal };
+  paintPick();
+}
+
+function paintPick(){
+  if (!pickCtx) return;
+  var o = pickCtx.opts;
+  pickCtx.sh.body.innerHTML = o.length
+    ? '<div class="pklist">' + o.map(function(x){
+        var on = String(x.v) === String(pickCtx.value);
+        return '<button class="pkopt' + (on ? ' on' : '') + '" data-act="pick-set" data-v="' + esc(x.v) + '">' +
+          '<span class="pt">' + pickOptHTML(x) + '</span>' +
+          '<span class="pc">' + ICON.check + '</span>' +
+        '</button>';
+      }).join('') + '</div>'
+    : '<div class="pkempty">고를 수 있는 항목이 없어요</div>';
+}
+
+function applyPick(fieldId, value){
+  var hidden = document.getElementById(fieldId);
+  if (hidden) hidden.value = value;
+  syncPickLabel(fieldId);
+  if (fieldId === 'bkMember') refreshBkPkgs();
+  else if (fieldId === 'bkPkg') validateBook();
+  else if (fieldId === 'qaMember') validateQuick();
+}
 
 /* =========================================================
    오늘 탭
@@ -1346,10 +1490,9 @@ function openBookSheet(pre){
 
 function bookBodyHTML(date, memberId, time){
   var opts = state.members.map(function(m){
-    var tr = totalRemaining(m.id);
-    return '<option value="' + m.id + '"' + (m.id === memberId ? ' selected' : '') + '>' + esc(m.name) + ' (' + tr + '회 남음)</option>';
-  }).join('');
-  return '<div class="field"><label>회원</label><select class="input" id="bkMember">' + opts + '</select></div>' +
+    return { v: m.id, label: m.name, sub: '잔여 ' + totalRemaining(m.id) + '회' };
+  });
+  return '<div class="field"><label>회원</label>' + pickFieldHTML('bkMember', opts, memberId) + '</div>' +
     '<div class="row2">' +
       '<div class="field"><label>날짜</label><input class="input" type="date" id="bkDate" value="' + date + '"></div>' +
       '<div class="field"><label>시작 시간</label><input class="input" type="time" id="bkTime" value="' + time + '" step="300"></div>' +
@@ -1358,7 +1501,7 @@ function bookBodyHTML(date, memberId, time){
       '<button class="' + (bookCtx.dur === 25 ? 'on' : '') + '" data-act="bk-dur" data-v="25">25분</button>' +
       '<button class="' + (bookCtx.dur === 55 ? 'on' : '') + '" data-act="bk-dur" data-v="55">55분</button>' +
     '</div><div class="hint">25분은 짧은 스윙 체크, 55분은 정규 레슨이에요. 다른 단위도 나중에 추가할 수 있습니다.</div></div>' +
-    '<div class="field"><label>차감할 수강권</label><select class="input" id="bkPkg"></select><div class="hint" id="bkPkgHint"></div></div>' +
+    '<div class="field"><label>차감할 수강권</label>'+ pickFieldHTML('bkPkg', [], '') + '<div class="hint" id="bkPkgHint"></div></div>' +
     '<div class="field"><label>메모 (선택)</label><input class="input" id="bkMemo" placeholder="예: 드라이버 위주"></div>' +
     '<div class="field"><label>장소 (선택)</label><input class="input" id="bkLocation" placeholder="예: 분당 실내연습장"></div>' +
     '<div id="bkWarn"></div>';
@@ -1366,14 +1509,22 @@ function bookBodyHTML(date, memberId, time){
 
 function refreshBkPkgs(){
   var mEl = document.getElementById('bkMember');
-  var pEl = document.getElementById('bkPkg');
-  if (!mEl || !pEl || !bookCtx) return;
+  if (!mEl || !bookCtx) return;
   var list = activePkgs(mEl.value).filter(function(p){ return p.durationMinutes === bookCtx.dur; });
-  pEl.innerHTML = list.length ? list.map(function(p){
+  var opts = list.map(function(p){
     var exp = p.expiryDate && p.expiryDate < todayISO();
-    return '<option value="' + p.id + '">' + p.durationMinutes + '분 · 잔여 ' + p.remainingSessions + '/' + p.totalSessions +
-      '회 (' + fmtDot(p.expiryDate) + (exp ? ' · 만료됨' : ' 만료') + ')</option>';
-  }).join('') : '<option value="">사용 가능한 ' + bookCtx.dur + '분 수강권이 없어요</option>';
+    return { v: p.id, label: p.durationMinutes + '분 · 잔여 ' + p.remainingSessions + '/' + p.totalSessions + '회',
+      sub: fmtDot(p.expiryDate) + (exp ? ' · 만료됨' : ' 만료') };
+  });
+  var pEl = document.getElementById('bkPkg');
+  var prev = pEl ? pEl.value : '', keep = '';
+  for (var i = 0; i < opts.length; i++) if (opts[i].v === prev) keep = prev;
+  if (!keep && opts.length) keep = opts[0].v;
+  setPickOptions('bkPkg', opts, keep);
+  if (!opts.length) {
+    var lbl = document.getElementById('bkPkgLbl');
+    if (lbl) lbl.innerHTML = '<span class="ph">사용 가능한 ' + bookCtx.dur + '분 수강권이 없어요</span>';
+  }
   var hint = document.getElementById('bkPkgHint');
   if (hint) hint.innerHTML = list.length
     ? '예약해 두고, 정산에서 완료·당일취소·노쇼로 확정할 때 이 수강권에서 차감돼요.'
@@ -1596,6 +1747,7 @@ function pkgCardHTML(p){
       '<span>' + fmtNum(p.startDate) + ' ~ ' + expiryLabel(p) + '</span>' +
       (p.price ? '<span>' + money(p.price) + '</span>' : '') +
       (unit ? '<span>회당 약 ' + money(unit) + '</span>' : '') +
+      '<button class="link" data-act="pkg-price" data-mid="' + p.memberId + '" style="font-size:11.5px">' + (p.price ? '금액 수정' : '금액 입력') + '</button>' +
       (dead ? '<span>사용 종료</span>' : '') +
     '</div>' +
   '</div>';
@@ -1881,7 +2033,7 @@ function addMemberBodyHTML(m, tpl){
   '</div>';
   h += '<div class="row2">' +
     '<div class="field"><label>연락처</label><input class="input" id="mfPhone" type="tel" value="' + esc(m ? (m.phone || '') : '') + '" placeholder="010-0000-0000"></div>' +
-    '<div class="field"><label>레벨</label><select class="input" id="mfLevel">' + levelOptions(m ? m.level : '') + '</select></div>' +
+    '<div class="field"><label>레벨</label>' + pickFieldHTML('mfLevel', levelPickOptions(), m ? (m.level || '') : '') + '</div>' +
   '</div>';
   h += '<div class="field"><label>메모</label><textarea class="input" id="mfMemo" placeholder="스윙 특징 · 목표 · 주의점">' + esc(m ? (m.memo || '') : '') + '</textarea></div>';
 
@@ -1900,9 +2052,7 @@ function addMemberBodyHTML(m, tpl){
       '</div>' +
       '<div class="row2">' +
         '<div class="field"><label>시작일</label><input class="input" type="date" id="mfStart" value="' + (tpl ? d : d) + '"></div>' +
-        '<div class="field"><label>유효기간</label><select class="input" id="mfMonths">' +
-          '<option value="3">3개월</option><option value="6" selected>6개월</option><option value="12">12개월</option><option value="0">무기한</option>' +
-        '</select></div>' +
+        '<div class="field"><label>유효기간</label>' + pickFieldHTML('mfMonths', monthPickOptions(), '6') + '</div>' +
       '</div>' +
       '<div class="field"><label>금액 (선택)</label><input class="input" id="mfPrice" type="number" inputmode="numeric" placeholder="예) 800000">' +
         '<div class="hint" id="mfUnit">금액을 넣으면 회당 금액을 계산해 드려요.</div></div>';
@@ -1910,11 +2060,14 @@ function addMemberBodyHTML(m, tpl){
   return h;
 }
 
-function levelOptions(cur){
-  var list = ['', '입문', '초급', '중급', '상급', '프로'];
-  return list.map(function(v){
-    return '<option value="' + v + '"' + (v === (cur || '') ? ' selected' : '') + '>' + (v || '선택 안 함') + '</option>';
-  }).join('');
+function levelPickOptions(){
+  return ['', '입문', '초급', '중급', '상급', '프로'].map(function(v){
+    return { v: v, label: v || '선택 안 함', sub: v ? '' : '레벨은 나중에 정해도 돼요' };
+  });
+}
+
+function monthPickOptions(){
+  return [{ v:'3', label:'3개월' }, { v:'6', label:'6개월' }, { v:'12', label:'12개월' }, { v:'0', label:'무기한', sub:'만료 없이 남은 횟수만큼 사용' }];
 }
 
 function setDurUI(v){
@@ -1961,7 +2114,7 @@ function applyQuickLine(){
     if (p.found.region && (el = document.getElementById('mfRegion'))) el.value = p.region;
     if (p.found.phone && (el = document.getElementById('mfPhone'))) el.value = p.phone;
     if (p.found.gender) setGenderUI(p.gender);
-    if (p.found.level && (el = document.getElementById('mfLevel'))) el.value = p.level;
+    if (p.found.level && (el = document.getElementById('mfLevel'))) { el.value = p.level; syncPickLabel('mfLevel'); }
     if (p.found.duration) { addCtx.duration = p.duration; setDurUI(p.duration); }
     if (p.found.sessions && (el = document.getElementById('mfSessions'))) el.value = p.sessions;
     if (p.extra && (el = document.getElementById('mfMemo')) && !el.value) el.value = p.extra;
@@ -2052,9 +2205,7 @@ function packageBodyHTML(){
     '</div>' +
     '<div class="row2">' +
       '<div class="field"><label>시작일</label><input class="input" type="date" id="pkStart" value="' + todayISO() + '"></div>' +
-      '<div class="field"><label>유효기간</label><select class="input" id="pkMonths">' +
-        '<option value="3">3개월</option><option value="6" selected>6개월</option><option value="12">12개월</option><option value="0">무기한</option>' +
-      '</select></div>' +
+      '<div class="field"><label>유효기간</label>' + pickFieldHTML('pkMonths', monthPickOptions(), '6') + '</div>' +
     '</div>' +
     '<div class="field"><label>금액 (선택)</label><input class="input" id="pkPrice" type="number" inputmode="numeric" placeholder="예) 640000">' +
       '<div class="hint" id="pkUnit">금액을 넣으면 회당 금액을 계산해 드려요.</div></div>';
@@ -2083,6 +2234,47 @@ function savePackage(){
   if (memberCtx) paintMemberSheet();
   render(true);
   toast(n + '회 수강권 추가 · ' + memberName(p.memberId));
+}
+
+/* =========================================================
+   수강권 금액 입력 (수입 정산용)
+   ========================================================= */
+var priceCtx = null;
+
+function openPriceSheet(memberId){
+  var m = memberById(memberId);
+  if (!m) return;
+  var pkgs = memberPkgs(memberId);
+  var sh = openSheet({ title: '수강권 금액', sub: esc(m.name) + ' 회원 · 결제한 총 금액을 넣으면 회당 금액이 자동 계산됩니다.' });
+  priceCtx = { sh: sh, memberId: memberId };
+  sh.body.innerHTML = pkgs.length ? pkgs.map(function(p){
+    var unit = perSessionPrice(p);
+    return '<div class="field"><label>' + p.durationMinutes + '분 · ' + p.totalSessions + '회' +
+      (p.startDate ? ' · ' + fmtNum(p.startDate) + ' 시작' : '') + '</label>' +
+      '<input class="input" type="number" inputmode="numeric" data-pid="' + p.id + '" value="' + (p.price || '') + '" placeholder="예) 640000">' +
+      '<div class="hint" id="pv_' + p.id + '">' + (unit ? '지금 회당 ' + money(unit) : '금액을 넣으면 회당 금액을 계산해 드려요.') + '</div></div>';
+  }).join('') : '<div class="empty"><div class="et">수강권이 없어요</div><div class="ed">회원 정보창에서 수강권을 먼저 추가해 주세요.</div></div>';
+  sh.footer.style.display = '';
+  sh.footer.innerHTML = '<button class="btn btn-primary btn-block" data-act="price-save">금액 저장</button>';
+}
+
+function savePrice(){
+  if (!priceCtx) return;
+  var inputs = priceCtx.sh.body.querySelectorAll('[data-pid]'), n = 0;
+  for (var i = 0; i < inputs.length; i++) {
+    var p = pkgById(inputs[i].getAttribute('data-pid'));
+    if (!p) continue;
+    var v = parseInt(String(inputs[i].value).replace(/[^0-9]/g, ''), 10);
+    p.price = isNaN(v) ? 0 : v;
+    n++;
+  }
+  save();
+  var sh = priceCtx.sh;
+  priceCtx = null;
+  if (sh) sh.close();
+  if (memberCtx) paintMemberSheet();
+  render(true);
+  toast(n ? '수강권 금액을 저장했어요' : '저장할 수강권이 없어요');
 }
 
 /* =========================================================
@@ -2122,18 +2314,31 @@ function kpi(cls, n, label, unit){
   return '<div class="kpi ' + (cls || '') + '"><div class="n">' + n + (unit ? '<small>' + unit + '</small>' : '') + '</div><div class="l">' + label + '</div></div>';
 }
 
+function statsMonthNav(){
+  return '<div class="monhdr"><div class="m">' + monthLabel(ui.month) + '</div><div class="navs">' +
+    '<button class="iconbtn" data-act="stats-month" data-delta="-1" aria-label="이전 달">' + ICON.back + '</button>' +
+    '<button class="btn btn-sm btn-outline" data-act="stats-month" data-delta="0">이번 달</button>' +
+    '<button class="iconbtn" data-act="stats-month" data-delta="1" aria-label="다음 달" style="transform:rotate(180deg)">' + ICON.back + '</button>' +
+  '</div></div>';
+}
+
+/* 통계 탭 = 수업 현황 · 수입 정산 두 화면 */
 function viewStats(){
+  var seg = '<div class="seg statsseg">' +
+    '<button class="' + (ui.stats === 'revenue' ? '' : 'on') + '" data-act="stats-view" data-v="lesson">수업 현황</button>' +
+    '<button class="' + (ui.stats === 'revenue' ? 'on' : '') + '" data-act="stats-view" data-v="revenue">수입 정산</button>' +
+  '</div>';
+  return seg + (ui.stats === 'revenue' ? viewRevenue() : viewLessonStats());
+}
+
+function viewLessonStats(){
   var ym = ui.month;
   var ms = monthStats(ym);
   var bars = weekBars(ym);
   var maxBar = 1;
   bars.forEach(function(b){ maxBar = Math.max(maxBar, b.total); });
 
-  var h = '<div class="monhdr"><div class="m">' + monthLabel(ym) + '</div><div class="navs">' +
-    '<button class="iconbtn" data-act="stats-month" data-delta="-1" aria-label="이전 달">' + ICON.back + '</button>' +
-    '<button class="btn btn-sm btn-outline" data-act="stats-month" data-delta="0">이번 달</button>' +
-    '<button class="iconbtn" data-act="stats-month" data-delta="1" aria-label="다음 달" style="transform:rotate(180deg)">' + ICON.back + '</button>' +
-  '</div></div>';
+  var h = statsMonthNav();
 
   h += '<div class="kpis">' +
     kpi('green', ms.completed, '완료 레슨', '건') +
@@ -2203,6 +2408,240 @@ function viewStats(){
   '</div>';
 
   h += '<div class="foot">레슨 관리 프로토타입 · 아이디어 검증용<br>실제 회원 정보가 아닌 예시 데이터입니다</div>';
+  return h;
+}
+
+/* ---------- 수입 정산 (차감된 레슨 × 회당 금액) ---------- */
+function perSessionPrice(p){
+  if (!p) return 0;
+  var price = +p.price || 0, n = +p.totalSessions || 0;
+  return (price > 0 && n > 0) ? Math.round(price / n) : 0;
+}
+
+function monthFromTo(ym){
+  var p = String(ym).split('-'), y = +p[0], mo = +p[1];
+  var last = new Date(y, mo, 0).getDate();
+  return { from: ym + '-01', to: ym + '-' + pad(last), last: last };
+}
+
+/* 레슨에 붙은 수강권 (연결이 없으면 같은 시간 단위 수강권으로 추정) */
+function sessionPkg(s){
+  var p = pkgById(s.packageId);
+  if (p) return p;
+  var list = memberPkgs(s.memberId);
+  for (var i = 0; i < list.length; i++) if (list[i].durationMinutes === s.durationMinutes) return list[i];
+  return list.length ? list[0] : null;
+}
+
+function revenueRange(from, to){
+  var all = [], total = 0, missing = 0, mmap = {}, rows = [];
+  state.sessions.forEach(function(s){
+    if (!s.deducted) return;
+    if (s.date < from || s.date > to) return;
+    var unit = perSessionPrice(sessionPkg(s));
+    all.push({ id: s.id, date: s.date, time: s.startTime, status: s.status,
+      memberId: s.memberId, name: memberName(s.memberId), dur: s.durationMinutes,
+      unit: unit, missing: !(unit > 0) });
+  });
+  all.sort(function(a, b){
+    if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+    return minOf(b.time) - minOf(a.time);
+  });
+  all.forEach(function(r){
+    if (r.missing) {
+      missing++;
+      if (r.memberId) mmap[r.memberId] = (mmap[r.memberId] || 0) + 1;
+      return;
+    }
+    total += r.unit;
+    rows.push(r);
+  });
+  return { all: all, rows: rows, total: total, count: rows.length,
+    deducted: all.length, missing: missing, missingByMember: mmap };
+}
+
+function revenueByMember(rows){
+  var map = {}, list = [];
+  rows.forEach(function(r){
+    var k = r.memberId || '-';
+    if (!map[k]) { map[k] = { memberId: r.memberId, name: r.name, count: 0, amount: 0 }; list.push(map[k]); }
+    map[k].count++; map[k].amount += r.unit;
+  });
+  list.sort(function(a, b){ return b.amount - a.amount; });
+  return list;
+}
+
+/* 450000 → 45만 · 1230000 → 123만 (막대 그래프 라벨용) */
+function wonShort(n){
+  n = Math.round(n || 0);
+  if (n >= 100000000) { var e = n / 100000000; return (e >= 10 ? Math.round(e) : Math.round(e * 10) / 10) + '억'; }
+  if (n >= 10000) { var m = n / 10000; return (m >= 100 ? Math.round(m) : Math.round(m * 10) / 10) + '만'; }
+  return n ? String(n) : '0';
+}
+
+function revDetailMembers(rows, mmap){
+  var parts = revenueByMember(rows).map(function(x){
+    return '<div class="rvline"><span class="n">' + esc(x.name) + '</span>' +
+      '<span class="a">' + x.count + '회 · ' + money(x.amount) + '</span></div>';
+  });
+  var miss = Object.keys(mmap || {}).map(function(mid){
+    var m = memberById(mid);
+    return '<div class="rvline miss"><span class="n">' + esc(m ? m.name : '(삭제된 회원)') + '</span>' +
+      '<span class="a miss">미입력 ' + mmap[mid] + '건</span></div>';
+  });
+  if (!parts.length && !miss.length) return '<div class="rvdetail"><div class="hint" style="margin:2px 0 6px">이 기간에 차감된 레슨이 없어요.</div></div>';
+  return '<div class="rvdetail">' + parts.join('') + miss.join('') + '</div>';
+}
+
+function revDetailSessions(rows){
+  if (!rows.length) return '<div class="rvdetail"><div class="hint" style="margin:2px 0 6px">이 날 차감된 레슨이 없어요.</div></div>';
+  return '<div class="rvdetail">' + rows.map(function(r){
+    var st = STATUS[r.status] ? STATUS[r.status].label : '';
+    return '<div class="rvline' + (r.missing ? ' miss' : '') + '"><span class="n">' + esc(r.name) +
+      '<span class="t">' + r.time + ' · ' + r.dur + '분 · ' + st + '</span></span>' +
+      '<span class="a' + (r.missing ? ' miss' : '') + '">' + (r.missing ? '금액 미입력' : money(r.unit)) + '</span></div>';
+  }).join('') + '</div>';
+}
+
+function revMonthBody(ym, cur){
+  var months = [], max = 1;
+  for (var i = 5; i >= 0; i--) {
+    var k = addMonths(ym + '-01', -i).slice(0, 7);
+    var rg = monthFromTo(k);
+    var t = revenueRange(rg.from, rg.to).total;
+    months.push({ key: k, total: t });
+    max = Math.max(max, t);
+  }
+  var h = '<div class="sec" style="margin-top:16px"><h2>최근 6개월</h2><span class="aside">막대를 눌러 이동</span></div>' +
+    '<div class="card"><div class="wchart rvchart">' + months.map(function(x){
+      var hh = Math.max(4, Math.round(x.total / max * 84));
+      var on = x.key === ym;
+      return '<button class="wcol" data-act="rev-month" data-ym="' + x.key + '" aria-label="' + monthLabel(x.key) + ' 수입">' +
+        '<span class="wval' + (on ? ' on' : '') + '">' + wonShort(x.total) + '</span>' +
+        '<span class="wbar' + (x.total ? '' : ' zero') + '" style="height:' + hh + 'px"></span>' +
+        '<span class="wlab' + (on ? ' on' : '') + '">' + (+x.key.slice(5, 7)) + '월</span></button>';
+    }).join('') + '</div></div>';
+
+  var list = revenueByMember(cur.rows);
+  h += '<div class="sec"><h2>회원별 기여</h2><span class="aside">' + list.length + '명 · 금액순</span></div>';
+  h += '<div class="rvlist">' + (list.length ? list.map(function(x){
+    var share = cur.total ? Math.round(x.amount / cur.total * 100) : 0;
+    return '<button class="rvmem" data-act="member-open" data-id="' + x.memberId + '">' +
+      '<span class="rvmemhead"><span class="n">' + esc(x.name) + '</span>' +
+        '<span class="c">' + x.count + '회 · ' + share + '%</span>' +
+        '<span class="a">' + money(x.amount) + '</span></span>' +
+      '<span class="rvshare"><i style="width:' + Math.max(3, share) + '%"></i></span></button>';
+  }).join('') : '<div class="hint" style="margin:12px 2px">이 달에는 차감된 레슨이 없어요.</div>') + '</div>';
+  return h;
+}
+
+function revWeekBody(ym){
+  var rng = monthFromTo(ym), weeks = [], max = 1;
+  for (var d = 1; d <= rng.last; d += 7) {
+    var to = Math.min(rng.last, d + 6);
+    var g = revenueRange(ym + '-' + pad(d), ym + '-' + pad(to));
+    weeks.push({ key: 'w' + d, idx: weeks.length + 1, from: d, to: to, total: g.total, deducted: g.deducted, missing: g.missing, rows: g.rows, missingByMember: g.missingByMember });
+    max = Math.max(max, g.total);
+  }
+  return '<div class="rvlist" style="margin-top:16px">' + weeks.map(function(w){
+    var open = ui.revOpen === w.key;
+    var share = w.total ? Math.max(4, Math.round(w.total / max * 100)) : 0;
+    return '<div class="rvitem">' +
+      '<button class="rvrow" data-act="rev-open" data-key="' + w.key + '" data-open="' + (open ? 1 : 0) + '">' +
+        '<span class="rvmain"><span class="rvtitle">' + w.idx + '주차</span>' +
+          '<span class="rvmeta">' + fmtDot(ym + '-' + pad(w.from)) + '~' + fmtDot(ym + '-' + pad(w.to)) + ' · 차감 ' + w.deducted + '회</span>' +
+          '<span class="rvshare"><i style="width:' + share + '%"></i></span></span>' +
+        '<span class="rvright"><span class="rvamt">' + money(w.total) + '</span>' +
+          (w.missing ? '<span class="rvcnt">미입력 ' + w.missing + '건</span>' : '') + '</span>' +
+        '<span class="rvchev">' + ICON.chev + '</span>' +
+      '</button>' +
+      (open ? revDetailMembers(w.rows, w.missingByMember) : '') +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function revDayBody(cur){
+  var map = {}, days = [];
+  cur.all.forEach(function(r){
+    if (!map[r.date]) { map[r.date] = { key: 'd' + r.date, date: r.date, total: 0, count: 0, missing: 0, rows: [] }; days.push(map[r.date]); }
+    var d = map[r.date];
+    d.count++;
+    d.rows.push(r);
+    if (r.missing) d.missing++;
+    else d.total += r.unit;
+  });
+  days.sort(function(a, b){ return a.date < b.date ? 1 : -1; });
+  var max = 1;
+  days.forEach(function(d){ max = Math.max(max, d.total); });
+
+  var h = '<div class="sec" style="margin-top:16px"><h2>일별 수입</h2><span class="aside">' + days.length + '일 · 최근순</span></div>';
+  if (!days.length) return h + '<div class="empty" style="background:#fff"><div class="et">이 달에는 수입이 없어요</div><div class="ed">차감된 레슨이 생기면 날짜별로 쌓입니다.</div></div>';
+  return h + '<div class="rvlist">' + days.map(function(d){
+    var open = ui.revOpen === d.key;
+    var dow = WEEK[parseISO(d.date).getDay()];
+    var share = d.total ? Math.max(4, Math.round(d.total / max * 100)) : 0;
+    return '<div class="rvitem">' +
+      '<button class="rvrow" data-act="rev-open" data-key="' + d.key + '" data-open="' + (open ? 1 : 0) + '">' +
+        '<span class="rvmain"><span class="rvtitle">' + fmtDot(d.date) + ' (' + dow + ')</span>' +
+          '<span class="rvmeta">차감 ' + d.count + '회 · 회원 ' + revenueByMember(d.rows).length + '명</span>' +
+          '<span class="rvshare"><i style="width:' + share + '%"></i></span></span>' +
+        '<span class="rvright"><span class="rvamt">' + money(d.total) + '</span>' +
+          (d.missing ? '<span class="rvcnt">미입력 ' + d.missing + '건</span>' : '') + '</span>' +
+        '<span class="rvchev">' + ICON.chev + '</span>' +
+      '</button>' +
+      (open ? revDetailSessions(d.rows) : '') +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+function viewRevenue(){
+  var ym = ui.month;
+  var rng = monthFromTo(ym);
+  var cur = revenueRange(rng.from, rng.to);
+  var prevYm = addMonths(ym + '-01', -1).slice(0, 7);
+  var prng = monthFromTo(prevYm);
+  var prev = revenueRange(prng.from, prng.to);
+  var unit = ui.revUnit || 'month';
+  var avg = cur.count ? Math.round(cur.total / cur.count) : 0;
+  var diff = cur.total - prev.total;
+
+  var h = statsMonthNav();
+
+  h += '<div class="hero rvhero">' +
+      '<div class="k">' + monthLabel(ym) + ' 수입 · 차감된 레슨 기준</div>' +
+      '<div class="big">' + Number(cur.total).toLocaleString('ko-KR') + '<small>원</small></div>' +
+      '<div class="row">' +
+        '<span class="pillstat">차감 ' + cur.deducted + '회</span>' +
+        (avg ? '<span class="pillstat">회당 평균 ' + money(avg) + '</span>' : '') +
+        (cur.missing ? '<span class="pillstat">미입력 ' + cur.missing + '건</span>' : '') +
+        (prev.total ? '<span class="pillstat">' + (diff >= 0 ? '▲ ' : '▼ ') + money(Math.abs(diff)) + ' 전월 대비</span>' : '') +
+      '</div>' +
+    '</div>';
+
+  if (cur.missing > 0) {
+    h += '<div class="rvmiss"><div class="t">금액 미입력 ' + cur.missing + '건은 수입에서 빠졌어요</div>' +
+      '<div class="d">수강권에 결제 금액을 넣으면 그 레슨부터 자동으로 계산됩니다.</div>' +
+      Object.keys(cur.missingByMember).map(function(mid){
+        var m = memberById(mid);
+        return '<div class="mrow"><span class="n">' + esc(m ? m.name : '(삭제된 회원)') + '</span>' +
+          '<span class="c">' + cur.missingByMember[mid] + '건</span>' +
+          (m ? '<button class="btn" data-act="pkg-price" data-mid="' + mid + '">금액 입력</button>' : '') +
+        '</div>';
+      }).join('') + '</div>';
+  }
+
+  h += '<div class="sec"><h2>기간별 수입</h2><span class="aside">' + monthLabel(ym) + '</span></div>' +
+    '<div class="seg rvunit">' +
+      [['month', '월별'], ['week', '주별'], ['day', '일별']].map(function(t){
+        return '<button class="' + (unit === t[0] ? 'on' : '') + '" data-act="rev-unit" data-v="' + t[0] + '">' + t[1] + '</button>';
+      }).join('') +
+    '</div>';
+
+  if (unit === 'week') h += revWeekBody(ym);
+  else if (unit === 'day') h += revDayBody(cur);
+  else h += revMonthBody(ym, cur);
+
+  h += '<div class="hint">수입 = 차감된 레슨(완료·당일취소·노쇼) × 수강권 회당 금액. 예정·일반취소·보강은 빠지고, 회당 금액은 결제 금액 ÷ 총 횟수를 반올림해 계산합니다.</div>';
   return h;
 }
 
@@ -2316,7 +2755,7 @@ function qaBodyHTML(){
     '<div class="field"><label>날짜</label><input class="input" type="date" id="qaDate" value="' + ui.date + '"></div>' +
     '<div class="field"><label>시간</label><input class="input" type="time" id="qaTime" step="300" value="' + defaultTime() + '"></div>' +
   '</div>' +
-  '<div class="field"><label>회원</label><select class="input" id="qaMember"></select></div>' +
+  '<div class="field"><label>회원</label>' + pickFieldHTML('qaMember', [], '') + '</div>' +
   '<div class="field"><label>장소</label><input class="input" id="qaLocation" placeholder="예: 분당 실내연습장"></div>' +
   '<div class="field"><label>수업 시간</label><div class="seg" id="qaDur">' +
     '<button data-act="qa-dur" data-v="25">25분</button>' +
@@ -2326,17 +2765,17 @@ function qaBodyHTML(){
 }
 
 function refreshQaMemberOptions(parsed, keep){
-  var sel = document.getElementById('qaMember');
-  if (!sel) return;
+  if (!document.getElementById('qaMember')) return;
   var opts = state.members.map(function(m){
-    return '<option value="' + m.id + '">' + esc(m.name) + ' (' + totalRemaining(m.id) + '회 남음)</option>';
-  }).join('');
+    return { v: m.id, label: m.name, sub: '잔여 ' + totalRemaining(m.id) + '회' };
+  });
   if (parsed && parsed.memberName && !parsed.memberId) {
-    opts += '<option value="__new__">＋ 새 회원으로 추가: ' + esc(parsed.memberName) + '</option>';
+    opts.push({ v:'__new__', label:'＋ 새 회원으로 추가', sub: parsed.memberName });
   }
-  if (!opts) opts = '<option value="__new__">＋ 새 회원으로 추가</option>';
-  sel.innerHTML = opts;
-  if (keep) sel.value = keep;
+  if (!opts.length) opts.push({ v:'__new__', label:'＋ 새 회원으로 추가' });
+  var hidden = document.getElementById('qaMember');
+  var cur = keep || (hidden ? hidden.value : '') || (opts[0] ? opts[0].v : '');
+  setPickOptions('qaMember', opts, cur);
 }
 
 function setSegValue(segId, v){
@@ -2367,6 +2806,7 @@ function applyQuickParse(){
     refreshQaMemberOptions(p, null);
     if (p.memberId) sel.value = p.memberId;
     else if (p.memberName) sel.value = '__new__';
+    syncPickLabel('qaMember');
   }
 
   if (bar) {
@@ -2583,7 +3023,56 @@ function onClick(e){
         var d1 = new Date(+p[0], (+p[1]) - 1 + dl, 1);
         ui.month = d1.getFullYear() + '-' + pad(d1.getMonth() + 1);
       }
+      ui.revOpen = '';
       render();
+      break;
+    }
+
+    /* ---------- 통계 하위 메뉴 · 수입 정산 ---------- */
+    case 'stats-view':
+      ui.stats = el.getAttribute('data-v') === 'revenue' ? 'revenue' : 'lesson';
+      ui.revOpen = '';
+      render();
+      break;
+
+    case 'rev-unit':
+      ui.revUnit = el.getAttribute('data-v') || 'month';
+      ui.revOpen = '';
+      render(true);
+      break;
+
+    case 'rev-month': {
+      var ymv = el.getAttribute('data-ym');
+      if (ymv) { ui.month = ymv; ui.revOpen = ''; render(true); }
+      break;
+    }
+
+    case 'rev-open': {
+      var rk = el.getAttribute('data-key');
+      ui.revOpen = (ui.revOpen === rk) ? '' : rk;
+      render(true);
+      break;
+    }
+
+    case 'pkg-price':
+      openPriceSheet(el.getAttribute('data-mid'));
+      break;
+
+    case 'price-save':
+      savePrice();
+      break;
+
+    /* ---------- 앱 안 피커 ---------- */
+    case 'pick':
+      openPick(el.getAttribute('data-field'));
+      break;
+
+    case 'pick-set': {
+      if (!pickCtx) break;
+      var pf = pickCtx.field, pv = el.getAttribute('data-v');
+      pickCtx.sh.close();
+      pickCtx = null;
+      applyPick(pf, pv);
       break;
     }
 
@@ -2841,7 +3330,20 @@ function renderGenderChips(el){
 }
 
 function onFieldChange(e){
-  var id = e.target && e.target.id;
+  var t = e.target;
+  var pid = t && t.getAttribute ? t.getAttribute('data-pid') : null;
+  if (pid) {
+    var pkg = pkgById(pid);
+    var hintEl = document.getElementById('pv_' + pid);
+    var v = parseInt(String(t.value).replace(/[^0-9]/g, ''), 10);
+    if (hintEl && pkg) {
+      hintEl.innerHTML = (v > 0 && pkg.totalSessions > 0)
+        ? '회당 약 <b>' + money(Math.round(v / pkg.totalSessions)) + '</b> · 총 ' + money(v)
+        : '금액을 넣으면 회당 금액을 계산해 드려요.';
+    }
+    return;
+  }
+  var id = t && t.id;
   if (!id) return;
   if (id === 'mSearch') {
     ui.search = e.target.value;
