@@ -179,24 +179,24 @@ main::-webkit-scrollbar{width:0}
 .empty .et{font-size:14px;font-weight:800;color:var(--ink2)}
 .empty .ed{font-size:12px;font-weight:600;margin-top:4px}
 /* ---------- members ---------- */
-.search{position:relative;margin:2px 0 12px}
+.search{position:relative;margin:2px 0 10px}
 .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#A9AEB6}
 .search input{width:100%;height:40px;border-radius:12px;border:1px solid var(--line);background:#fff;
   padding:0 12px 0 34px;font-size:14px;font-weight:600}
 .search input::placeholder{color:#B4B9C1;font-weight:600}
-.mrow{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:12px 14px;
+.mrow{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:9px 12px;
   box-shadow:var(--shadow);border:1px solid rgba(16,24,40,.035);width:100%}
-.mrow+.mrow{margin-top:8px}
-.av{flex:none;width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:14px;background:var(--green-soft);color:var(--green-d)}
+.mrow+.mrow{margin-top:6px}
+.av{flex:none;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:13px;background:var(--green-soft);color:var(--green-d)}
 .av.b{background:var(--blue-soft);color:#2359C4}
 .av.a{background:var(--amber-soft);color:#8A5200}
 .av.r{background:var(--red-soft);color:#96271D}
 .mrow .mi{flex:1;min-width:0}
-.mrow .mn{font-size:15px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.mrow .mm{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow .mn{font-size:14.5px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.mrow .mm{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mrow .mr{flex:none;text-align:right}
-.mrow .rem{font-size:17px;font-weight:800;letter-spacing:-.5px}
+.mrow .rem{font-size:16px;font-weight:800;letter-spacing:-.5px}
 .mrow .rem small{font-size:11px;font-weight:700;color:var(--muted);margin-left:1px}
 .mrow .rem.low{color:var(--red)}
 .chev{flex:none;color:#C3C8CF}
@@ -400,6 +400,10 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
   z-index:90;opacity:0;transition:opacity .18s,transform .18s;max-width:84vw;text-align:center;pointer-events:none;
   box-shadow:0 10px 24px rgba(0,0,0,.24)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.act{pointer-events:auto;display:flex;align-items:center;gap:10px;max-width:90vw;text-align:left;padding:10px 10px 10px 15px}
+.toast .ts-act{flex:0 0 auto;border:0;background:rgba(255,255,255,.17);color:#fff;font:inherit;font-weight:800;
+  padding:7px 11px;border-radius:10px}
+.toast .ts-act:active{background:rgba(255,255,255,.32)}
 /* ---------- misc ---------- */
 .fab{position:absolute;right:16px;bottom:calc(78px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:50%;
   background:linear-gradient(160deg,#12975A,#0B6A42);color:#fff;display:none;align-items:center;justify-content:center;
@@ -420,7 +424,7 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .parsebar{margin-top:8px;font-size:11.5px;font-weight:700;color:var(--ink2);background:#fff;border:1px dashed #C9D8F0;border-radius:10px;padding:8px 10px;line-height:1.5}
 .parsebar b{color:#1F5FBF}
 .quickadd{display:flex;align-items:center;gap:10px;width:100%;background:linear-gradient(135deg,#EAF1FF,#F7FAFF);
-  border:1px solid #CFE0FF;border-radius:16px;padding:12px 13px;margin-bottom:12px;text-align:left}
+  border:1px solid #CFE0FF;border-radius:16px;padding:12px 13px;margin-bottom:10px;text-align:left}
 .quickadd .qa-ic{flex:none;width:34px;height:34px;border-radius:11px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blue);box-shadow:0 1px 3px rgba(16,24,40,.08)}
 .quickadd .qa-ic svg{width:18px;height:18px}
 .quickadd .qa-t{flex:1;min-width:0}
@@ -507,7 +511,7 @@ var STATUS = {
   completed:        { label:'완료',     deducted:true,  cls:'completed',        desc:'레슨 진행 완료 · 1회 차감' },
   same_day_cancel:  { label:'당일취소', deducted:true,  cls:'same_day_cancel',  desc:'당일 취소 · 1회 차감' },
   no_show:          { label:'노쇼',     deducted:true,  cls:'no_show',          desc:'무단 불참 · 1회 차감' },
-  excused_cancel:   { label:'일반취소', deducted:false, cls:'excused_cancel',   desc:'사전 취소 · 차감 없음' },
+  excused_cancel:   { label:'일반취소', deducted:false, cls:'excused_cancel',   desc:'사전 취소 · 미차감 · 일정에서 삭제' },
   makeup:           { label:'보강',     deducted:false, cls:'makeup',           desc:'보강 진행 · 차감 없음' }
 };
 var STATUS_KEYS = ['completed','same_day_cancel','no_show','excused_cancel','makeup'];
@@ -580,15 +584,23 @@ var ui = { tab:'today', date: todayISO(), memberId: null, search:'', month: toda
 
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
 function load(){
+  var fresh = false;
   try {
     var raw = localStorage.getItem(KEY);
     if (raw) {
       var s = JSON.parse(raw);
-      if (s && s.members && s.packages && s.sessions) { state = s; return; }
+      if (s && s.members && s.packages && s.sessions) state = s;
     }
   } catch(e){}
-  state = buildDemo();
-  save();
+  if (!state) { state = buildDemo(); fresh = true; }
+  /* 일반취소는 일정에 남기지 않는다 — 예전 데이터에 남아 있던 일반취소 레슨은 한 번만 정리 */
+  if (!state.migExcused) {
+    var keep = state.sessions.filter(function(x){ return x.status !== 'excused_cancel'; });
+    if (keep.length !== state.sessions.length) state.sessions = keep;
+    state.migExcused = 1;
+    fresh = true;
+  }
+  if (fresh) save();
 }
 
 /* ---------- 조회 ---------- */
@@ -621,6 +633,43 @@ function applyStatus(s, status){
   }
   s.status = status;
   s.deducted = next;
+  return true;
+}
+
+/* 일반취소 = 차감 되돌림 + 일정에서 제거 (오늘·캘린더에서 바로 사라지고 그 시간이 비워짐) */
+function cancelExcused(s){
+  if (!s) return null;
+  var pkg = pkgById(s.packageId);
+  var snap = JSON.parse(JSON.stringify(s));       /* 되돌리기용 원본 */
+  var remBefore = pkg ? pkg.remainingSessions : null;
+  var wasDeducted = !!s.deducted;
+  var mname = memberName(s.memberId);
+  applyStatus(s, 'excused_cancel');               /* 차감됐던 회차는 여기서 +1 복구 */
+  var removed = false;
+  for (var i = state.sessions.length - 1; i >= 0; i--) {
+    if (state.sessions[i].id === s.id) { state.sessions.splice(i, 1); removed = true; break; }
+  }
+  /* 통계용 기록만 남긴다(일정·차감에는 영향 없음) */
+  if (!state.cancelLog) state.cancelLog = [];
+  var log = { date: snap.date, memberId: snap.memberId, at: nowLocalISO() };
+  state.cancelLog.push(log);
+  return { snap: snap, wasDeducted: wasDeducted, removed: removed, memberName: mname,
+           remaining: pkg ? pkg.remainingSessions : null, remBefore: remBefore, log: log };
+}
+
+/* 직전 일반취소 한 건 되돌리기 (토스트의 '되돌리기') */
+function undoCancelExcused(ctx){
+  if (!ctx || !ctx.snap) return false;
+  var back = ctx.snap;
+  if (findSession(back.id)) return false;         /* 이미 되살아났으면 중복 방지 */
+  state.sessions.push(back);
+  var pkg = pkgById(back.packageId);
+  if (pkg && ctx.remBefore !== null && ctx.remBefore !== undefined) pkg.remainingSessions = ctx.remBefore;
+  if (state.cancelLog && ctx.log) {
+    for (var i = state.cancelLog.length - 1; i >= 0; i--) {
+      if (state.cancelLog[i] === ctx.log) { state.cancelLog.splice(i, 1); break; }
+    }
+  }
   return true;
 }
 
@@ -939,12 +988,20 @@ function renderTabbar(){
 
 /* ---------- 토스트 ---------- */
 var toastTimer = null;
-function toast(msg){
+function toast(msg, opt){
   var el = document.getElementById('toast');
-  el.textContent = msg;
+  var ms = (opt && opt.ms) || 2400;
+  if (opt && opt.act) {
+    el.innerHTML = '<span class="ts-msg">' + esc(msg) + '</span>' +
+      '<button class="ts-act" data-act="' + esc(opt.act) + '">' + esc(opt.label || '되돌리기') + '</button>';
+    el.classList.add('act');
+  } else {
+    el.textContent = msg;
+    el.classList.remove('act');
+  }
   el.classList.add('on');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ el.classList.remove('on'); }, 2400);
+  toastTimer = setTimeout(function(){ el.classList.remove('on'); }, ms);
 }
 
 /* ---------- 시트(바닥에서 올라오는 창) ---------- */
@@ -1339,7 +1396,7 @@ function openStatusSheet(sid){
   }).join('');
   var sh = openSheet({
     title:'레슨 상태',
-    sub: '잔여 횟수는 상태를 바꿀 때마다 자동으로 맞춰집니다.',
+    sub: '잔여 횟수는 상태 변경에 맞춰 자동으로 조정되고, 일반취소는 일정에서 지워져요.',
     body: body,
     footer: '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
       '<span class="cta-go">' + ICON.chev + '</span></button>'
@@ -1351,6 +1408,7 @@ function openStatusSheet(sid){
    오늘 마감 정산
    ========================================================= */
 var settleCtx = null;
+var lastCancel = null;   /* 직전 일반취소 건 (토스트 '되돌리기'용) */
 
 function openSettleSheet(dateStr){
   var list = sessionsByDate(dateStr);
@@ -1403,7 +1461,7 @@ function settleBodyHTML(sel, list){
       '<div class="sopts">' + opts + '</div>' +
     '</div>';
   }).join('');
-  return '<div class="formnote">완료 · 당일취소 · 노쇼는 횟수를 <b>차감</b>하고, 일반취소 · 보강은 <b>차감하지 않아요</b>.<br>이미 처리된 레슨도 여기서 바꿀 수 있고, 차이는 잔여 횟수에 자동 반영됩니다.</div>' + rows;
+  return '<div class="formnote">완료 · 당일취소 · 노쇼는 횟수를 <b>차감</b>하고, 일반취소 · 보강은 <b>차감하지 않아요</b>.<br>일반취소로 확정하면 그 레슨은 오늘·캘린더에서 지워지고, 이미 처리된 레슨을 바꿔 정산하면 차이가 잔여 횟수에 자동 반영됩니다.</div>' + rows;
 }
 
 function settleFooterHTML(sel, list){
@@ -1425,11 +1483,16 @@ function settleApply(){
   var t = settleTally(settleCtx.sel, settleCtx.list);
   if (t.und) { toast('미정 ' + t.und + '건을 먼저 골라주세요'); return; }
   var counts = { completed:0, same_day_cancel:0, no_show:0, excused_cancel:0, makeup:0 };
-  var deducted = 0;
+  var deducted = 0, cleared = 0;
   settleCtx.list.forEach(function(s){
     var target = settleCtx.sel.decisions[s.id];
     if (!target) return;
-    applyStatus(s, target);
+    if (target === 'excused_cancel') {
+      cancelExcused(s);                  /* 차감 복구 + 일정에서 제거 */
+      cleared++;
+    } else {
+      applyStatus(s, target);
+    }
     counts[target] = (counts[target] || 0) + 1;
     if (STATUS[target].deducted) deducted++;
     s.settledAt = nowLocalISO();
@@ -1445,7 +1508,7 @@ function settleApply(){
   settleCtx = null;
   if (sh) sh.close();
   render();
-  toast('마감 정산 완료 · 차감 ' + deducted + '회 반영');
+  toast('마감 정산 완료 · 차감 ' + deducted + '회 반영' + (cleared ? ' · 일반취소 ' + cleared + '건 일정에서 지움' : ''));
 }
 
 /* 메모(예약 메모) 시트 */
@@ -1532,7 +1595,7 @@ function viewCalendar(){
   h += dayListHTML(sel);
   h += '<div class="sec" style="margin-top:16px"><h2>시간표</h2><span class="aside">레슨을 누르면 상태 변경</span></div>';
   h += timelineHTML(sel);
-  h += '<div class="legend" style="margin-top:14px">' +    '<span class="lg">예정</span><span class="lg">완료</span><span class="lg">당일취소</span><span class="lg">노쇼</span><span class="lg">일반취소</span><span class="lg">보강</span></div>';
+  h += '<div class="legend" style="margin-top:14px">' +    '<span class="lg">예정</span><span class="lg">완료</span><span class="lg">당일취소</span><span class="lg">노쇼</span><span class="lg">보강</span></div>';
   h += '<div class="hint">오른쪽 아래 <b>+</b> 버튼으로 한 줄 입력해 레슨을 바로 추가할 수 있어요.</div>';
   h += '<div style="height:60px"></div>';
   return h;
@@ -2717,6 +2780,12 @@ function monthStats(ym){
     r.total++;
     if (STATUS[s.status] && STATUS[s.status].deducted) r.deducted++;
   });
+  /* 일반취소는 일정에서 지워지므로 남겨 둔 기록(state.cancelLog)으로 집계한다 */
+  (state.cancelLog || []).forEach(function(c){
+    if (String(c.date || '').slice(0, 7) !== ym) return;
+    r.excused_cancel++;
+    r.total++;
+  });
   return r;
 }
 
@@ -3547,12 +3616,41 @@ function onClick(e){
       if (!s) break;
       var st = el.getAttribute('data-status');
       var pkg = pkgById(s.packageId);
+      w = el.closest('.sheetwrap');
+      if (st === 'excused_cancel') {
+        /* 일반취소 = 차감 되돌리고 일정에서 삭제 (오늘·캘린더에서 사라짐) */
+        var cx = cancelExcused(s);
+        save();
+        if (w) closeSheetEl(w);
+        render(true);
+        lastCancel = cx;
+        var cmsg = cx.memberName + ' 일반취소 · 일정에서 지웠어요';
+        if (cx.wasDeducted) cmsg += ' · 잔여 ' + cx.remaining + '회로 복구';
+        toast(cmsg, { label:'되돌리기', act:'status-undo', ms:6000 });
+        break;
+      }
       applyStatus(s, st);
       save();
-      w = el.closest('.sheetwrap');
       if (w) closeSheetEl(w);
       render(true);
       toast(STATUS[st].label + ' 처리' + (pkg ? ' · ' + memberName(s.memberId) + ' 잔여 ' + pkg.remainingSessions + '회' : ''));
+      break;
+    }
+
+    case 'status-undo': {
+      var uc = lastCancel;
+      lastCancel = null;
+      var tel = document.getElementById('toast');
+      if (tel) tel.classList.remove('on');
+      if (!uc) break;
+      if (undoCancelExcused(uc)) {
+        save();
+        render(true);
+        var bs = uc.snap;
+        toast(memberName(bs.memberId) + ' ' + fmtDot(bs.date) + ' ' + bs.startTime + ' · ' +
+          (STATUS[bs.status] ? STATUS[bs.status].label : '예정') + ' 상태로 되돌렸어요' +
+          (uc.wasDeducted ? ' · 차감도 원래대로' : ''));
+      }
       break;
     }
 
