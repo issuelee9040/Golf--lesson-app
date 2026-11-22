@@ -123,10 +123,11 @@ main::-webkit-scrollbar{width:0}
 .btn-block{display:flex;width:100%}
 .btn:disabled{opacity:.42;box-shadow:none}
 /* ---------- segmented / chips ---------- */
-.seg{display:flex;background:var(--gray-soft);border-radius:12px;padding:3px;gap:3px}
+.seg{display:flex;background:#E4E8EE;border:1px solid rgba(16,24,40,.045);border-radius:12px;padding:3px;gap:3px}
 .seg button{flex:1;height:34px;border-radius:9px;font-size:13px;font-weight:800;color:var(--ink2);text-align:center}
-.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.14)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.16)}
 .seg.mini{max-width:210px}
+.statsseg button.on,.rvunit button.on{color:var(--green-d)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{padding:7px 12px;border-radius:999px;background:var(--gray-soft);font-size:12.5px;font-weight:800;color:var(--ink2);border:1px solid transparent}
 .chip.on{background:var(--green-soft);color:var(--green-d);border-color:var(--green-mid)}
@@ -280,8 +281,8 @@ main::-webkit-scrollbar{width:0}
 .rvmemhead .n{flex:1;min-width:0;font-size:13px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rvmemhead .c{flex:none;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}
 .rvmemhead .a{flex:none;font-size:13px;font-weight:800;white-space:nowrap}
-.rvshare{display:block;height:5px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:7px}
-.rvshare>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#17A466,#0F7B4A)}
+.rvshare{display:block;height:4px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:7px}
+.rvshare>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#7BC9A3,#3EA97A)}
 .rvmiss{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:15px;padding:12px 13px;margin-top:12px;color:#6B4400}
 .rvmiss .t{font-size:12.5px;font-weight:800}
 .rvmiss .d{font-size:11.5px;font-weight:600;margin-top:2px;opacity:.85;line-height:1.45}
@@ -309,6 +310,14 @@ main::-webkit-scrollbar{width:0}
 .pkopt.on .pc{background:var(--green);border-color:var(--green);color:#fff}
 .pkopt .pt b .plus{color:var(--green-d)}
 .pkempty{padding:22px 4px;text-align:center;font-size:12.5px;font-weight:700;color:var(--muted)}
+.tslotwrap{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.tslot{height:40px;border-radius:11px;background:#fff;border:1px solid var(--line);font-size:13px;
+  font-weight:800;color:var(--ink2);display:flex;align-items:center;justify-content:center}
+.tslot.on{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 10px rgba(15,123,74,.24)}
+.dpcal{margin-top:2px}
+.dpcal .day{width:100%;height:42px;font-size:13px}
+.dpcal .day.sel{color:#fff}
+.dplabel{font-size:12px;font-weight:700;color:var(--muted);margin:2px 3px 8px}
 /* ---------- tabbar ---------- */
 .tabbar{flex:none;display:flex;background:rgba(255,255,255,.96);border-top:1px solid var(--line);
   padding:6px 6px calc(6px + env(safe-area-inset-bottom));-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -490,6 +499,7 @@ var ICON = {
   edit: svg('<path d="M4 20h4l10.2-10.2a2.8 2.8 0 0 0-4-4L4 16v4z"/><path d="M13.4 6.6l4 4"/>'),
   chev: svg('<path d="M9.5 5.5 16 12l-6.5 6.5"/>', 2.1),
   chevD:svg('<path d="M6 9.5 12 15.5 18 9.5"/>', 2.1),
+  clock:svg('<circle cx="12" cy="12" r="8.4"/><path d="M12 7.6V12l3 1.8"/>', 2),
   search:svg('<circle cx="11" cy="11" r="6.4"/><path d="M16 16l4.2 4.2"/>', 2.1),
   spark:svg('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/><path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>'),
   bell: svg('<path d="M18 15.5V11a6 6 0 1 0-12 0v4.5L4.5 18h15L18 15.5z"/><path d="M10 21h4"/>'),
@@ -883,7 +893,7 @@ function renderHeader(){
     h = '<div class="hd-left"><div><h1>회원목록</h1><div class="sub">' + state.members.length + '명 · 활성 수강권 ' + activePkgCount() + '개</div></div></div>' +
         '<button class="iconbtn" data-act="member-add" aria-label="회원 추가">' + ICON.plus + '</button>';
   } else {
-    h = '<div class="hd-left"><div><h1>통계</h1><div class="sub">' + monthLabel(ui.month) + (ui.stats === 'revenue' ? ' 수입 정산' : ' 운영 현황') + '</div></div></div>';
+    h = '<div class="hd-left"><div><h1>통계</h1><div class="sub">' + (ui.stats === 'revenue' ? '월 · 주 · 일 수입' : monthLabel(ui.month) + ' 운영 현황') + '</div></div></div>';
   }
   document.getElementById('hd').innerHTML = h;
 }
@@ -946,6 +956,8 @@ function closeSheetEl(wrap){
   if (qaCtx && qaCtx.sh && qaCtx.sh.el === wrap) { stopQaVoice(); qaCtx = null; }
   if (priceCtx && priceCtx.sh && priceCtx.sh.el === wrap) priceCtx = null;
   if (pickCtx && pickCtx.sh && pickCtx.sh.el === wrap) pickCtx = null;
+  if (dpCtx && dpCtx.sh && dpCtx.sh.el === wrap) dpCtx = null;
+  if (tpCtx && tpCtx.sh && tpCtx.sh.el === wrap) tpCtx = null;
 }
 function closeTopSheet(){
   if (!sheetStack.length) return;
@@ -975,7 +987,7 @@ var PICK_META = {
 };
 
 function pickOptHTML(o){
-  return '<b>' + esc(o.label) + '</b>' + (o.sub ? '<span>' + esc(o.sub) + '</span>' : '');
+  return '<b>' + esc(o.label) + '</b>' + (o.sub ? '<span class="sub">' + esc(o.sub) + '</span>' : '');
 }
 
 function pickFieldHTML(id, opts, value){
@@ -1036,6 +1048,114 @@ function applyPick(fieldId, value){
   if (fieldId === 'bkMember') refreshBkPkgs();
   else if (fieldId === 'bkPkg') validateBook();
   else if (fieldId === 'qaMember') validateQuick();
+}
+
+/* ---------- 날짜 · 시간 필드 (앱 안 달력 / 시간 칩) ---------- */
+var dpCtx = null, tpCtx = null;
+
+function dateFieldLabel(v, short){
+  if (!v) return '';
+  return short ? fmtShort(v) : fmtLong(v);
+}
+
+function dateFieldHTML(id, value, short, cls){
+  return '<button class="input pickfield' + (cls ? ' ' + cls : '') + '" type="button" data-act="datepick" data-field="' + id + '">' +
+      '<span class="pv" id="' + id + 'Lbl">' + (value ? esc(dateFieldLabel(value, short)) : '<span class="ph">날짜를 골라주세요</span>') + '</span>' +
+      '<span class="pchev">' + ICON.cal + '</span></button>' +
+    '<input type="hidden" id="' + id + '" value="' + esc(value || '') + '">';
+}
+
+function timeFieldHTML(id, value){
+  return '<button class="input pickfield" type="button" data-act="timepick" data-field="' + id + '">' +
+      '<span class="pv" id="' + id + 'Lbl">' + (value ? esc(value) : '<span class="ph">시간을 골라주세요</span>') + '</span>' +
+      '<span class="pchev">' + ICON.clock + '</span></button>' +
+    '<input type="hidden" id="' + id + '" value="' + esc(value || '') + '">';
+}
+
+function syncDateLabel(id){
+  var el = document.getElementById(id + 'Lbl'), h = document.getElementById(id);
+  if (!el) return;
+  var v = h ? h.value : '';
+  el.innerHTML = v ? esc(dateFieldLabel(v, id === 'noteDate')) : '<span class="ph">날짜를 골라주세요</span>';
+}
+
+function syncTimeLabel(id){
+  var el = document.getElementById(id + 'Lbl'), h = document.getElementById(id);
+  if (!el) return;
+  var v = h ? h.value : '';
+  el.innerHTML = v ? esc(v) : '<span class="ph">시간을 골라주세요</span>';
+}
+
+function applyDate(field, v){
+  var h = document.getElementById(field);
+  if (h) h.value = v;
+  syncDateLabel(field);
+  if (field === 'bkDate') validateBook();
+  else if (field === 'qaDate') validateQuick();
+  else if (field === 'noteDate') {
+    if (memberCtx) memberCtx.noteDate = v;
+    var b = document.getElementById('noteDateBadge');
+    if (b) b.textContent = fmtShort(v);
+  }
+}
+
+function applyTime(field, v){
+  var h = document.getElementById(field);
+  if (h) h.value = v;
+  syncTimeLabel(field);
+  if (field === 'bkTime') validateBook();
+  else if (field === 'qaTime') validateQuick();
+}
+
+function openDatePick(field){
+  var h = document.getElementById(field);
+  var cur = (h && h.value) || todayISO();
+  var sh = openSheet({ title:'날짜', sub:'달력에서 날짜를 누르면 바로 정해져요.' });
+  dpCtx = { sh: sh, field: field, ym: cur.slice(0, 7), value: cur };
+  paintDatePick();
+}
+
+function paintDatePick(){
+  if (!dpCtx) return;
+  var y = +(dpCtx.ym.slice(0, 4)), mo = +(dpCtx.ym.slice(5, 7));
+  var first = new Date(y, mo - 1, 1).getDay();
+  var last = new Date(y, mo, 0).getDate();
+  var cells = '';
+  for (var i = 0; i < first; i++) cells += '<span class="day out"></span>';
+  for (var day = 1; day <= last; day++) {
+    var ds = dpCtx.ym + '-' + pad(day);
+    var dow = new Date(y, mo - 1, day).getDay();
+    var cls = 'day' + (dow === 0 ? ' sun' : (dow === 6 ? ' sat' : '')) +
+      (ds === todayISO() ? ' today' : '') + (ds === dpCtx.value ? ' sel' : '');
+    cells += '<button class="' + cls + '" data-act="dpday" data-date="' + ds + '">' + day + '</button>';
+  }
+  dpCtx.sh.body.innerHTML =
+    '<div class="monhdr"><div class="m">' + monthLabel(dpCtx.ym) + '</div><div class="navs">' +
+      '<button class="iconbtn" data-act="dpmon" data-delta="-1" aria-label="이전 달">' + ICON.back + '</button>' +
+      '<button class="iconbtn" data-act="dpmon" data-delta="1" aria-label="다음 달" style="transform:rotate(180deg)">' + ICON.back + '</button>' +
+    '</div></div>' +
+    '<div class="cal dpcal"><div class="wk">' + WEEK.map(function(w){ return '<div>' + w + '</div>'; }).join('') + '</div>' +
+      '<div class="grid">' + cells + '</div></div>' +
+    '<div class="crow mt10" style="margin-top:12px"><button class="btn btn-ghost btn-block" data-act="dp-today">오늘로</button></div>' +
+    '<div class="hint">날짜를 누르면 정해지고 창이 닫혀요.</div>';
+}
+
+function openTimePick(field){
+  var h = document.getElementById(field);
+  var cur = (h && h.value) || defaultTime();
+  var sh = openSheet({ title:'시작 시간', sub:'30분 단위로 고를 수 있어요.' });
+  tpCtx = { sh: sh, field: field, value: cur };
+  paintTimePick();
+}
+
+function paintTimePick(){
+  if (!tpCtx) return;
+  var list = [];
+  for (var m = DAY_START * 60; m <= 21 * 60; m += 30) list.push(hhmm(m));
+  if (tpCtx.value && list.indexOf(tpCtx.value) < 0) list.unshift(tpCtx.value);
+  tpCtx.sh.body.innerHTML = '<div class="tslotwrap">' + list.map(function(t){
+    return '<button class="tslot' + (t === tpCtx.value ? ' on' : '') + '" data-act="tpick" data-v="' + t + '">' + t + '</button>';
+  }).join('') + '</div>';
 }
 
 /* =========================================================
@@ -1494,8 +1614,8 @@ function bookBodyHTML(date, memberId, time){
   });
   return '<div class="field"><label>회원</label>' + pickFieldHTML('bkMember', opts, memberId) + '</div>' +
     '<div class="row2">' +
-      '<div class="field"><label>날짜</label><input class="input" type="date" id="bkDate" value="' + date + '"></div>' +
-      '<div class="field"><label>시작 시간</label><input class="input" type="time" id="bkTime" value="' + time + '" step="300"></div>' +
+      '<div class="field"><label>날짜</label>' + dateFieldHTML('bkDate', date) + '</div>' +
+      '<div class="field"><label>시작 시간</label>' + timeFieldHTML('bkTime', time) + '</div>' +
     '</div>' +
     '<div class="field"><label>수업 시간</label><div class="seg" id="bkDur">' +
       '<button class="' + (bookCtx.dur === 25 ? 'on' : '') + '" data-act="bk-dur" data-v="25">25분</button>' +
@@ -1711,7 +1831,7 @@ function memberBodyHTML(m){
     '<div class="kv"><span class="k">연락처</span><span class="v">' +
       (m.phone ? '<a href="tel:' + esc(String(m.phone).replace(/[^0-9+]/g, '')) + '">' + esc(m.phone) + '</a>' : '-') + '</span></div>' +
     '<div class="kv"><span class="k">레벨</span><span class="v">' + (esc(m.level) || '-') + '</span></div>' +
-    '<div class="kv"><span class="k">등록일</span><span class="v">' + fmtDot(m.since || todayISO()) + '</span></div>' +
+    '<div class="kv"><span class="k">등록일</span><span class="v">' + fmtLong(m.since || todayISO()) + '</span></div>' +
   '</div>';
 
   h += '<div class="sec"><h2>수강권</h2><span class="aside">' + pkgs.length + '개</span></div>';
@@ -1761,7 +1881,7 @@ function composerHTML(){
     '<textarea class="input" id="noteText" placeholder="예: 11월 20일 드라이버 백스윙 교정. 오른팔 펴기 유지.">' + esc(draft) + '</textarea>' +
     '<div class="crow">' +
       '<button class="btn btn-sm btn-outline" id="voiceBtn" data-act="voice">🎤 음성 입력</button>' +
-      '<input class="input dateinput" type="date" id="noteDate" value="' + d + '" aria-label="기록 날짜">' +
+      dateFieldHTML('noteDate', d, true, 'dateinput') +
       '<button class="btn btn-sm btn-primary" data-act="note-save">저장</button>' +
     '</div>' +
     '<div class="hint" id="noteHint">본문에 “오늘 · 어제 · 그제 · 11월 20일 · 11/20”처럼 쓰면 날짜를 알아서 잡아요. 없으면 오늘로 저장됩니다.</div>' +
@@ -2051,7 +2171,7 @@ function addMemberBodyHTML(m, tpl){
         }).join('') + '</div>' +
       '</div>' +
       '<div class="row2">' +
-        '<div class="field"><label>시작일</label><input class="input" type="date" id="mfStart" value="' + (tpl ? d : d) + '"></div>' +
+        '<div class="field"><label>시작일</label>' + dateFieldHTML('mfStart', d) + '</div>' +
         '<div class="field"><label>유효기간</label>' + pickFieldHTML('mfMonths', monthPickOptions(), '6') + '</div>' +
       '</div>' +
       '<div class="field"><label>금액 (선택)</label><input class="input" id="mfPrice" type="number" inputmode="numeric" placeholder="예) 800000">' +
@@ -2204,7 +2324,7 @@ function packageBodyHTML(){
       }).join('') + '</div>' +
     '</div>' +
     '<div class="row2">' +
-      '<div class="field"><label>시작일</label><input class="input" type="date" id="pkStart" value="' + todayISO() + '"></div>' +
+      '<div class="field"><label>시작일</label>' + dateFieldHTML('pkStart', todayISO()) + '</div>' +
       '<div class="field"><label>유효기간</label>' + pickFieldHTML('pkMonths', monthPickOptions(), '6') + '</div>' +
     '</div>' +
     '<div class="field"><label>금액 (선택)</label><input class="input" id="pkPrice" type="number" inputmode="numeric" placeholder="예) 640000">' +
@@ -2752,8 +2872,8 @@ function qaBodyHTML(){
     '<div class="parsebar" id="qaBar">날짜 · 시간 · 회원 · 장소를 알아서 나눠 담아요.</div>' +
   '</div>' +
   '<div class="row2">' +
-    '<div class="field"><label>날짜</label><input class="input" type="date" id="qaDate" value="' + ui.date + '"></div>' +
-    '<div class="field"><label>시간</label><input class="input" type="time" id="qaTime" step="300" value="' + defaultTime() + '"></div>' +
+    '<div class="field"><label>날짜</label>' + dateFieldHTML('qaDate', ui.date) + '</div>' +
+    '<div class="field"><label>시간</label>' + timeFieldHTML('qaTime', defaultTime()) + '</div>' +
   '</div>' +
   '<div class="field"><label>회원</label>' + pickFieldHTML('qaMember', [], '') + '</div>' +
   '<div class="field"><label>장소</label><input class="input" id="qaLocation" placeholder="예: 분당 실내연습장"></div>' +
@@ -2796,8 +2916,8 @@ function applyQuickParse(){
   qaCtx.gender = p.gender || '';
 
   var dEl = document.getElementById('qaDate'), tEl = document.getElementById('qaTime'), lEl = document.getElementById('qaLocation');
-  if (dEl && p.date) dEl.value = p.date;
-  if (tEl && p.time) tEl.value = p.time;
+  if (dEl && p.date) { dEl.value = p.date; syncDateLabel('qaDate'); }
+  if (tEl && p.time) { tEl.value = p.time; syncTimeLabel('qaTime'); }
   if (lEl && p.location) lEl.value = p.location;
   if (p.duration) { qaCtx.duration = p.duration; setSegValue('qaDur', p.duration); }
 
@@ -3075,6 +3195,48 @@ function onClick(e){
       applyPick(pf, pv);
       break;
     }
+
+    case 'datepick':
+      openDatePick(el.getAttribute('data-field'));
+      break;
+
+    case 'dpmon': {
+      if (!dpCtx) break;
+      var dmd = parseInt(el.getAttribute('data-delta'), 10) || 0;
+      var dmp = dpCtx.ym.split('-');
+      var dmd2 = new Date(+dmp[0], (+dmp[1]) - 1 + dmd, 1);
+      dpCtx.ym = dmd2.getFullYear() + '-' + pad(dmd2.getMonth() + 1);
+      paintDatePick();
+      break;
+    }
+
+    case 'dpday':
+      if (!dpCtx) break;
+      var dpf = dpCtx.field, dpv = el.getAttribute('data-date');
+      dpCtx.sh.close();
+      dpCtx = null;
+      applyDate(dpf, dpv);
+      break;
+
+    case 'dp-today':
+      if (!dpCtx) break;
+      var dpf2 = dpCtx.field;
+      dpCtx.sh.close();
+      dpCtx = null;
+      applyDate(dpf2, todayISO());
+      break;
+
+    case 'timepick':
+      openTimePick(el.getAttribute('data-field'));
+      break;
+
+    case 'tpick':
+      if (!tpCtx) break;
+      var tpf = tpCtx.field, tpv = el.getAttribute('data-v');
+      tpCtx.sh.close();
+      tpCtx = null;
+      applyTime(tpf, tpv);
+      break;
 
     case 'sheet-close':
       closeSheetEl(el.closest('.sheetwrap'));
