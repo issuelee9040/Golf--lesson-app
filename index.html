@@ -136,7 +136,7 @@ main::-webkit-scrollbar{width:0}
   font-size:11.5px;font-weight:800;color:var(--ink2);letter-spacing:-.3px}
 .sortbtn svg{width:13px;height:13px;flex:none;color:#A8ADB5;margin-top:1px}
 .sortbtn:active{background:var(--gray-soft)}
-.sec h2 .sec-cnt{font-size:12px;font-weight:700;color:var(--muted);margin-left:3px;letter-spacing:-.1px}
+.sec h2 .sec-cnt{font-size:12px;font-weight:700;color:var(--muted);margin-left:1px;letter-spacing:-.1px}
 /* ---------- calendar ---------- */
 .monhdr{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 10px}
 .monhdr .m{font-size:17px;font-weight:800;letter-spacing:-.4px}
@@ -1789,7 +1789,7 @@ function viewMembers(){
     '<span class="qa-ic">' + ICON.spark + '</span>' +
     '<span class="qa-t"><b>한 줄로 회원 추가</b><span class="qa-d">이름 · 횟수 · 성별 · 지역만 적으면 알아서 정리돼요</span></span>' +
     '<span class="chev">' + ICON.chev + '</span></button>';
-  h += '<div class="sec" style="margin-top:4px"><h2>회원 목록<span class="sec-cnt">' + list.length + '명</span></h2>' +
+  h += '<div class="sec" style="margin-top:4px"><h2>회원 목록 <span class="sec-cnt">' + list.length + '명</span></h2>' +
     '<button class="sortbtn" data-act="pick" data-field="mSort" type="button" aria-label="정렬 방식 고르기">' +
       '<span>' + memberSortLabel(mode) + '</span>' + ICON.chevD + '</button></div>';
   h += '<div id="memberList">' + memberRowsHTML(list) + '</div>';
