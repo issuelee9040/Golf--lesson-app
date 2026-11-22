@@ -389,8 +389,8 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
   height:50px;border-radius:15px;color:#fff;font-size:15px;font-weight:800;letter-spacing:-.3px;white-space:nowrap;
   background:linear-gradient(152deg,#128A53 0%,#0C6B41 52%,#08492C 100%);
   box-shadow:0 10px 22px rgba(8,73,44,.26),inset 0 1px 0 rgba(255,255,255,.18)}
-.cta-hero:after{content:"";position:absolute;right:-34px;top:-58px;width:132px;height:132px;border-radius:50%;
-  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.22),rgba(255,255,255,0) 70%);pointer-events:none}
+.cta-hero:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,.06) 42%,rgba(255,255,255,0) 64%)}
 .cta-hero:active{transform:translateY(1px)}
 .cta-hero .cta-go{position:absolute;right:13px;top:50%;transform:translateY(-50%);display:flex;opacity:.85}
 .cta-hero .cta-go svg{width:16px;height:16px}
