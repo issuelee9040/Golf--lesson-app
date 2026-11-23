@@ -377,18 +377,6 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 .tpl .ti{flex:1;min-width:0}
 .tpl .tn{font-size:13.5px;font-weight:800}
 .tpl .ts{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:1px}
-.rm{position:relative;padding-left:24px;margin-top:6px}
-.rm .step{position:relative;padding-bottom:16px}
-.rm .step:last-child{padding-bottom:2px}
-.rm .step:before{content:"";position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;
-  background:#D6DAE0;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #D6DAE0}
-.rm .step.done:before{background:var(--green);box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--green)}
-.rm .step.cur:before{background:#fff;box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--green)}
-.rm .step:after{content:"";position:absolute;left:-15.2px;top:15px;bottom:0;width:1.5px;background:var(--line)}
-.rm .step:last-child:after{display:none}
-.rm .rt{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.rm .rd{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px;line-height:1.5}
-.rnow{font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--green-soft);color:var(--green-d)}
 /* ---------- 수입 정산 ---------- */
 .statsseg{margin:2px 0 14px}
 .rvhero .big{font-size:29px;letter-spacing:-1px}
@@ -5575,7 +5563,7 @@ function viewLessonStats(){
   return h;
 }
 
-/* 설정 탭 = 화면 테마 · 레슨 시간 범위 · 외부 캘린더 연동 · 프로 정보(데이터) · 앱스토어 출시 로드맵(맨 아래) */
+/* 설정 탭 = 화면 테마 · 레슨 시간 범위 · 외부 캘린더 연동 · 프로 정보(데이터) */
 function hourHintText(){
   return '레슨 예약·수정의 <b>시작 시간</b> 칩과 캘린더 시간표가 이 범위를 따라요. 기본은 06:00~23:00이에요.';
 }
@@ -5607,7 +5595,7 @@ function viewSettings(){
     '<div class="hint" id="hourHint">' + hourHintText() + '</div>' +
   '</div>';
 
-  /* 실제 설정(테마 → 시간 범위 → 캘린더 → 프로 정보)을 먼저, 개발용 로드맵은 맨 아래로 */
+  /* 테마 → 시간 범위 → 캘린더 → 프로 정보 */
   h += '<div class="sec"><h2>외부 캘린더 연동</h2><span class="aside">아이폰 · 구글</span></div><div class="card">' +
     calSettingHTML() +
   '</div>';
@@ -5624,14 +5612,6 @@ function viewSettings(){
     '<button class="btn btn-danger btn-block" data-act="fresh-start">내 데이터로 새로 시작 (초기화)</button>' +
     '<div class="hint">샘플 데이터를 지우고 내 회원만 관리하려면 <b>내 데이터로 새로 시작</b>을 누르세요. 데이터는 이 브라우저(localStorage)에만 저장되고, 정식 앱에서는 기기 DB + iCloud 백업으로 옮겨가요.</div>' +
   '</div>';
-
-  h += '<div class="sec"><h2>앱스토어 출시 로드맵</h2><span class="aside">현재 1단계</span></div><div class="card"><div class="rm">' +
-    roadmapStep('cur', '1단계 · MVP 프로토타입', '지금 보고 있는 화면. 운동장에서 한 손으로 쓰는 흐름과 데이터 구조를 먼저 검증해요.') +
-    roadmapStep('', '2단계 · React Native + Expo', '같은 화면을 실제 앱 코드로 옮기고 기기 저장(SQLite)과 알림을 붙여요. iOS 음성 인식으로 레슨 내용을 말로 기록해요.') +
-    roadmapStep('', '3단계 · TestFlight 베타', '지인 프로 3~5명이 2~4주 써보게 하고, 백업·복원과 수강권 만료 알림을 다듬어요.') +
-    roadmapStep('', '4단계 · App Store 심사', '스크린샷·개인정보처리방침·심사 답변을 준비해 제출해요. 업데이트는 Expo EAS로 빌드해 올려요.') +
-    roadmapStep('', '5단계 · 운영 고도화', '카카오 알림톡, 수강료 결제, 여러 강사(지점) 관리, 회원 셀프 예약 링크 순서로 넓혀요.') +
-  '</div></div>';
 
   h += '<div class="brandfoot">' +
     '<img class="lk-lightword" src="assets/proplan-lockup-light.png" alt="ProPlan" width="864" height="491">' +
@@ -5956,11 +5936,6 @@ function viewRevenue(){
 
   h += '<div class="hint">수입 = <b>정규 수강권 수입</b>(차감된 레슨 25·55분 × 수강권 회당 금액) + <b>필드 · 숏게임 · 원포인트 별도 수입</b>(완료 · 당일취소 · 노쇼로 정산한 별도 레슨비). 예정 · 일반취소 · 보강은 빠지고, 회당 금액은 결제 금액 ÷ 총 횟수를 반올림해 계산해요.</div>';
   return h;
-}
-
-function roadmapStep(cls, title, desc){
-  return '<div class="step ' + cls + '"><div class="rt">' + esc(title) +
-    (cls === 'cur' ? '<span class="rnow">지금</span>' : '') + '</div><div class="rd">' + esc(desc) + '</div></div>';
 }
 
 /* =========================================================

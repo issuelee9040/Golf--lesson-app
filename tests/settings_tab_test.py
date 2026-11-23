@@ -4,7 +4,8 @@
 
 - 하단 탭바가 오늘 · 캘린더 · 회원목록 · 통계 · 설정 5개이고, 설정이 맨 오른쪽인지
 - 오늘 탭 오른쪽 위 ⚙️ 가 설정 탭으로 바로 가는지
-- 통계 탭은 수업 현황 · 수입 정산만 남고, 로드맵·프로 설정·외부 캘린더 연동은 설정 탭으로 옮겨졌는지
+- 통계 탭은 수업 현황 · 수입 정산만 남고, 프로 설정·외부 캘린더 연동은 설정 탭에 있는지
+- 앱스토어 출시 로드맵 카드는 화면에서 빠지고 설계서(spec.md)에만 남았는지
 - renderTabbar() 를 실제로 실행해 5개 버튼 HTML 이 만들어지는지
 """
 import re, sys
@@ -59,7 +60,9 @@ ok('3-2 통계·설정 라벨 제거', 'aria-label="통계·설정"' not in HTML
 ok('4-1 viewSettings 함수 존재', 'function viewSettings(){' in HTML)
 vs = HTML[HTML.index('function viewSettings(){'):]
 vs = vs[:vs.index('\n}\n')]
-ok('4-2 설정 탭에 앱스토어 출시 로드맵', '앱스토어 출시 로드맵' in vs)
+ok('4-2 설정 탭에 앱스토어 출시 로드맵 없음', '앱스토어 출시 로드맵' not in vs)
+ok('4-2b 로드맵 카드·헬퍼 제거', 'roadmapStep' not in HTML and '<div class="rm">' not in HTML
+   and '.rm{position:relative' not in HTML)
 ok('4-3 설정 탭에 프로 정보 입력', 'id="setPro"' in vs and 'id="setAcademy"' in vs)
 ok('4-4 설정 탭에 데이터 내보내기', 'data-act="export-data"' in vs)
 ok('4-5 설정 탭에 데모 초기화', 'data-act="demo-reset"' in vs)
@@ -67,6 +70,7 @@ ok('4-6 설정 탭에 외부 캘린더 연동', '외부 캘린더 연동' in vs 
 
 ls = HTML[HTML.index('function viewLessonStats(){'):HTML.index('/* 설정 탭 = 화면 테마')]
 ok('4-7 통계(수업 현황)에 로드맵 없음', '앱스토어 출시 로드맵' not in ls)
+ok('4-7b 화면 어디에도 로드맵 카드 없음', '앱스토어 출시 로드맵' not in HTML)
 ok('4-8 통계에 프로 설정 없음', 'data-act="pro-save"' not in ls and 'id="setPro"' not in ls)
 ok('4-9 통계에 외부 캘린더 연동 없음', '외부 캘린더 연동' not in ls)
 ok('4-10 통계에 수업 현황 지표 유지', '주별 레슨' in ls and '회원별 이번 달' in ls)

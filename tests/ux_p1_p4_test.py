@@ -224,12 +224,23 @@ has(EL('noteDateLbl').innerHTML, '11월 20일', 'C-2 날짜 버튼 글자도 11�
 has(EL('noteDateLbl').innerHTML, '(금)', 'C-3 요일까지 표시');
 EL('noteText').value = '어제 퍼팅 그립 교정';
 A.refreshNoteDate();
-eq(EL('noteDate').value, '2026-11-22', 'C-4 어제 → 11월 22일');
-has(EL('noteDateLbl').innerHTML, '11월 22일', 'C-5 날짜 버튼도 어제로');
-has(EL('noteDateLbl').innerHTML, '(일)', 'C-6 요일 표시');
+/* '어제'는 실행한 날에 따라 달라지므로 기대값도 오늘 날짜에서 계산한다 */
+function shiftISO(iso, days){
+  var p = iso.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]);
+  d.setDate(d.getDate() + days);
+  return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+}
+function korDay(iso){
+  var p = iso.split('-'), d = new Date(+p[0], +p[1] - 1, +p[2]);
+  return { md: (+p[1]) + '월 ' + (+p[2]) + '일', wd: '(' + ['일','월','화','수','목','금','토'][d.getDay()] + ')' };
+}
+var yISO = shiftISO(A.todayISO(), -1), yK = korDay(yISO);
+eq(EL('noteDate').value, yISO, 'C-4 어제 → 어제 날짜(' + yISO + ')');
+has(EL('noteDateLbl').innerHTML, yK.md, 'C-5 날짜 버튼도 어제로');
+has(EL('noteDateLbl').innerHTML, yK.wd, 'C-6 요일 표시');
 EL('noteText').value = '날짜 없는 메모';
 A.refreshNoteDate();
-eq(EL('noteDate').value, '2026-11-22', 'C-7 날짜가 없으면 고른 날짜 유지');
+eq(EL('noteDate').value, yISO, 'C-7 날짜가 없으면 고른 날짜 유지');
 A.closeAllSheets();
 
 /* ══════════ D. P2 오늘 탭 ══════════ */
@@ -341,8 +352,8 @@ var st = A.viewSettings();
 var iTheme = st.indexOf('화면 테마'), iHour = st.indexOf('레슨 시간 범위'),
     iCal = st.indexOf('외부 캘린더 연동'), iPro = st.indexOf('프로 정보 · 데이터'),
     iRoad = st.indexOf('앱스토어 출시 로드맵');
-ok(iTheme >= 0 && iTheme < iHour && iHour < iCal && iCal < iPro && iPro < iRoad,
-   'G-13 설정 순서: 테마 → 시간 → 캘린더 → 프로 정보 → 로드맵', [iTheme, iHour, iCal, iPro, iRoad].join('/'));
+ok(iTheme >= 0 && iTheme < iHour && iHour < iCal && iCal < iPro && iRoad < 0,
+   'G-13 설정 순서: 테마 → 시간 → 캘린더 → 프로 정보 (로드맵 카드 없음)', [iTheme, iHour, iCal, iPro, iRoad].join('/'));
 hasNot(st, '<h2>설정</h2>', 'G-14 설정 제목 아래 중복 설정 섹션 없음');
 
 /* ══════════ H. P4 빈 상태 · 다듬기 ══════════ */

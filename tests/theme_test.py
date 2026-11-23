@@ -32,7 +32,7 @@ ok('1-7 부트스트랩이 JSON.parse 실패에 안전(try/catch)', 'try {' in b
 
 # ── 2. 설정 탭 테마 카드 ─────────────────────────────────
 ok('2-1 viewSettings 맨 위가 화면 테마', HTML.index('function viewSettings(){')
-   < HTML.index('<h2>화면 테마</h2>') < HTML.index('<h2>앱스토어 출시 로드맵</h2>'))
+   < HTML.index('<h2>화면 테마</h2>') < HTML.index('<h2>레슨 시간 범위</h2>'))
 ok('2-2 그린 화이트 · 시크 블랙 두 카드', "themeCardHTML('green')" in HTML and "themeCardHTML('black')" in HTML)
 ok('2-3 테마 카드 이름', '🌿 그린 화이트' in HTML and '🖤 시크 블랙' in HTML)
 ok('2-4 카드가 data-act="theme" 로 동작', 'data-act="theme" data-v="' in HTML)
@@ -143,7 +143,6 @@ STUB2 = r"""
 var state = { theme:'black', pro:{ name:'이시훈', academy:'그린필드 골프 아카데미' },
   calendarSync:{ enabled:false, target:'both' } };
 function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function roadmapStep(cls, title, desc){ return '<div class="step ' + cls + '"><div class="rt">' + esc(title) + '</div><div class="rd">' + esc(desc) + '</div></div>'; }
 function calSettingHTML(){ return '<div id="calStub"></div>'; }
 function dayRangeLabel(){ return '06:00~23:00'; }
 function dayFromMin(){ return 6 * 60; }
@@ -158,8 +157,8 @@ ctx2 = quickjs.Context()
 ctx2.eval(STUB2 + CODE + '\n' + VS + '\nglobalThis.OUT = viewSettings();')
 vshtml = ctx2.eval('OUT')
 ok('5-0-2 설정 화면에 NaN 없음', 'NaN' not in vshtml, vshtml[:200])
-ok('5-0-3 로드맵 1단계가 정상 렌더', '1단계 · MVP 프로토타입' in vshtml and '지금' in vshtml)
-ok('5-0-4 설정 화면 맨 앞이 화면 테마', vshtml.index('<h2>화면 테마</h2>') < vshtml.index('앱스토어 출시 로드맵'))
+ok('5-0-3 설정 화면에 출시 로드맵 없음', '앱스토어 출시 로드맵' not in vshtml and '1단계 · MVP 프로토타입' not in vshtml)
+ok('5-0-4 설정 첫 섹션이 화면 테마', vshtml.index('<h2>화면 테마</h2>') < vshtml.index('레슨 시간 범위'))
 ok('5-0-5 설정 화면에 두 테마 카드', 'data-v="black"' in vshtml and 'data-v="green"' in vshtml)
 ok('5-0-6 저장된 테마가 선택 표시', 'class="themecard on"' in vshtml and 'data-v="black"' in vshtml[
     vshtml.index('class="themecard on"'):vshtml.index('class="themecard on"') + 60])
