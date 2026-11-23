@@ -258,7 +258,10 @@ hasNot(settledHtml, '정산 기준', 'D-12 정산이 끝난 뒤에는 정산 기
 
 /* ══════════ E. 터치 타깃 · 25분 타임라인 ══════════ */
 ok(CSS.indexOf('.btn-sm{') >= 0, 'E-1 btn-sm 규칙 존재');
-has(rule('.btn-sm'), 'height:38px', 'E-2 오늘 카드 버튼 38px');
+has(rule('.acts'), 'flex-wrap:nowrap', 'E-2 오늘 카드 액션 4개는 한 줄 고정(390px 아이폰)');
+has(rule('.acts .btn'), 'height:34px', 'E-2b 오늘 카드 액션 버튼 34px 로 낮춰 한 줄에 맞춤');
+has(rule('.acts .btn'), 'white-space:nowrap', 'E-2c 액션 버튼 글자는 줄바꿈 없음');
+has(rule('.btn-sm'), 'height:38px', 'E-2d 다른 btn-sm 버튼은 38px 그대로');
 has(rule('.sopt'), 'height:38px', 'E-3 마감 정산 상태 버튼 38px');
 has(rule('.editbtn'), 'height:34px', 'E-4 캘린더 카드 수정 버튼 34px');
 has(rule('.statetap'), 'height:34px', 'E-5 캘린더 상태 배지 34px');
@@ -282,6 +285,17 @@ var hA = /height:([0-9.]+)px[^"]*" data-act="status-sheet" data-sid="a"/.exec(tl
 var hB = /height:([0-9.]+)px[^"]*" data-act="status-sheet" data-sid="b"/.exec(tl2);
 ok(hA && hB && parseFloat(hA[1]) <= 36 && parseFloat(hB[1]) <= 36, 'E-9 붙은 25분 레슨도 36px 안에서 서로 덮지 않음',
    (hA ? hA[1] : '?') + '/' + (hB ? hB[1] : '?'));
+
+/* ══════════ E2. 오늘 카드 컴팩트 — 한 화면에 더 많은 레슨 ══════════ */
+ok(HTML.indexOf('chiprow mt10 acts') >= 0, 'E-10 오늘 카드 액션 줄에 acts 클래스');
+has(rule('.lesson-card'), 'padding:9px 13px', 'E-11 카드 안 여백 14→9px 로 줄임');
+has(rule('.lesson-card+.lesson-card'), 'margin-top:7px', 'E-12 카드 사이 간격 10→7px');
+has(rule('.bar'), 'height:4px', 'E-13 수강권 진행 막대 높이 5→4px');
+has(rule('.bar'), 'margin-top:6px', 'E-14 진행 막대 위 여백 9→6px');
+has(rule('.acts'), 'margin-top:7px', 'E-15 액션 줄 위 여백 10→7px');
+has(rule('.lesson .nameline .tedit'), 'height:29px', 'E-16 수정 버튼 34→29px');
+has(rule('.meta'), 'margin-top:2px', 'E-17 잔여 안내 줄 위 여백 3→2px');
+has(rule('.timecol .d'), 'margin-top:1px', 'E-18 소요시간 줄 위 여백 2→1px');
 
 /* ══════════ F. 회원 상세 — 레슨 차트 위로 · 저장 버튼 이름 ══════════ */
 resetDemo();

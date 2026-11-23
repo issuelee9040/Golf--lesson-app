@@ -144,21 +144,25 @@ main::-webkit-scrollbar{width:0}
 .alert .at{font-size:13px;font-weight:800}
 .alert .ad{font-size:11.5px;font-weight:600;opacity:.86;margin-top:2px}
 /* ---------- lesson card ---------- */
-.lesson-card{padding:14px 15px}
-.lesson{display:flex;gap:12px}
-.timecol{flex:none;width:50px}
-.timecol .t{font-size:15.5px;font-weight:800;letter-spacing:-.4px}
-.timecol .d{font-size:11px;font-weight:800;color:var(--muted);margin-top:2px}
+.lesson-card{padding:9px 13px}
+.lesson-card+.lesson-card{margin-top:7px}
+.lesson{display:flex;gap:10px}
+.timecol{flex:none;width:48px}
+.timecol .t{font-size:15px;font-weight:800;letter-spacing:-.4px}
+.timecol .d{font-size:10.5px;font-weight:800;color:var(--muted);margin-top:1px}
 .lesson .body{flex:1;min-width:0}
-.nameline{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.name{font-size:15.5px;font-weight:800;letter-spacing:-.25px}
-.meta{font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nameline{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.name{font-size:15px;font-weight:800;letter-spacing:-.25px}
+.meta{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .meta b{color:var(--ink2);font-weight:800}
-.bar{height:5px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:9px}
+.bar{height:4px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:6px}
 .bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#17A466,#0F7B4A)}
 .bar>i.low{background:linear-gradient(90deg,#E8A33C,#D07C12)}
 .chiprow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.lesson .nameline .tedit{margin-left:auto;flex:none;height:34px;padding:0 11px;background:var(--field);border:1px solid var(--line);color:var(--ink2)}
+/* 오늘 카드 레슨 액션 4개(완료 · 취소·노쇼 · 수업 메모 · 레슨 차트)는 390px 아이폰에서도 한 줄에 들어가게 */
+.acts{gap:5px;flex-wrap:nowrap;margin-top:7px}
+.acts .btn{flex:1 1 0;min-width:0;height:34px;padding:0 4px;font-size:12px;border-radius:10px;letter-spacing:-.3px;white-space:nowrap;overflow:hidden}
+.lesson .nameline .tedit{margin-left:auto;flex:none;height:29px;padding:0 10px;font-size:12px;background:var(--field);border:1px solid var(--line);color:var(--ink2)}
 /* ---------- status pill ---------- */
 .st{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:8px;font-size:11.5px;font-weight:800;white-space:nowrap}
 .st-completed{background:var(--green-soft);color:var(--green-d)}
@@ -3001,7 +3005,7 @@ function lessonCard(s){
       '</div>' +
       '<div class="meta">' + metaline + '</div>' +
       (sep ? '' : '<div class="bar"><i class="' + (rem <= LOW_LIMIT ? 'low' : '') + '" style="width:' + pct + '%"></i></div>') +
-      '<div class="chiprow mt10">' + actions +
+      '<div class="chiprow mt10 acts">' + actions +
         '<button class="btn btn-sm btn-ghost" data-act="note-open" data-sid="' + s.id + '" aria-label="' + esc(sessionName(s)) + ' 수업 메모">수업 메모</button>' +
         (s.memberId ? '<button class="btn btn-sm btn-ghost" data-act="tm-open" data-sid="' + s.id + '">레슨 차트</button>' : '') +
       '</div>' +
