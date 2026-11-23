@@ -2439,7 +2439,7 @@ function openStatusSheet(sid){
         '<span class="kko-t"><b>카톡 요약 복사</b><span class="kko-s">레슨 내용 · 잔여 횟수 · 오늘 포인트를 한 번에</span></span>' +
         '<span class="kko-go">복사</span></button>' +
       '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '" style="margin-bottom:8px">📅 내 캘린더에 추가</button>' +
-      (s.memberId ? '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
+      (s.memberId ? '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '" aria-label="' + esc((m ? m.name : '회원') + ' 정보와 레슨 차트 열기') + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
         '<span class="cta-go">' + ICON.chev + '</span></button>' : '')
   });
   return sh;
