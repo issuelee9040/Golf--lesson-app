@@ -1270,7 +1270,7 @@ function calSettingHTML(){
   }).join('');
   return '<div class="calrow"><div class="calrow-t">' +
       '<b>레슨을 등록하면 캘린더에도 넣기</b>' +
-      '<span id="calStateTxt">' + (cs.enabled ? '켜짐 · ' + calTargetLabel(cs.target) + '로 들어가요' : '꺼짐 · 레슨만 앱에 저장돼요') + '</span>' +
+      '<span id="calStateTxt">' + (cs.enabled ? '켜짐 · ' + calTargetLabel(cs.target) + '에 넣어요' : '꺼짐 · 레슨만 앱에 저장돼요') + '</span>' +
     '</div>' +
     '<button class="switch' + (cs.enabled ? ' on' : '') + '" id="calSwitch" data-act="cal-toggle" role="switch" aria-checked="' + (cs.enabled ? 'true' : 'false') + '" aria-label="캘린더 연동"><i></i></button>' +
   '</div>' +
@@ -1292,7 +1292,7 @@ function paintCalSetting(){
     }
   }
   var txt = document.getElementById('calStateTxt');
-  if (txt) txt.textContent = cs.enabled ? ('켜짐 · ' + calTargetLabel(cs.target) + '로 들어가요') : '꺼짐 · 레슨만 앱에 저장돼요';
+  if (txt) txt.textContent = cs.enabled ? ('켜짐 · ' + calTargetLabel(cs.target) + '에 넣어요') : '꺼짐 · 레슨만 앱에 저장돼요';
   var stat = document.getElementById('calStat');
   if (stat) {
     stat.classList.toggle('on', cs.enabled);
@@ -4053,7 +4053,7 @@ function saveNote(){
   stopVoice();
   paintMemberSheet();
   render(true);
-  toast(fmtShort(date) + ' 레슨 차트에 저장했어요');
+  toast(fmtShort(date) + ' · 레슨 차트에 저장했어요');
 }
 
 /* =========================================================

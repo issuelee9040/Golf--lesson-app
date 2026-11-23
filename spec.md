@@ -650,5 +650,5 @@ rows:
 - 차감 상태: `completed`, `same_day_cancel`, `no_show`. 미차감: `excused_cancel`, `makeup`, `scheduled`.
 - 별도 결제 레슨: `separatePay: true` + `lessonKind`, `fee`, `guestName`, `charged`. 상태는 `completed` / `same_day_cancel` / `no_show` / `excused_cancel` 네 가지.
 - 저장 키: `localStorage["golfLessonApp.v2"]`, 최상위 `version: 2`, `theme: 'green' | 'black'`, `migExcused: 1`, `calendarSync: { enabled, target }`, `renewalLog: []`. 부트스트랩용 짧은 키도 `localStorage["golfLessonApp.theme"]`.
-- 프로토타입 파일: `golf-lesson-app/prototype.html` (단일 파일, 약 240KB).
+- 프로토타입 파일: `golf-lesson-app/prototype.html` (단일 파일, 약 300KB).
 - 이 문서: `golf-lesson-app/spec.md`.
