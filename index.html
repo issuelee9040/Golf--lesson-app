@@ -3320,8 +3320,7 @@ function noteTagChipsHTML(){
   var sel = (memberCtx && isArr(memberCtx.tagSel)) ? memberCtx.tagSel : [];
   return '<div class="tagchips" id="noteTags">' + GOLF_TAGS.map(function(t){
     return '<button class="tagchip' + (sel.indexOf(t.key) >= 0 ? ' on' : '') + '" data-act="note-tag" data-v="' + t.key + '">#' + t.key + '</button>';
-  }).join('') + '</div>' +
-    '<div class="hint" id="noteTagHint">말하거나 적으면 클럽·영역 태그가 자동으로 붙어요. 틀리면 눌러서 끄면 돼요.</div>';
+  }).join('') + '</div>';
 }
 
 /* 타이핑·음성으로 본문이 바뀔 때 칩만 다시 칠합니다(입력 포커스 유지) */
@@ -3591,11 +3590,14 @@ function pkgCardHTML(p){
   '</div>';
 }
 
+/* 레슨 차트 입력칸 아래 상시 안내 — 태그와 날짜 인식을 한 줄로 */
+var NOTE_HINT_IDLE = '말하거나 적으면 클럽·영역 태그가 자동으로 붙어요. ‘오늘 · 어제 · 11월 20일’처럼 쓰면 날짜도 알아서 잡아요.';
+
 function composerHTML(){
   var d = memberCtx ? memberCtx.noteDate : todayISO();
   var draft = (memberCtx && memberCtx.draft) ? memberCtx.draft : '';
   return '<div class="composer">' +
-    '<div class="ctitle"><span>레슨 내용 기록</span><span class="cdate" id="noteDateBadge">' + fmtShort(d) + '</span></div>' +
+    '<div class="ctitle"><span>레슨 내용 기록</span></div>' +
     '<textarea class="input" id="noteText" placeholder="예: 11월 20일 드라이버 백스윙 교정. 오른팔 펴기 유지.">' + esc(draft) + '</textarea>' +
     '<div class="crow">' +
       '<button class="btn btn-sm micbtn" id="voiceBtn" data-act="voice">🎤 음성 입력</button>' +
@@ -3603,7 +3605,7 @@ function composerHTML(){
       '<button class="btn btn-sm btn-primary" data-act="note-save">저장</button>' +
     '</div>' +
     noteTagChipsHTML() +
-    '<div class="hint" id="noteHint">본문에 “오늘 · 어제 · 그제 · 11월 20일 · 11/20”처럼 쓰면 날짜를 알아서 잡아요. 없으면 오늘로 저장돼요.</div>' +
+    '<div class="hint" id="noteHint">' + NOTE_HINT_IDLE + '</div>' +
   '</div>';
 }
 
@@ -3737,7 +3739,7 @@ function refreshNoteDate(){
   var eff = dEl.value || todayISO();
   if (badge) badge.textContent = fmtShort(eff);
   if (hint) {
-    if (!ta.value.trim()) hint.innerHTML = '본문에 “오늘 · 어제 · 그제 · 11월 20일 · 11/20”처럼 쓰면 날짜를 알아서 잡아요. 없으면 오늘로 저장돼요.';
+    if (!ta.value.trim()) hint.innerHTML = NOTE_HINT_IDLE;
     else if (p.matched) hint.innerHTML = '“' + esc(p.matched) + '” → <b>' + fmtShort(p.date) + '</b> 기록으로 잡았어요.';
     else hint.innerHTML = '날짜가 없어 <b>' + fmtShort(eff) + '</b> 기록으로 저장돼요. 옆 날짜 칸에서 바꿀 수 있어요.';
   }
