@@ -26,7 +26,9 @@
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;padding:0;height:100%}
+/* 아이폰 사파리 '당겨서 새로고침' 방지 — 화면을 아래로 당겨도 앱이 다시 열리지 않습니다.
+   (시트 안에서 끌어내릴 때는 아래 attachSheetGestures 가 touchmove 를 함께 막습니다) */
+html,body{margin:0;padding:0;height:100%;overscroll-behavior:none;overscroll-behavior-y:none}
 :root{
   --bg:#F2F2F7; --card:#FFFFFF; --ink:#0B0F14; --ink2:#3C434D; --muted:#8A9099;
   --line:#E3E6EB; --line2:#EFF1F4;
@@ -58,7 +60,7 @@ a{color:inherit;text-decoration:none}
 h1,h2,h3,p{margin:0}
 #app{
   position:relative;display:flex;flex-direction:column;width:100%;max-width:430px;
-  margin:0 auto;height:100vh;height:100dvh;background:var(--bg);overflow:hidden;
+  margin:0 auto;height:100vh;height:100dvh;background:var(--bg);overflow:hidden;overscroll-behavior:none;
   box-shadow:0 0 0 1px rgba(16,24,40,.06),0 24px 70px rgba(16,24,40,.14);
 }
 /* ---------- header ---------- */
@@ -405,18 +407,22 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 .tabbar button.on{color:var(--green)}
 /* ---------- sheet ---------- */
 .sheetwrap{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;
-  background:rgba(9,13,18,.4);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  background:rgba(9,13,18,.4);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  overscroll-behavior:none;overscroll-behavior-y:none;touch-action:pan-y}
+/* 닫히는 동안에는 뒤 화면을 눌러도 반응하지 않게 (두 번 닫힘·엉뚱한 탭 방지) */
+.sheetwrap.closing{pointer-events:none}
 .sheet{width:100%;max-width:430px;background:var(--bg);border-radius:22px 22px 0 0;display:flex;flex-direction:column;
-  max-height:92vh;box-shadow:0 -10px 40px rgba(0,0,0,.24);animation:sheetup .24s cubic-bezier(.2,.9,.2,1)}
+  max-height:92vh;box-shadow:0 -10px 40px rgba(0,0,0,.24);animation:sheetup .24s cubic-bezier(.2,.9,.2,1);
+  overscroll-behavior:contain;touch-action:pan-y}
 @keyframes sheetup{from{transform:translateY(34px);opacity:.5}to{transform:translateY(0);opacity:1}}
-.sheet .grab{flex:none;width:38px;height:5px;border-radius:3px;background:#D3D7DD;margin:8px auto 2px}
+.sheet .grab{flex:none;width:38px;height:5px;border-radius:3px;background:#D3D7DD;margin:8px auto 2px;touch-action:none}
 .sheet .sh{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px 6px}
 .sheet .sh h3{font-size:17px;font-weight:800;letter-spacing:-.3px}
 .sheet .sub{padding:0 17px 8px;font-size:11.5px;font-weight:600;color:var(--muted);line-height:1.5}
 /* 시간 범위 안내 — '시작 시간' 시트 부제 아래 한 줄 */
 .sheet .sub .subnote{display:block;margin-top:4px;color:var(--ink2);font-weight:700}
 .sheet .sub .subnote b{color:var(--green-d);font-weight:800}
-.sheet .sb{flex:1;overflow-y:auto;padding:4px 16px 14px}
+.sheet .sb{flex:1;overflow-y:auto;padding:4px 16px 14px;overscroll-behavior:contain;overscroll-behavior-y:contain}
 .sheet .sf{flex:none;padding:10px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg)}
 .sf .sumline{display:flex;justify-content:space-between;gap:10px;font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:8px}
 .sf .sumline b{font-weight:800}
@@ -1785,6 +1791,7 @@ function openSheet(opts){
   document.getElementById('sheetRoot').appendChild(wrap);
   sheetStack.push(wrap);
   wrap.addEventListener('click', function(e){ if (e.target === wrap) closeSheetEl(wrap); });
+  attachSheetGestures(wrap, sheet);
   return { el: wrap, sheet: sheet, body: bodyEl, footer: footEl, close: function(){ closeSheetEl(wrap); } };
 }
 
@@ -1811,6 +1818,145 @@ function closeTopSheet(){
 }
 function closeAllSheets(){
   sheetStack.slice().forEach(closeSheetEl);
+}
+
+/* =========================================================
+   시트 제스처 — 아래로 밀어 닫기 + 아이폰 사파리 '당겨서 새로고침' 막기
+
+   · 손잡이(grab)나 제목줄을 잡고 아래로 끌면, 또는 내용이 맨 위
+     (scrollTop <= 0)일 때 아래로 끌면 시트가 손가락을 따라 내려옵니다.
+   · 76px 넘게 내리거나 짧게 튕겨서(v >= 0.5px/ms, 28px 이상) 놓으면
+     그 시트 하나만 닫혀 바로 아래 화면(이전 시트 또는 원래 탭)으로 돌아갑니다.
+     모자라면 제자리로 부드럽게 돌아갑니다.
+   · 끌어내리는 동안 touchmove 를 preventDefault 해서 사파리가 이 동작을
+     '당겨서 새로고침'(페이지 전체 다시 열기)으로 받아채지 못하게 합니다.
+     위로 스크롤하거나 내용 중간에서 끌 때는 손대지 않아 스크롤이 그대로 부드럽습니다.
+   ========================================================= */
+var SHEET_DISMISS_PX = 76;      /* 이만큼 내리면 닫힘 */
+var SHEET_FLICK_DY = 28;        /* 튕겨서 닫을 때 최소 이동 거리 */
+var SHEET_FLICK_V = 0.5;        /* px/ms — 이보다 빠르면 짧게 튕겨도 닫힘 */
+var SHEET_DIM = 'rgba(9,13,18,.4)';
+
+function attachSheetGestures(wrap, sheet){
+  var head = sheet.querySelector('.sh');
+  var grab = sheet.querySelector('.grab');
+  var body = sheet.querySelector('.sb');
+  var st = null;   /* 지금 손가락 하나를 따라가는 중인 제스처 */
+
+  function isTop(){
+    return sheetStack.length > 0 && sheetStack[sheetStack.length - 1] === wrap;
+  }
+  function inHead(t){
+    if (!t) return false;
+    if (grab && t === grab) return true;
+    if (head && t === head) return true;
+    if (grab && grab.contains && grab.contains(t)) return true;
+    if (head && head.contains && head.contains(t)) return true;
+    return false;
+  }
+  function inField(t){
+    return !!t && typeof t.closest === 'function' && !!t.closest('input,textarea,select,option');
+  }
+  function atTop(){ return !body || body.scrollTop <= 0; }
+
+  /* 손가락을 따라 내려온 만큼 시트를 옮기고, 뒤 어둠은 조금씩 옅게 */
+  function paint(ty){
+    if (ty < 0) ty = 0;
+    var damped = ty <= 140 ? ty : 140 + (ty - 140) * 0.35;   /* 140px 부터는 저항 */
+    sheet.style.transform = 'translateY(' + Math.round(damped) + 'px)';
+    wrap.style.background = 'rgba(9,13,18,' + (0.4 * (1 - Math.min(damped / 340, 0.9))).toFixed(3) + ')';
+  }
+
+  function snapBack(){
+    sheet.style.transition = 'transform .26s cubic-bezier(.2,.9,.2,1)';
+    wrap.style.transition = 'background-color .26s linear';
+    sheet.style.transform = 'translateY(0)';
+    wrap.style.background = SHEET_DIM;
+  }
+
+  /* 이 시트 하나만 아래로 흘려보내고 스택에서 뺌 → 이전 시트/탭이 그대로 드러남 */
+  function dismissOut(){
+    wrap.classList.add('closing');
+    sheet.style.transition = 'transform .2s cubic-bezier(.4,0,1,1)';
+    wrap.style.transition = 'background-color .2s linear';
+    sheet.style.transform = 'translateY(100%)';
+    wrap.style.background = 'rgba(9,13,18,0)';
+    var w = wrap;
+    setTimeout(function(){ closeSheetEl(w); }, 200);
+  }
+
+  function down(e){
+    if (!isTop() || !e.touches || e.touches.length !== 1) { st = null; return; }
+    var p = e.touches[0];
+    var now = e.timeStamp || Date.now();
+    st = {
+      x0: p.clientX, y0: p.clientY,
+      t0: now, t1: now,
+      head: inHead(e.target), field: inField(e.target), backdrop: e.target === wrap,
+      dy: 0, dragging: false, locked: false, blockPTR: false
+    };
+    sheet.style.animation = 'none';
+    sheet.style.transition = 'none';
+    wrap.style.transition = 'none';
+  }
+
+  function move(e){
+    if (!st || !e.touches || e.touches.length !== 1) return;
+    var p = e.touches[0];
+    var dy = p.clientY - st.y0;
+    var dx = p.clientX - st.x0;
+    st.t1 = e.timeStamp || Date.now();
+
+    if (st.locked){
+      /* 입력칸에서 시작한 끌기 — 시트는 안 움직이고 새로고침만 막음 */
+      if (st.blockPTR && e.cancelable !== false && e.preventDefault) e.preventDefault();
+      return;
+    }
+
+    if (!st.dragging){
+      if (Math.abs(dy) < 5 && Math.abs(dx) < 5) return;          /* 손떨림은 그냥 둠 */
+      if (Math.abs(dx) > Math.abs(dy)) { st.locked = true; return; }   /* 가로 → 그냥 둠 */
+      if (dy <= 0) { st.locked = true; return; }                 /* 위로 → 그냥 스크롤 */
+      if (!st.head && !atTop()) { st.locked = true; return; }    /* 내용 중간 → 그냥 스크롤 */
+      if (st.field || st.backdrop){                              /* 입력칸·바깥 여백 → 끌지 않고 새로고침만 막음 */
+        st.locked = true; st.blockPTR = true;
+        if (e.cancelable !== false && e.preventDefault) e.preventDefault();
+        return;
+      }
+      st.dragging = true;                                       /* 여기서부터 시트가 따라 내려옴 */
+    }
+
+    if (e.cancelable !== false && e.preventDefault) e.preventDefault();   /* 사파리 당겨서 새로고침 차단 */
+    st.dy = dy;
+    paint(dy);
+  }
+
+  function up(e){
+    if (!st) return;
+    var s = st;
+    st = null;
+    if (e && e.changedTouches && e.changedTouches.length === 1){
+      s.dy = e.changedTouches[0].clientY - s.y0;
+      s.t1 = e.timeStamp || s.t1;
+    }
+    if (!s.dragging) return;
+    var dt = s.t1 - s.t0;
+    var v = dt >= 8 ? s.dy / dt : 0;    /* 한 프레임 안에 잰 값은 속도로 치지 않음 */
+    if (s.dy >= SHEET_DISMISS_PX || (s.dy >= SHEET_FLICK_DY && v >= SHEET_FLICK_V)) dismissOut();
+    else snapBack();
+  }
+
+  function cancel(){
+    if (!st) return;
+    var s = st;
+    st = null;
+    if (s.dragging) snapBack();
+  }
+
+  wrap.addEventListener('touchstart', down, { passive: true });
+  wrap.addEventListener('touchmove', move, { passive: false });   /* preventDefault 를 위해 필수 */
+  wrap.addEventListener('touchend', up);
+  wrap.addEventListener('touchcancel', cancel);
 }
 function findSession(id){
   for (var i = 0; i < state.sessions.length; i++) if (state.sessions[i].id === id) return state.sessions[i];
