@@ -207,7 +207,7 @@ html[data-theme="black"] .seg.boxed button.on{background:var(--green-solid);bord
 .chips.durchips .chip{padding:7px 11px}
 /* 횟수 프리셋 — 30회를 빼고 다섯 개가 390px에서도 한 줄에 꽉 차게 */
 .chips.countrow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.chips.countrow .chip{padding:8px 0;text-align:center;border-radius:11px;font-size:12.5px}
+.chips.countrow .chip{padding:8px 0;text-align:center;border-radius:11px;font-size:12.5px;border-color:var(--line)}
 input.chipinp{flex:none;width:104px;height:33px;border-radius:999px;padding:0 10px;text-align:center;
   font-size:16px;font-weight:800;letter-spacing:-.3px}
 input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);opacity:.8;letter-spacing:-.2px}
@@ -4626,8 +4626,8 @@ function addMemberBodyHTML(m, tpl){
         '<div class="chips countrow mt10" id="mfCountChips">' + [1,5,8,10,20].map(function(n){
           return '<button class="chip" data-act="mf-count" data-v="' + n + '">' + n + '회</button>';
         }).join('') + '</div>' +
-        '<div class="hint" id="mfCountHint">횟수는 비워도 돼요 — 비우면 <b>수강권 없이 회원만</b> 등록되고, 나중에 회원 정보에서 넣을 수 있어요.</div>' +
-        '<div class="hint" id="mfRemainHint">이미 몇 번 진행한 회원이면 <b>남은 횟수</b>를 같이 적어 주세요. 비우면 전체 횟수로 등록돼요.</div>' +
+        '<div class="hint" id="mfCountHint" style="word-break:keep-all">횟수는 비워도 돼요 — 비우면 <b>수강권 없이 회원만</b> 등록되고, 나중에 회원 정보에서 넣을 수 있어요.</div>' +
+        '<div class="hint" id="mfRemainHint" style="word-break:keep-all">이미 몇 번 진행한 회원이면 <b>남은 횟수</b>를 같이 적어 주세요. 비우면 전체 횟수로 등록돼요.</div>' +
       '</div>' +
       '<div class="row2">' +
         '<div class="field wide"><label>시작일</label>' + dateFieldHTML('mfStart', d) + '</div>' +
