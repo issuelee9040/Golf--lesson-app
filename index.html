@@ -960,6 +960,38 @@ html[data-theme="black"] .brandfoot .bf-tag{background:#26262C;color:#8B9099}
   display:none;align-items:center;justify-content:center;font-size:11px;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,.28)}
 .themecard.on .tcheck{display:flex}
 
+/* ---------- 데이터 가져오기 (JSON 복원) ---------- */
+/* 확인 시트 — 무엇이 되살아나는지 숫자 네 칸으로 먼저 보여 줍니다 (2×2) */
+.impk{margin-bottom:12px}
+.impk .kpi{padding:11px 12px;background:var(--field);box-shadow:none;border-color:var(--line2)}
+.impk .kpi .n{font-size:20px}
+.impfile{font-size:11.5px;font-weight:800;color:var(--muted);margin:0 2px 10px;word-break:break-all;line-height:1.4}
+.impwarn{margin-bottom:0;border-color:var(--amber-line);background:var(--amber-soft);color:var(--amber-ink)}
+html[data-theme="black"] .impwarn{color:#F1C57E}
+
+/* ---------- 홈 화면에 앱 추가 ---------- */
+.inscard{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.inscard .ic{flex:none;width:44px;height:44px;border-radius:14px;background:var(--green-soft);color:var(--green-d);
+  display:flex;align-items:center;justify-content:center}
+.inscard .ic svg{width:22px;height:22px}
+.inscard .tx{flex:1;min-width:0}
+.inscard .tx b{display:block;font-size:14px;font-weight:800;letter-spacing:-.3px;line-height:1.3}
+.inscard .tx span{display:block;font-size:11.5px;font-weight:600;color:var(--muted);line-height:1.45;margin-top:2px}
+/* 안내 시트 — 1단계 · 2단계 */
+.inslead{font-size:12.5px;font-weight:800;color:var(--ink2);line-height:1.45;margin:0 2px 12px}
+.insstep{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--line2);
+  background:var(--field);border-radius:15px;margin-bottom:8px}
+.insstep .num{flex:none;width:26px;height:26px;border-radius:9px;background:var(--green-soft);color:var(--green-d);
+  font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.insstep .tx{flex:1;min-width:0}
+.insstep .tx b{display:block;font-size:13.5px;font-weight:800;letter-spacing:-.3px;line-height:1.35}
+.insstep .tx span{display:block;font-size:11.5px;font-weight:600;color:var(--muted);line-height:1.45;margin-top:3px}
+.insstep .ic{flex:none;width:34px;height:34px;border-radius:11px;background:var(--gray-soft);color:var(--ink2);
+  display:flex;align-items:center;justify-content:center}
+.insstep .ic svg{width:18px;height:18px}
+.insnote{display:flex;align-items:flex-start;gap:8px;margin:2px 2px 0;font-size:11.5px;font-weight:600;color:var(--muted);line-height:1.5}
+.insnote svg{flex:none;width:15px;height:15px;margin-top:1px;color:var(--green)}
+
 /* =========================================================
    🖤 시크 블랙 — 무광 차콜 다크 테마 (html[data-theme="black"])
    그린 화이트(:root 기본값)는 손대지 않고 여기서만 색을 바꿉니다.
@@ -1186,6 +1218,8 @@ html[data-theme="black"] .sp-bar>i{background:linear-gradient(90deg,rgba(255,255
 </div>
 <div id="sheetRoot"></div>
 <div class="toast" id="toast"></div>
+<!-- 데이터 가져오기(복원) — 버튼이 부르는 숨은 파일 선택칸. 화면에는 보이지 않습니다 -->
+<input type="file" id="importFile" accept=".json,application/json" hidden aria-hidden="true" tabindex="-1">
 <noscript><p style="padding:20px;font-weight:700">이 프로토타입은 JavaScript가 있어야 열려요.</p></noscript>
 <script>
 /* =========================================================
@@ -2439,6 +2473,8 @@ function closeSheetEl(wrap){
   if (priceCtx && priceCtx.sh && priceCtx.sh.el === wrap) priceCtx = null;
   if (renewCtx && renewCtx.sh && renewCtx.sh.el === wrap) renewCtx = null;
   if (pickCtx && pickCtx.sh && pickCtx.sh.el === wrap) pickCtx = null;
+  /* 확인 시트가 X·바깥 탭으로 닫혀도 복원 대기 상태를 풉니다 (함수만 떼어 쓰는 검사 대비) */
+  if (typeof importCtx !== 'undefined' && importCtx && importCtx.sh && importCtx.sh.el === wrap) importCtx = null;
   if (dpCtx && dpCtx.sh && dpCtx.sh.el === wrap) dpCtx = null;
   if (tpCtx && tpCtx.sh && tpCtx.sh.el === wrap) tpCtx = null;
 }
@@ -5600,12 +5636,18 @@ function viewSettings(){
     calSettingHTML() +
   '</div>';
 
+  /* 홈 화면에 앱 추가 — 이미 앱처럼 열고 있으면(standalone) 카드가 통째로 숨습니다 */
+  h += installCardHTML();
+
   h += '<div class="sec"><h2>프로 정보 · 데이터</h2><span class="aside">이 기기에만</span></div><div class="card">' +
     '<div class="field"><label>프로 이름</label><input class="input" id="setPro" value="' + esc(state.pro.name) + '"></div>' +
     '<div class="field"><label>소속 / 레슨장</label><input class="input" id="setAcademy" value="' + esc(state.pro.academy) + '"></div>' +
     '<button class="btn btn-outline btn-block" data-act="pro-save">저장</button>' +
     '<div class="divider"></div>' +
     '<button class="btn btn-ghost btn-block" data-act="export-data">데이터 내보내기 (JSON)</button>' +
+    '<div style="height:8px"></div>' +
+    '<button class="btn btn-outline btn-block" data-act="import-data">데이터 가져오기 (복원)</button>' +
+    '<div class="hint">내보내 둔 JSON 파일로 회원 · 수강권 · 레슨을 되살려요. 이 기기의 데이터는 파일 내용으로 바뀌고, 되살리기 전에 한 번 더 확인해요.</div>' +
     '<div style="height:8px"></div>' +
     '<button class="btn btn-outline btn-block" data-act="demo-reset">샘플 데이터 채우기</button>' +
     '<div style="height:8px"></div>' +
@@ -6395,6 +6437,379 @@ function exportData(){
   }
 }
 
+/* =========================================================
+   데이터 가져오기 (JSON 복원)
+
+   내보내기로 받은 파일(golf-lesson-data-YYYY-MM-DD.json)을 그대로 읽어
+   회원 · 수강권 · 레슨 · 차트 메모 · 정산 기록을 되살립니다.
+   · 백업이 아니거나 망가져 있으면 저장하기 전에 멈추고 토스트로만 알려 줍니다.
+   · 살릴 수 있는 항목은 빠진 필드를 보정해 넣고, 읽을 수 없는 항목은 빼고 건수를 알려 줍니다.
+   · 저장은 확인 시트에서 '이 데이터로 복원하기'를 누른 뒤에만 합니다.
+   ========================================================= */
+var IMPORT_MAX = 8 * 1024 * 1024;   /* 8MB — 레슨 몇 년 치를 넣어도 넉넉한 크기 */
+var importCtx = null;               /* 확인 시트를 띄우고 복원 버튼을 기다리는 후보 */
+
+function importErr(msg){ return { ok:false, msg:msg }; }
+function plainObj(v){ return !!v && Object.prototype.toString.call(v) === '[object Object]'; }
+function strVal(v){ return (typeof v === 'string') ? v : (typeof v === 'number' ? String(v) : ''); }
+function numVal(v, d){ var n = parseFloat(v); return isFinite(n) ? n : d; }
+function dateVal(v){ var s = strVal(v).trim(); return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : ''; }
+function timeVal(v){ var s = strVal(v).trim(); return /^\d{1,2}:\d{2}$/.test(s) ? hhmm(minOf(s)) : ''; }
+
+/* 백업 한 부를 지금 앱이 바로 쓸 수 있는 상태로 다듬습니다 (원본은 건드리지 않음) */
+function normalizeImported(raw){
+  if (!plainObj(raw))
+    return importErr('JSON 안에 앱 데이터가 없어요 · 데이터 내보내기로 받은 파일을 골라 주세요');
+  if (!isArr(raw.members) || !isArr(raw.packages) || !isArr(raw.sessions))
+    return importErr('ProPlan 백업 파일이 아니에요 · 회원 · 수강권 · 레슨 목록이 들어 있지 않아요');
+
+  var skipped = { members:0, packages:0, sessions:0 };
+  var st = blankState('', '');
+  st.version = 2;
+
+  /* 프로 정보 */
+  var pro = plainObj(raw.pro) ? raw.pro : {};
+  st.pro = { name: strVal(pro.name) || '프로', title: strVal(pro.title) || '프로',
+    academy: strVal(pro.academy) };
+
+  /* 회원 — 이름이 없으면 회원으로 볼 수 없어 건너뜁니다 */
+  var idMap = {}, usedMem = {};
+  raw.members.forEach(function(m){
+    if (!plainObj(m) || !strVal(m.name).trim()) { skipped.members++; return; }
+    var oldId = strVal(m.id).trim();
+    var id = (oldId && !usedMem[oldId]) ? oldId : uid('mem');
+    usedMem[id] = 1;
+    if (oldId && !idMap[oldId]) idMap[oldId] = id;   /* id 가 겹치면 첫 회원 쪽으로 이어 줌 */
+    var mm = { id: id, name: strVal(m.name).trim(),
+      gender: (m.gender === 'male' || m.gender === 'female') ? m.gender : '',
+      region: strVal(m.region), phone: strVal(m.phone), level: strVal(m.level),
+      since: dateVal(m.since) || todayISO(), memo: strVal(m.memo), passHistory: [] };
+    if (m.fromSeparate === true) mm.fromSeparate = true;
+    st.members.push(mm);
+  });
+
+  /* 수강권 — 회원을 찾을 수 없거나 총 횟수가 0이면 의미가 없어 건너뜁니다 */
+  var pkgMap = {}, usedPkg = {};
+  raw.packages.forEach(function(p){
+    if (!plainObj(p)) { skipped.packages++; return; }
+    var mid = idMap[strVal(p.memberId).trim()];
+    var total = Math.round(numVal(p.totalSessions, 0));
+    if (!mid || !(total > 0)) { skipped.packages++; return; }
+    var oldId = strVal(p.id).trim();
+    var id = (oldId && !usedPkg[oldId]) ? oldId : uid('pkg');
+    usedPkg[id] = 1;
+    if (oldId) pkgMap[oldId] = id;
+    var rem = Math.round(numVal(p.remainingSessions, total));
+    var dur = Math.round(numVal(p.durationMinutes, 55));
+    st.packages.push({ id: id, memberId: mid, durationMinutes: (dur > 0 ? dur : 55),
+      totalSessions: total, remainingSessions: Math.max(0, Math.min(total, rem)),
+      startDate: dateVal(p.startDate) || todayISO(),
+      expiryDate: dateVal(p.expiryDate) || addMonths(todayISO(), 5),
+      price: Math.max(0, Math.round(numVal(p.price, 0))), note: strVal(p.note) });
+  });
+
+  /* 레슨 — 날짜 · 시작 시간이 없으면 달력에 놓을 수 없어 건너뜁니다 */
+  var usedLsn = {};
+  raw.sessions.forEach(function(s){
+    if (!plainObj(s)) { skipped.sessions++; return; }
+    var date = dateVal(s.date), time = timeVal(s.startTime);
+    if (!date || !time) { skipped.sessions++; return; }
+    var sep = isSep(s);
+    var mid = s.memberId ? (idMap[strVal(s.memberId).trim()] || null) : null;
+    var guest = strVal(s.guestName);
+    if (!mid && !sep) { skipped.sessions++; return; }        /* 회원이 사라진 레슨은 달력에 붙일 수 없음 */
+    if (!mid && sep && !guest) guest = '비회원';
+    var status = STATUS[s.status] ? s.status : 'scheduled';
+    if (sep && SEP_STATUS_KEYS.indexOf(status) < 0) status = 'scheduled';
+    var pid = pkgMap[strVal(s.packageId).trim()] || '';
+    var dur = Math.round(numVal(s.durationMinutes, 0));
+    if (!(dur > 0)) {                                        /* 분이 비어 있으면 수강권 분으로 */
+      var pkDur = 0;
+      for (var i = 0; i < st.packages.length; i++) if (st.packages[i].id === pid) pkDur = st.packages[i].durationMinutes;
+      dur = pkDur || (sep ? 120 : 55);
+    }
+    var oldL = strVal(s.id).trim();
+    var sid = (oldL && !usedLsn[oldL]) ? oldL : uid('lsn');
+    usedLsn[sid] = 1;
+    var o = { id: sid, memberId: mid, packageId: sep ? '' : pid,
+      date: date, startTime: time, durationMinutes: dur,
+      location: strVal(s.location), status: status,
+      deducted: sep ? false : !!(STATUS[status] && STATUS[status].deducted),
+      memo: strVal(s.memo), settledAt: strVal(s.settledAt), source: strVal(s.source) || 'import' };
+    if (sep) {                                               /* 별도 결제 3종은 수강권을 건드리지 않음 */
+      o.lessonKind = normSepKind(s.lessonKind);
+      o.separatePay = true;
+      o.guestName = guest;
+      o.fee = Math.max(0, feeNum(s.fee));
+      o.charged = (s.charged === true || s.charged === false) ? s.charged : !!CHARGED[status];
+    }
+    st.sessions.push(o);
+  });
+
+  /* 레슨 차트 메모 — 회원이 있는 메모만 */
+  if (isArr(raw.notes)) raw.notes.forEach(function(n){
+    if (!plainObj(n) || !strVal(n.text).trim()) return;
+    var mid = idMap[strVal(n.memberId).trim()];
+    if (!mid) return;
+    var text = strVal(n.text), nd = dateVal(n.date) || todayISO();
+    st.notes.push({ id: uid('note'), memberId: mid, date: nd, text: text,
+      createdAt: strVal(n.createdAt) || nd + 'T20:00:00',
+      source: strVal(n.source) || 'text', tags: detectGolfTags(text) });
+  });
+
+  /* 마감 정산 기록 */
+  if (isArr(raw.settlements)) raw.settlements.forEach(function(r){
+    if (!plainObj(r) || !dateVal(r.date)) return;
+    var d = dateVal(r.date), counts = {};
+    if (plainObj(r.counts)) Object.keys(r.counts).forEach(function(k){
+      var v = Math.round(numVal(r.counts[k], 0));
+      if (v > 0) counts[k] = v;
+    });
+    st.settlements.push({ date: d, settledAt: strVal(r.settledAt) || d + 'T21:00:00',
+      counts: counts, deducted: Math.max(0, Math.round(numVal(r.deducted, 0))) });
+  });
+  st.settlements.sort(function(a, b){ return a.date < b.date ? 1 : -1; });
+
+  /* 빠른 등록 템플릿 — 하나도 없으면 기본 3종 */
+  st.templates = [];
+  if (isArr(raw.templates)) raw.templates.forEach(function(t){
+    if (!plainObj(t) || !strVal(t.name).trim()) return;
+    var n2 = Math.round(numVal(t.sessions, 0));
+    var d2 = Math.round(numVal(t.durationMinutes, 55));
+    st.templates.push({ id: uid('tpl'), name: strVal(t.name).trim(),
+      durationMinutes: (d2 > 0 ? d2 : 55), sessions: (n2 > 0 ? n2 : 1),
+      price: Math.max(0, Math.round(numVal(t.price, 0))) });
+  });
+  if (!st.templates.length) st.templates = defaultTemplates();
+
+  /* 재등록 · 일반취소 기록 — 통계에만 쓰는 기록이라 살릴 수 있는 만큼만 */
+  if (isArr(raw.renewalLog)) st.renewalLog = raw.renewalLog.filter(function(r){ return plainObj(r); }).map(function(r){
+    var o = {};
+    Object.keys(r).forEach(function(k){ o[k] = r[k]; });
+    if (r.memberId && idMap[strVal(r.memberId).trim()]) o.memberId = idMap[strVal(r.memberId).trim()];
+    return o;
+  });
+  if (isArr(raw.cancelLog)) st.cancelLog = raw.cancelLog.filter(function(r){ return plainObj(r); }).map(function(r){
+    var o = { date: dateVal(r.date) || todayISO(), at: strVal(r.at) };
+    var mid = idMap[strVal(r.memberId).trim()];
+    if (mid) o.memberId = mid;
+    return o;
+  });
+
+  /* 레슨 시간 범위 · 테마 · 외부 캘린더 연동 */
+  var h = plainObj(raw.hours) ? raw.hours : {};
+  var from = Math.round(numVal(h.fromMin, DEF_FROM)), to = Math.round(numVal(h.toMin, DEF_TO));
+  if (!(from > 0)) from = DEF_FROM;
+  if (!(to > 0)) to = DEF_TO;
+  from = Math.min(Math.max(from, FROM_MIN), FROM_MAX);
+  to = Math.min(Math.max(to, TO_MIN), TO_MAX);
+  if (to < from + 60) to = Math.min(TO_MAX, from + 60);
+  st.hours = { fromMin: from, toMin: to };
+  st.theme = (raw.theme === 'black') ? 'black' : 'green';
+  var cs = plainObj(raw.calendarSync) ? raw.calendarSync : {};
+  st.calendarSync = { enabled: cs.enabled === true,
+    target: (['both','apple','google'].indexOf(cs.target) >= 0) ? cs.target : 'both' };
+
+  st.migExcused = 1;      /* 예전 일반취소 레슨 정리를 다시 하지 않게 */
+  delete st.freshStart;   /* 돌아온 데이터는 '빈 상태로 새 시작' 표시를 달지 않음 */
+  return { ok: true, state: st, skipped: skipped };
+}
+
+function importCounts(st){
+  return { members: st.members.length, packages: st.packages.length, sessions: st.sessions.length,
+    notes: st.notes.length, settlements: st.settlements.length };
+}
+
+/* 파일 내용(글자) → 복원 후보. 파일이 아니거나 망가졌으면 이유만 돌려줍니다 */
+function parseImportText(text){
+  var body = String(text === undefined || text === null ? '' : text).replace(/^\uFEFF/, '').trim();
+  if (!body) return importErr('파일이 비어 있어요 · 데이터 내보내기로 받은 JSON 파일을 골라 주세요');
+  var raw = null;
+  try { raw = JSON.parse(body); }
+  catch(e){ return importErr('JSON 파일이 아니에요 · 데이터 내보내기로 받은 파일을 골라 주세요'); }
+  return normalizeImported(raw);
+}
+
+/* 무엇이 되살아나는지 두 줄로 먼저 보여 줍니다 */
+function importSummaryHTML(c, skipped){
+  var parts = [];
+  if (skipped && skipped.members) parts.push('회원 ' + skipped.members + '명');
+  if (skipped && skipped.packages) parts.push('수강권 ' + skipped.packages + '건');
+  if (skipped && skipped.sessions) parts.push('레슨 ' + skipped.sessions + '건');
+  return '<div class="kpis impk">' +
+      kpi('green', c.members, '회원', '명') +
+      kpi('', c.packages, '수강권', '건') +
+      kpi('', c.sessions, '레슨', '건') +
+      kpi('', c.notes, '레슨 차트', '건') +
+    '</div>' +
+    '<div class="formnote impwarn"><b>지금 이 기기의 데이터가 파일 내용으로 바뀝니다.</b> 회원 · 수강권 · 레슨 · 차트 메모가 모두 교체되고, 되돌릴 수 없어요. 필요하면 먼저 <b>데이터 내보내기 (JSON)</b>로 지금 데이터를 저장해 두세요.</div>' +
+    (parts.length ? '<div class="hint">읽을 수 없는 ' + parts.join(' · ') + '은(는) 빼고 복원해요.</div>' : '');
+}
+
+/* 확인 시트 열기 — 이 단계에서는 아직 아무것도 저장하지 않습니다 */
+function openImportConfirm(text, fileName){
+  var res = parseImportText(text);
+  if (!res.ok) { toast(res.msg, { ms: 4200 }); return null; }
+  var c = importCounts(res.state);
+  var sh = openSheet({
+    title: '이 데이터로 복원할까요?',
+    sub: '지금 데이터를 이 파일 내용으로 바꿔요',
+    body: (fileName ? '<div class="impfile">' + esc(fileName) + '</div>' : '') + importSummaryHTML(c, res.skipped),
+    footer: '<div style="display:flex;gap:8px">' +
+      '<button class="btn btn-ghost" style="flex:0 0 38%" data-act="import-cancel">취소</button>' +
+      '<button class="btn btn-primary" style="flex:1" data-act="import-confirm">이 데이터로 복원하기</button></div>'
+  });
+  importCtx = { state: res.state, counts: c, skipped: res.skipped, sh: sh };
+  return sh;
+}
+
+/* 숨은 파일 선택칸을 눌러 파일 고르기 — 같은 파일을 다시 골라도 change 가 오게 비워 둡니다 */
+function pickImportFile(){
+  var inp = document.getElementById('importFile');
+  if (!inp) { toast('이 브라우저에서는 파일을 고를 수 없어요'); return; }
+  try { inp.value = ''; } catch(e){}
+  try { inp.click(); } catch(e){ toast('파일을 고르지 못했어요 · 다시 시도해 주세요'); }
+}
+
+function onImportFilePicked(e){
+  var inp = e && e.target;
+  var f = inp && inp.files && inp.files[0];
+  try { if (inp) inp.value = ''; } catch(err){}
+  if (!f) return;
+  if (f.size > IMPORT_MAX) { toast('파일이 너무 커요 · 8MB 이하 백업만 되살릴 수 있어요', { ms: 3600 }); return; }
+  var name = f.name || '';
+  try {
+    var rd = new FileReader();
+    rd.onerror = function(){ toast('파일을 읽지 못했어요 · 다시 시도해 주세요', { ms: 3600 }); };
+    rd.onload = function(){ openImportConfirm(String(rd.result || ''), name); };
+    rd.readAsText(f);
+  } catch(err){ toast('파일을 읽지 못했어요 · 다시 시도해 주세요', { ms: 3600 }); }
+}
+
+/* 확인을 누른 뒤에만 — 상태 교체 · 저장 · 화면 다시 그리기 */
+function applyImport(){
+  var ctx = importCtx;
+  importCtx = null;
+  if (!ctx) return false;
+  obWaiting = false;              /* 온보딩 대기 중이었더라도 이제 저장합니다 */
+  state = ctx.state;
+  save();
+  applyTheme(themeOf());
+  ui.tab = 'today';
+  ui.date = todayISO();
+  ui.month = todayISO().slice(0, 7);
+  ui.search = '';
+  ui.memberId = null;
+  closeAllSheets();
+  render();
+  toast('데이터를 복원했어요 · 회원 ' + ctx.counts.members + '명 · 레슨 ' + ctx.counts.sessions + '건', { ms: 3400 });
+  return true;
+}
+
+/* =========================================================
+   홈 화면에 앱 추가
+
+   · 안드로이드 크롬: beforeinstallprompt 를 잡아 두었다가 버튼에서 그대로 띄웁니다.
+   · 아이폰 사파리(또는 설치 창을 주지 않는 브라우저): 1 · 2단계 그림 안내 시트.
+   · 이미 홈 화면 앱으로 열고 있으면(standalone) 설정 카드 자체를 보여 주지 않습니다.
+   ========================================================= */
+var installEvt = null;          /* 크롬이 주는 설치 요청 — 한 번 쓰면 사라집니다 */
+var INS_ICON = {
+  home:  svg('<path d="M4 10.6 12 4l8 6.6"/><path d="M6.2 9.4V20h11.6V9.4"/><path d="M10 20v-5.2h4V20"/>'),
+  share: svg('<path d="M12 15.4V3.6"/><path d="M8.3 7.3 12 3.6l3.7 3.7"/><path d="M7 11.4H5.3A1.3 1.3 0 0 0 4 12.7v6.1A1.3 1.3 0 0 0 5.3 20h13.4a1.3 1.3 0 0 0 1.3-1.2v-6.1a1.3 1.3 0 0 0-1.3-1.3H17"/>'),
+  plus:  svg('<rect x="4.6" y="4.6" width="14.8" height="14.8" rx="4"/><path d="M12 8.4v7.2M8.4 12h7.2"/>'),
+  menu:  svg('<circle cx="12" cy="5.6" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="18.4" r="1.6" fill="currentColor" stroke="none"/>')
+};
+function browserNav(){
+  try { return window.navigator || navigator; } catch(e){ return null; }
+}
+/* 홈 화면에서 연 앱(주소창 없음)인지 — 아이폰은 navigator.standalone, 그 밖은 display-mode */
+function isStandalone(){
+  try {
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches === true) return true;
+  } catch(e){}
+  var nv = browserNav();
+  return !!(nv && nv.standalone === true);
+}
+function isIOS(){
+  var nv = browserNav(), ua = (nv && nv.userAgent) || '';
+  if (/iPad|iPhone|iPod/.test(ua)) return true;
+  /* 아이패드 사파리는 맥으로 보이기도 합니다 — 터치가 있으면 아이패드 */
+  return /Macintosh/.test(ua) && !!(nv && nv.maxTouchPoints > 1);
+}
+
+/* 설정 탭 카드 — standalone 이면 빈 문자열이라 섹션째로 사라집니다 */
+function installCardHTML(){
+  if (isStandalone()) return '';
+  var ios = isIOS();
+  return '<div class="sec"><h2>홈 화면에 앱 추가</h2><span class="aside">' + (ios ? '아이폰 사파리' : '브라우저 메뉴') + '</span></div>' +
+    '<div class="card">' +
+      '<div class="inscard"><span class="ic" aria-hidden="true">' + INS_ICON.home + '</span>' +
+        '<div class="tx"><b>ProPlan을 앱처럼 열기</b>' +
+        '<span>주소창 없이 전체 화면으로 열리고, 홈 화면에 ProPlan 아이콘이 생겨요.</span></div></div>' +
+      '<button class="btn btn-primary btn-block" data-act="install-app">홈 화면에 앱 추가</button>' +
+      '<div class="hint">' + (ios
+        ? '사파리에서 <b>공유(□↑)</b> → <b>홈 화면에 추가</b> 순서예요. 카카오톡 같은 앱 안 브라우저에서는 추가할 수 없어요.'
+        : '<b>홈 화면에 앱 추가</b>를 누르면 설치 창이 떠요. 창이 안 뜨면 브라우저 메뉴에서 <b>홈 화면에 추가</b>를 골라 주세요.') +
+      '</div>' +
+    '</div>';
+}
+
+function insStepHTML(n, ic, title, sub){
+  return '<div class="insstep"><span class="num" aria-hidden="true">' + n + '</span>' +
+    '<div class="tx"><b>' + title + '</b><span>' + sub + '</span></div>' +
+    '<span class="ic" aria-hidden="true">' + ic + '</span></div>';
+}
+
+/* 1단계 · 2단계 그림 안내 — 아이폰 사파리(공유 버튼) / 그 밖의 브라우저(메뉴) */
+function openInstallGuide(){
+  var ios = isIOS();
+  var body = '<div class="inslead">' + (ios ? '아이폰 사파리에서는 두 번만 누르면 끝나요.' : '브라우저 메뉴에서 두 번만 누르면 끝나요.') + '</div>' +
+    (ios
+      ? insStepHTML(1, INS_ICON.share, '화면 아래 공유(□↑) 버튼 누르기', '사파리 아래쪽 가운데, 네모에 화살표가 나온 버튼이에요.')
+      : insStepHTML(1, INS_ICON.menu, '브라우저 메뉴 열기', '오른쪽 위 ⋮ 또는 ··· 버튼을 눌러 주세요.')) +
+    insStepHTML(2, INS_ICON.plus, '‘홈 화면에 추가’ 누르기', '목록을 조금 내리면 나와요. 누르면 홈 화면에 ProPlan 아이콘이 생겨요.') +
+    '<div class="insnote">' + INS_ICON.home + '<span>홈 화면에서 연 앱은 주소창 없이 전체 화면으로 뜨고, 지금 저장한 데이터가 그대로 이어져요.</span></div>';
+  return openSheet({
+    title: '홈 화면에 앱 추가',
+    sub: '두 단계면 끝나요',
+    body: body,
+    footer: '<button class="btn btn-primary btn-block" data-act="sheet-close">알겠어요</button>'
+  });
+}
+
+/* 크롬이 설치 요청을 주면 기본 배너 대신 설정 탭 버튼에서 띄웁니다 */
+function handleBeforeInstall(e){
+  if (e && e.preventDefault) e.preventDefault();
+  installEvt = e || null;
+}
+function handleInstalled(){
+  installEvt = null;
+  toast('홈 화면에 앱을 추가했어요');
+  if (ui.tab === 'settings') render(true);
+}
+function installApp(){
+  if (isStandalone()) { toast('이미 홈 화면 앱으로 열고 있어요'); return; }
+  if (installEvt && installEvt.prompt) { runInstallPrompt(); return; }
+  openInstallGuide();
+}
+function runInstallPrompt(){
+  var evt = installEvt;
+  installEvt = null;              /* 설치 요청은 한 번만 쓸 수 있습니다 */
+  try { evt.prompt(); } catch(e){ openInstallGuide(); return; }
+  var pick = evt.userChoice;
+  if (pick && pick.then) {
+    pick.then(function(res){
+      if (res && res.outcome === 'accepted') toast('홈 화면에 추가하는 중이에요');
+      else toast('설치를 취소했어요 · 홈 화면에 추가는 언제든 할 수 있어요', { ms: 3200 });
+      if (ui.tab === 'settings') render(true);
+    })['catch'](function(){});
+  } else {
+    toast('설치 창을 띄웠어요 · 안내를 따라 추가해 주세요');
+    if (ui.tab === 'settings') render(true);
+  }
+}
+
 function resetDemo(){
   var keepTheme = themeOf();          /* 데모 초기화해도 고른 테마는 그대로 */
   var keepHours = dayRange();         /* 레슨 시간 범위도 프로가 고른 값 그대로 */
@@ -7115,6 +7530,24 @@ function onClick(e){
       exportData();
       break;
 
+    case 'import-data':
+      pickImportFile();
+      break;
+
+    /* 확인 시트 — 여기서 처음으로 저장합니다 */
+    case 'import-confirm':
+      applyImport();
+      break;
+
+    case 'import-cancel':
+      importCtx = null;
+      closeSheetEl(el.closest('.sheetwrap'));
+      break;
+
+    case 'install-app':
+      installApp();
+      break;
+
     case 'demo-reset':
       askConfirm('샘플 데이터 채우기', '지금 이 브라우저에 저장한 예약·회원·기록이 모두 지워지고, 기능을 둘러볼 수 있는 예시 데이터로 바뀌어요.', '샘플로 바꾸기', resetDemo);
       break;
@@ -7310,6 +7743,12 @@ document.addEventListener('keydown', function(e){
 });
 /* 앱을 떠날 때는 마이크를 확실히 반납합니다 */
 window.addEventListener('pagehide', function(){ if (voice.want || voice.inst) vrStop(); });
+/* 홈 화면에 앱 추가 — 크롬이 주는 설치 요청은 잡아 두었다가 설정 탭 버튼에서 쓱 띄웁니다 */
+window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+window.addEventListener('appinstalled', handleInstalled);
+/* 데이터 가져오기 — 숨은 파일 선택칸 */
+var importInput = document.getElementById('importFile');
+if (importInput) importInput.addEventListener('change', onImportFilePicked);
 
 /* 앱을 켜면 스플래시가 먼저 뜨고, 화면은 그 뒤에 준비됩니다 */
 startSplash();

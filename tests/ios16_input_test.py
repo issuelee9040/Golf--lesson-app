@@ -97,6 +97,8 @@ for m in re.finditer(r'<(input|textarea)\b[^>]*>', HTML, re.I):
     tag = m.group(0)
     if re.search(r'type=["\']hidden', tag, re.I):
         continue
+    if re.search(r'type=["\']file', tag, re.I):
+        continue                                # 숨은 파일 선택칸(데이터 가져오기)은 글자를 치는 칸이 아님
     if 'class="input' in tag or 'class="chipinp' in tag or 'class="input chipinp' in tag:
         continue
     if 'id="mSearch"' in tag or "'mSearch'" in tag:
