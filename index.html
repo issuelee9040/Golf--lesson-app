@@ -2734,6 +2734,7 @@ function validateBook(){
   if (date && time && dur) {
     var a = minOf(time), b = a + dur;
     var clash = sessionsByDate(date).filter(function(s){
+      if (bookCtx.editing && s.id === bookCtx.editing) return false;   /* 수정 중인 레슨 자신은 빼고 본다 */
       if (s.status === 'excused_cancel' || s.status === 'same_day_cancel' || s.status === 'no_show') return false;
       return a < sessionEnd(s) && minOf(s.startTime) < b;
     });
@@ -2851,7 +2852,7 @@ function saveBooking(){
   var isNew = !cur;
   if (isNew) state.sessions.push(s);
   save();
-  ui.tab = 'calendar';
+  if (isNew) ui.tab = 'calendar';    /* 수정할 때는 지금 보던 탭을 그대로 둔다 */
   ui.date = s.date;
   var sh = bookCtx.sh;
   bookCtx = null;
