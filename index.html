@@ -4130,7 +4130,7 @@ function revMonthBody(ym, cur){
 
   var list = revenueByMember(cur.rows);
   var shareBase = cur.passTotal || 0;
-  h += '<div class="sec"><h2>회원별 기여</h2><span class="aside">' + list.length + '명 · 금액순</span></div>';
+  h += '<div class="sec"><h2>회원별 기여</h2><span class="aside">수강권 ' + list.length + '명 · 금액순</span></div>';
   h += '<div class="rvlist">' + (list.length ? list.map(function(x){
     var share = shareBase ? Math.round(x.amount / shareBase * 100) : 0;
     return '<button class="rvmem" data-act="member-open" data-id="' + x.memberId + '">' +
