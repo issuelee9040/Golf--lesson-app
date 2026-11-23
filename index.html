@@ -430,6 +430,8 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;resize:vertical}
 .row2{display:flex;gap:9px}
 .row2>*{flex:1;min-width:0}
+/* 날짜 칸이 유효기간 칸과 한 줄에 있을 때 날짜(2026.11.23 (월))가 줄임표로 잘리지 않게 조금 더 준다 */
+.row2>.wide{flex:1.34}
 .hint{font-size:11px;font-weight:600;color:var(--muted);margin:6px 3px 0;line-height:1.45}
 .err{font-size:11.5px;font-weight:800;color:var(--red);margin:7px 3px 0;line-height:1.45}
 .ok{font-size:11.5px;font-weight:700;color:var(--green-d);margin:7px 3px 0}
@@ -3901,7 +3903,7 @@ function addMemberBodyHTML(m, tpl){
         }).join('') + '</div>' +
       '</div>' +
       '<div class="row2">' +
-        '<div class="field"><label>시작일</label>' + dateFieldHTML('mfStart', d) + '</div>' +
+        '<div class="field wide"><label>시작일</label>' + dateFieldHTML('mfStart', d) + '</div>' +
         '<div class="field"><label>유효기간</label>' + pickFieldHTML('mfMonths', monthPickOptions(), '6') + '</div>' +
       '</div>' +
       '<div class="field"><label>금액 (선택)</label><input class="input" id="mfPrice" type="number" inputmode="numeric" placeholder="예) 800000">' +
@@ -4054,7 +4056,7 @@ function packageBodyHTML(){
       }).join('') + '</div>' +
     '</div>' +
     '<div class="row2">' +
-      '<div class="field"><label>시작일</label>' + dateFieldHTML('pkStart', todayISO()) + '</div>' +
+      '<div class="field wide"><label>시작일</label>' + dateFieldHTML('pkStart', todayISO()) + '</div>' +
       '<div class="field"><label>유효기간</label>' + pickFieldHTML('pkMonths', monthPickOptions(), '6') + '</div>' +
     '</div>' +
     '<div class="field"><label>금액 (선택)</label><input class="input" id="pkPrice" type="number" inputmode="numeric" placeholder="예) 640000">' +
