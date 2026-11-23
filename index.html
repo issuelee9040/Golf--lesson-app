@@ -72,15 +72,19 @@ h1,h2,h3,p{margin:0}
   margin:0 auto;height:100vh;height:100dvh;background:var(--bg);overflow:hidden;overscroll-behavior:none;
   box-shadow:0 0 0 1px rgba(16,24,40,.06),0 24px 70px rgba(16,24,40,.14);
 }
-/* ---------- 상단 브랜드 바 — 깃발 + ProPlan 워드마크가 왼쪽 ---------- */
+/* ---------- 상단 브랜드 바 — 깃발 + ProPlan 워드마크가 왼쪽 ----------
+   사진(PNG)을 21px 로 줄이면 아이폰 고해상도 화면에서 흐리게 번져 보여서,
+   같은 로고를 글자 모양 그대로 딴 벡터 경로(인라인 SVG)로 그립니다.
+   바탕은 아래 .hd 그라데이션과 같은 --bg 로 이어 붙여 경계선·흐림이 없습니다. */
 .brandbar{flex:none;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
-.brandbar .bb-lockup{display:block;height:21px}
-.brandbar .bb-lockup img{display:block;height:21px;width:auto}
-.brandbar .bb-lockup .bb-black{display:none}
-html[data-theme="black"] .brandbar{background:#1B1B1F;border-bottom-color:rgba(255,255,255,.08)}
-html[data-theme="black"] .brandbar .bb-lockup .bb-green{display:none}
-html[data-theme="black"] .brandbar .bb-lockup .bb-black{display:block}
+  padding:9px 16px 8px;background:var(--bg);border-bottom:0}
+.brandbar .bb-lockup{display:flex;align-items:center;height:21px;line-height:0}
+.brandbar .bb-svg{display:block;height:21px;width:107px;overflow:visible}
+.brandbar .bb-flag{fill:#0F7B4A}
+.brandbar .bb-word{fill:#0B0F14}
+html[data-theme="black"] .brandbar{background:var(--bg)}
+html[data-theme="black"] .brandbar .bb-flag{fill:#34D399}
+html[data-theme="black"] .brandbar .bb-word{fill:#F4F6F8}
 /* ---------- header ---------- */
 .hd{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:12px 16px 8px;background:linear-gradient(180deg,var(--bg) 72%,rgba(242,242,247,0))}
@@ -158,6 +162,9 @@ main::-webkit-scrollbar{width:0}
   font-size:11px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
 .lkind.lk-field{background:#DCF1F4;color:#06555C;box-shadow:inset 0 0 0 1px #A6D8DE}
 .lkind.lk-shortgame{background:#EDE5FE;color:#4C2694;box-shadow:inset 0 0 0 1px #CCB9F5}
+.lkind.lk-onepoint{background:#FCEFD6;color:#7A4700;box-shadow:inset 0 0 0 1px #EBD3A4}
+/* 별도 결제 종류 3칸 — 390px 아이폰에서 글자가 줄바꿈되지 않게 한 줄에 균등 배분 */
+.seg.kind3 button{font-size:12.5px;letter-spacing:-.4px;white-space:nowrap}
 .guestpill{flex:none;display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:6px;
   background:var(--gray-soft);color:#6B7280;font-size:10px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
 .paytag{flex:none;display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:6px;
@@ -170,6 +177,12 @@ main::-webkit-scrollbar{width:0}
 .dur.d55{background:var(--green-soft);color:var(--green-d)}
 .tagwarn{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--red-soft);color:var(--red)}
 .tagnone{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--gray-soft);color:#6B7280}
+/* 별도 결제로만 다닌 회원 — 수강권은 없지만 이용 횟수는 남는다 */
+.tagsep{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;
+  background:var(--green-soft);color:var(--green-d)}
+html[data-theme="black"] .tagsep{background:rgba(70,214,156,.16);color:#9BF0C9}
+.mrow .rem.none{font-size:15px;color:#B4B9C1;letter-spacing:0}
+html[data-theme="black"] .mrow .rem.none{color:#5C6169}
 /* ---------- buttons ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:44px;padding:0 16px;
   border-radius:14px;font-size:14.5px;font-weight:800;letter-spacing:-.2px;border:1px solid transparent;white-space:nowrap}
@@ -295,6 +308,13 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
   box-shadow:0 1px 2px rgba(16,24,40,.05),0 10px 22px -14px rgba(15,123,74,.38)}
 .pcard+.pcard{margin-top:10px}
 .pcard .bar{background:rgba(16,24,40,.08)}
+/* 별도 레슨 기록 줄 (회원 정보창) */
+.sepline{display:flex;align-items:center;gap:8px;width:100%;padding:10px 2px;border-bottom:1px solid var(--line2);text-align:left}
+.sepline:last-child{border-bottom:0}
+.sp-d{flex:none;width:42px;font-size:11.5px;font-weight:800;color:var(--ink2)}
+.sp-k{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;font-size:12.5px;font-weight:800;letter-spacing:-.2px}
+.sp-sub{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:-.1px}
+.sp-f{flex:none;font-size:11.5px;font-weight:800;color:var(--amber)}
 .pcard.dead{background:linear-gradient(180deg,rgba(250,250,251,.94),rgba(241,242,245,.78));
   border-color:rgba(16,24,40,.10);box-shadow:0 1px 2px rgba(16,24,40,.04);opacity:.82}
 .phead{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -494,16 +514,26 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
   box-shadow:inset 0 0 0 1px var(--red-line)}
 .sopt.on{background:#111820;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.18)}
 .sopt.on.opt-ded{background:var(--green-d)}
-.statusrow{display:flex;align-items:center;gap:9px;width:100%;padding:8px 12px;border-radius:12px;
-  background:var(--field);border:1px solid var(--line2);margin-bottom:6px}
-.statusrow.on{border-color:var(--green);box-shadow:0 0 0 2px rgba(15,123,74,.12)}
-.sr-i{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
-  padding:0;font-size:9px;line-height:1.02;font-weight:800;letter-spacing:-.35px;text-align:center;
-  white-space:normal;word-break:keep-all;overflow:hidden}
-.sr-i br{display:block}
-.sr-b{flex:1;min-width:0}
-.sr-t{font-size:13.5px;font-weight:800;letter-spacing:-.2px}
-.sr-d{font-size:10.5px;font-weight:600;color:var(--muted);margin-top:0;line-height:1.3}
+/* 레슨 상태 5가지 — 예전 한 줄씩(5줄) 쌓던 것을 절반 높이 2열 타일로.
+   누르는 높이는 46px 그대로라 손가락으로 짚기 편함 */
+.statusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:2px 0 8px}
+.stopt{position:relative;display:flex;align-items:center;gap:8px;height:46px;padding:0 13px;border-radius:13px;
+  background:var(--field);border:1px solid var(--line);font-size:13.5px;font-weight:800;letter-spacing:-.2px;
+  color:var(--ink);text-align:left}
+.stopt:last-child:nth-child(odd){grid-column:1 / -1}   /* 5개면 마지막 칸은 가로로 꽉 */
+.stopt:active{transform:translateY(1px)}
+.stopt .so-dot{flex:none;width:8px;height:8px;border-radius:50%;background:#C6CBD3}
+.stopt .so-t{flex:1;min-width:0}
+.stopt .so-k{flex:none;font-size:10px;font-weight:800;color:var(--muted);letter-spacing:-.2px}
+.stopt.stopt-completed .so-dot{background:var(--green)}
+.stopt.stopt-same_day_cancel .so-dot{background:var(--amber)}
+.stopt.stopt-no_show .so-dot{background:var(--red)}
+.stopt.stopt-excused_cancel .so-dot{background:#9AA0A8}
+.stopt.stopt-makeup .so-dot{background:var(--blue)}
+.stopt.on{border-color:var(--green);background:var(--green-soft);box-shadow:inset 0 0 0 1px var(--green-mid)}
+.stopt.on .so-t,.stopt.on .so-k{color:var(--green-d)}
+.stopt.on .so-dot{box-shadow:0 0 0 3px rgba(15,123,74,.14)}
+.stophint{margin:0 2px 2px;word-break:keep-all}
 /* ---------- 시트 하단 초록 CTA ---------- */
 .cta-hero{position:relative;overflow:hidden;display:flex;width:100%;align-items:center;justify-content:center;
   height:50px;border-radius:15px;color:#fff;font-size:15px;font-weight:800;letter-spacing:-.3px;white-space:nowrap;
@@ -546,7 +576,9 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .quick{background:linear-gradient(180deg,#F3FAF6,#E9F5EE);border:1px solid var(--green-mid);border-radius:16px;padding:12px;margin-bottom:14px}
 .qt{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:var(--green-d);margin-bottom:7px}
 .qt svg{width:15px;height:15px}
-.quick textarea{min-height:62px;background:var(--field)}
+/* 여러 줄을 적어 넘쳐도 칸 안에서 위아래로 스크롤 — 시트가 닫히거나 새로고침되지 않게 */
+.quick textarea{min-height:78px;max-height:150px;background:var(--field);overflow-y:auto;
+  -webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain;resize:none}
 .auto{font-size:9.5px;font-weight:800;color:var(--green-d);background:var(--green-soft);border-radius:5px;padding:1px 5px}
 .parsebar{margin-top:8px;font-size:11.5px;font-weight:700;color:var(--ink2);background:var(--field);border:1px dashed var(--green-mid);border-radius:10px;padding:8px 10px;line-height:1.5}
 .parsebar b{color:var(--green-d)}
@@ -611,9 +643,10 @@ html[data-theme="black"] .btn.micbtn{background:rgba(70,214,156,.16);border-colo
 .cn-m{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
 .cn-x{flex:none;width:24px;height:24px;color:#C9CED6;display:flex;align-items:center;justify-content:center}
 .cn-x svg{width:13px;height:13px}
-.sr-k{flex:none;font-size:10.5px;font-weight:800;color:var(--muted)}
-.sr-k.ded{color:var(--red)}
-.sr-k.keep{color:var(--green-d)}
+html[data-theme="black"] .stopt{border-color:var(--line2)}
+html[data-theme="black"] .stopt.on{background:rgba(70,214,156,.16);border-color:var(--green-mid);
+  box-shadow:inset 0 0 0 1px rgba(70,214,156,.32)}
+html[data-theme="black"] .stopt.on .so-dot{box-shadow:0 0 0 3px rgba(70,214,156,.20)}
 .nowline{position:absolute;left:0;right:0;height:0;border-top:1.5px solid #D9614F;z-index:3}
 .nowline:before{content:"";position:absolute;left:-3px;top:-4px;width:7px;height:7px;border-radius:50%;background:#D9614F}
 .hrow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line2);font-size:12px}
@@ -803,7 +836,7 @@ html[data-theme="black"] .sp-lockup .lk-black{display:block}
   animation:spUp 820ms 300ms cubic-bezier(.22,1,.36,1) both}
 .sp-bar>i{display:block;width:100%;height:100%;border-radius:999px;transform-origin:left center;
   background:linear-gradient(90deg,rgba(255,255,255,.5),#fff);
-  animation:spFill 2000ms cubic-bezier(.38,0,.3,1) both}
+  animation:spFill 3500ms cubic-bezier(.38,0,.3,1) both}   /* SPLASH_MS 와 같은 값 */
 @keyframes spBadge{from{opacity:0;transform:scale(.86) translateY(8px)}to{opacity:1;transform:none}}
 @keyframes spUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes spFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
@@ -940,6 +973,7 @@ html[data-theme="black"] .tagnone{color:#9BA1AA}
 html[data-theme="black"] .lkind.lk-field,
 html[data-theme="black"] .sguide-badge.sep{background:rgba(94,213,222,.15);color:#8FE3E9;box-shadow:inset 0 0 0 1px rgba(94,213,222,.30)}
 html[data-theme="black"] .lkind.lk-shortgame{background:rgba(178,150,255,.16);color:#C6B0FF;box-shadow:inset 0 0 0 1px rgba(178,150,255,.32)}
+html[data-theme="black"] .lkind.lk-onepoint{background:rgba(241,182,92,.16);color:#F3C078;box-shadow:inset 0 0 0 1px rgba(241,182,92,.32)}
 html[data-theme="black"] .gtag.t-driver{background:rgba(110,150,255,.16);color:#A8C2FF}
 html[data-theme="black"] .gtag.t-iron{background:var(--green-soft);color:var(--green-d)}
 html[data-theme="black"] .gtag.t-approach{background:var(--amber-soft);color:var(--amber-ink)}
@@ -997,8 +1031,16 @@ html[data-theme="black"] .pkopt.on{box-shadow:0 0 0 3px rgba(70,214,156,.14)}
 html[data-theme="black"] .pkopt .pc{border-color:#3A3A42}
 html[data-theme="black"] .dpcal .day.sel{color:#fff}
 html[data-theme="black"] .input:focus{box-shadow:0 0 0 3px rgba(70,214,156,.18)}
-/* 탭바 */
-html[data-theme="black"] .tabbar button{color:#7E848C}
+/* 탭바 — 지금 보고 있는 메뉴가 한눈에 보이도록
+   (밝은 민트 아이콘 + 흰 글자 + 민트 알약 + 위쪽 액센트 줄, 나머지 메뉴는 더 흐리게) */
+html[data-theme="black"] .tabbar{background:rgba(16,16,19,.97);border-top-color:rgba(255,255,255,.09)}
+html[data-theme="black"] .tabbar button{position:relative;color:rgba(255,255,255,.45)}
+html[data-theme="black"] .tabbar button.on{color:#9BF0C9;background:rgba(70,214,156,.15);
+  box-shadow:inset 0 0 0 1px rgba(70,214,156,.34)}
+html[data-theme="black"] .tabbar button.on:before{content:"";position:absolute;left:50%;top:-2px;transform:translateX(-50%);
+  width:24px;height:3px;border-radius:2px;background:#46D69C;box-shadow:0 0 10px rgba(70,214,156,.9)}
+html[data-theme="black"] .tabbar button.on svg{stroke-width:2.4;filter:drop-shadow(0 0 6px rgba(70,214,156,.45))}
+html[data-theme="black"] .tabbar button.on span{color:#F2FBF6;font-weight:800}
 /* 시트 */
 html[data-theme="black"] .sheetwrap{background:rgba(0,0,0,.62)}
 html[data-theme="black"] .sheet{box-shadow:0 -10px 40px rgba(0,0,0,.6)}
@@ -1103,10 +1145,7 @@ html[data-theme="black"] .sp-bar>i{background:linear-gradient(90deg,rgba(255,255
 </div>
 <div id="app">
   <div class="brandbar" id="brandbar">
-    <span class="bb-lockup">
-      <img class="bb-green" src="assets/proplan-bar-green.png" alt="ProPlan" width="634" height="120" decoding="async">
-      <img class="bb-black" src="assets/proplan-bar-black.png" alt="ProPlan" width="634" height="120" decoding="async">
-    </span>
+    <span class="bb-lockup" role="img" aria-label="ProPlan"><svg class="bb-svg" viewBox="-2 -2 758.92 149.00" aria-hidden="true" focusable="false"><g class="bb-flag" transform="scale(0.5598)"><path fill-rule="evenodd" d="M1.00 231.00L1.00 234.50L3.75 240.00L9.75 245.25L15.75 248.50L23.50 251.50L34.25 254.50L39.25 255.50L42.25 255.50L44.50 256.25L59.50 257.75L72.75 257.75L90.25 256.25L107.75 252.50L118.25 248.50L125.50 244.25L130.75 239.00L132.75 234.50L132.75 230.50L131.50 227.50L126.00 221.75L116.25 216.75L106.25 213.50L99.00 212.00L98.25 212.25L99.00 213.50L105.75 217.25L109.75 221.00L112.00 225.00L112.25 228.75L111.00 231.25L108.75 233.50L106.25 235.00L97.50 238.25L89.75 240.00L71.25 241.75L53.75 241.25L39.75 239.25L28.25 235.75L24.75 233.75L21.50 230.00L21.50 225.25L25.75 219.50L31.00 215.50L35.00 213.50L35.50 212.00L22.50 214.75L11.75 219.25L6.75 222.50L3.50 225.75L1.75 228.50ZM64.00 1.00L60.25 3.50L59.25 6.00L59.50 225.25L61.50 227.25L64.25 228.25L70.00 228.50L73.00 227.25L74.50 226.00L75.00 221.75L75.00 104.50L76.50 100.00L80.00 97.25L102.50 89.75L193.75 57.00L196.00 55.00L196.75 51.75L194.75 48.25L158.75 35.00L150.00 31.25L94.25 10.50L70.50 1.00Z"/></g><g class="bb-word" transform="translate(144.85 45.00) scale(0.7194)"><path fill-rule="evenodd" d="M594.75 137.25L595.50 138.75L596.00 138.25L616.25 138.25L617.50 137.00L657.75 64.50L658.75 64.00L699.25 137.50L701.00 138.50L717.25 138.75L719.50 138.25L721.25 138.75L722.00 137.75L681.75 65.25L670.75 44.50L668.50 41.25L648.25 41.25L647.50 42.00ZM746.00 52.75L743.25 56.50L740.50 61.75L738.50 70.50L738.50 137.75L739.50 138.75L740.25 138.25L742.75 138.75L752.50 138.75L753.50 138.25L756.25 138.25L757.00 138.75L758.25 137.75L758.50 72.75L759.75 68.75L763.00 64.50L768.00 61.50L771.75 60.75L815.00 60.75L818.25 61.50L820.75 62.75L824.00 65.50L826.00 68.50L827.50 74.00L827.50 137.75L828.25 138.25L833.00 138.75L838.25 138.25L846.00 138.50L847.75 137.25L847.25 131.00L847.25 112.75L847.75 107.50L847.25 69.50L845.75 62.75L843.50 57.75L840.25 52.75L836.25 48.75L829.25 44.25L819.25 41.25L772.25 41.00L762.75 42.25L757.50 44.00L751.25 47.75ZM257.75 53.25L253.25 60.50L251.25 67.00L250.50 71.75L250.50 107.00L252.25 116.25L255.50 123.25L258.50 127.25L262.00 130.75L265.75 133.50L272.00 136.50L281.50 138.75L286.50 138.75L288.25 138.25L330.00 138.25L338.75 138.75L340.50 138.00L344.25 137.75L348.00 136.75L354.25 133.75L357.25 131.75L361.50 127.75L365.50 122.25L368.50 115.00L369.50 110.00L369.25 68.00L367.50 61.50L363.50 54.25L358.00 48.50L354.50 46.00L348.25 43.00L340.50 41.25L279.50 41.25L271.75 43.25L266.00 46.00L260.75 50.00ZM272.75 67.00L275.00 64.50L277.50 62.75L280.25 61.50L283.75 60.75L337.00 60.75L342.25 62.50L345.00 64.50L347.50 67.25L349.50 71.25L350.00 74.00L350.00 105.00L349.50 108.00L347.75 112.00L346.25 114.00L343.00 116.75L337.50 118.75L289.00 119.00L282.75 118.75L277.75 117.00L273.00 113.00L271.25 110.00L270.25 106.50L270.25 73.50L271.25 69.75ZM231.75 41.25L190.00 41.00L185.75 41.50L178.50 43.50L172.75 46.25L168.75 49.25L164.25 54.00L159.75 61.50L157.50 70.75L157.25 137.25L158.25 138.75L160.75 138.25L176.25 138.25L177.00 137.50L177.25 74.00L178.00 70.50L180.25 66.50L184.50 62.75L187.25 61.50L190.75 60.75L231.50 60.75L232.00 60.25L232.25 42.00ZM556.00 0.00L555.50 7.50L555.50 137.50L556.25 138.25L558.75 138.25L559.75 138.75L574.25 138.75L575.50 137.25L575.25 0.00ZM396.50 0.00L396.25 137.50L397.50 138.75L398.00 138.25L399.75 138.75L406.25 138.25L413.50 138.25L415.25 138.75L416.25 137.50L416.25 93.50L417.00 92.75L494.75 92.75L498.50 92.25L505.75 90.50L512.25 87.25L518.50 82.25L524.00 75.25L528.25 65.25L529.50 58.50L529.50 33.50L529.00 30.25L526.50 21.75L523.00 15.75L516.50 8.50L512.00 5.25L505.50 2.25L497.75 0.50L497.25 0.00ZM416.25 20.25L417.00 19.50L493.50 19.50L497.75 20.50L501.75 22.75L505.75 26.75L508.00 30.75L509.25 35.00L509.25 56.50L507.25 63.25L505.50 66.00L502.00 69.50L498.00 71.75L493.50 73.00L416.75 73.00L416.00 71.25ZM0.75 0.00L0.50 137.25L1.25 138.25L19.25 138.50L20.50 137.50L20.50 93.50L21.25 92.75L101.25 92.50L110.00 90.50L116.25 87.50L121.25 83.75L125.00 80.00L128.50 75.00L132.25 66.50L133.75 58.25L133.75 33.25L133.25 29.75L131.25 22.75L126.75 14.75L121.25 8.75L115.25 4.50L110.25 2.25L103.25 0.75L102.00 0.00ZM20.50 20.50L21.50 19.50L97.50 19.50L103.25 21.00L106.50 23.00L109.75 26.25L112.00 29.75L113.25 33.25L114.00 38.50L114.00 55.25L112.25 62.00L110.25 65.50L106.00 69.75L103.00 71.50L98.00 73.00L21.25 73.00L20.25 71.50Z"/></g></svg></span>
   </div>
   <header class="hd" id="hd"></header>
   <main id="main"></main>
@@ -1152,10 +1191,14 @@ var SEP_STATUS_DESC = {
   no_show:         '무단 불참 · 별도 결제 수입에 포함',
   excused_cancel:  '사전 취소 · 수입 없음 · 일정에서 삭제'
 };
+/* 별도 결제 종류는 세 가지 — 필드 · 숏게임 · 원포인트.
+   label = 카드·요약에 쓰는 이름, short = 고르는 버튼에 쓰는 짧은 이름 */
 var SEP_KINDS = {
-  field:     { label:'필드 레슨',   badge:'⛳ 필드',   icon:'⛳' },
-  shortgame: { label:'숏게임 레슨', badge:'🎯 숏게임', icon:'🎯' }
+  field:     { label:'필드 레슨',     short:'필드',     badge:'⛳ 필드',     icon:'⛳' },
+  shortgame: { label:'숏게임 레슨',   short:'숏게임',   badge:'🎯 숏게임',  icon:'🎯' },
+  onepoint:  { label:'원포인트 레슨', short:'원포인트', badge:'💡 원포인트', icon:'💡' }
 };
+var SEP_KIND_ORDER = ['field', 'shortgame', 'onepoint'];
 var SEP_DURS = [60, 90, 120, 180, 240];
 var WEEK = ['일','월','화','수','목','금','토'];
 
@@ -1261,10 +1304,12 @@ function sum(arr, f){ var s = 0; for (var i = 0; i < arr.length; i++) s += f(arr
    ========================================================= */
 function isSep(s){
   if (!s) return false;
-  return s.separatePay === true || s.lessonKind === 'field' || s.lessonKind === 'shortgame';
+  return s.separatePay === true || s.lessonKind === 'field' || s.lessonKind === 'shortgame' || s.lessonKind === 'onepoint';
 }
-function sepKind(s){ return (s && s.lessonKind === 'shortgame') ? 'shortgame' : 'field'; }
-function sepKindName(kind){ return SEP_KINDS[kind === 'shortgame' ? 'shortgame' : 'field'].label; }
+function normSepKind(k){ return SEP_KINDS[k] ? k : 'field'; }
+function sepKind(s){ return normSepKind(s && s.lessonKind); }
+function sepKindName(kind){ return SEP_KINDS[normSepKind(kind)].label; }
+function sepKindShort(kind){ return SEP_KINDS[normSepKind(kind)].short; }
 function sepKindLabel(s){ return sepKindName(sepKind(s)); }
 function sepBadge(s){ return SEP_KINDS[sepKind(s)].badge; }
 function sepIcon(s){ return SEP_KINDS[sepKind(s)].icon; }
@@ -1283,6 +1328,49 @@ function sessionName(s){
 }
 function statusKeysFor(s){ return isSep(s) ? SEP_STATUS_KEYS : STATUS_KEYS; }
 function sepFeeLine(s){ return sepFee(s) ? money(sepFee(s)) : '금액 미입력'; }
+
+/* =========================================================
+   별도 결제 방문 회원 보존
+   - 필드 · 숏게임 · 원포인트로만 온 사람도 회원목록에 남긴다
+     (수강권은 만들지 않으므로 잔여 횟수는 0 · '수강권 없음')
+   - 나중에 그 사람이 수강권을 끊으면 회원목록에서 바로 [+ 수강권 추가]
+   - 팀 · 단체 이름은 한 번짜리 묶음이라 회원으로 만들지 않는다
+   ========================================================= */
+function isTeamName(name){
+  return /(팀|단체|모임|그룹)$/.test(String(name || '').replace(/\s+/g, ''));
+}
+/* 회원 한 명의 별도 레슨 이용 기록 (일반취소는 빠짐) */
+function sepUsage(memberId){
+  var n = 0, fee = 0, last = '', kinds = {};
+  if (!memberId) return { count: 0, fee: 0, last: '', kinds: kinds };
+  state.sessions.forEach(function(s){
+    if (!isSep(s) || s.memberId !== memberId) return;
+    if (s.status === 'excused_cancel') return;
+    var k = sepKind(s);
+    n++; fee += sepFee(s); kinds[k] = (kinds[k] || 0) + 1;
+    if (!last || s.date > last) last = s.date;
+  });
+  return { count: n, fee: fee, last: last, kinds: kinds };
+}
+function sepUsageMembers(memberId){
+  return state.sessions.filter(function(s){
+    return isSep(s) && s.memberId === memberId && s.status !== 'excused_cancel';
+  }).sort(function(a, b){
+    if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+    return minOf(b.startTime) - minOf(a.startTime);
+  });
+}
+/* 이름만 적어 온 비회원 → 회원목록에 남기고 그 회원으로 연결 */
+function ensureMemberForGuest(name){
+  var nm = String(name || '').trim().replace(/\s+/g, ' ');
+  if (!nm || isTeamName(nm)) return null;
+  var m = findMemberByName(nm);
+  if (m) return m;
+  m = { id: uid('mem'), name: nm, gender:'', region:'', phone:'', level:'', memo:'',
+        since: todayISO(), fromSeparate: true };
+  state.members.push(m);
+  return m;
+}
 
 /* =========================================================
    외부 캘린더 연동 (아이폰 캘린더 .ics · 구글 캘린더 템플릿 링크)
@@ -1809,6 +1897,14 @@ function buildDemo(){
     def._pkg = pkg;
   });
 
+  /* 별도 결제(원포인트)로만 다닌 방문 회원 — 수강권 없이도 회원목록에 그대로 남는 예시 */
+  st.members.push({
+    id: uid('mem'), name:'최유진', gender:'female', region:'광교', level:'입문',
+    phone:'010-7742-3310', since: addDays(today, -21),
+    memo:'원포인트로 스윙 점검만 받으러 옴. 그립 압력과 어깨 회전 위주.',
+    fromSeparate: true
+  });
+
   state = st;   /* applyStatus가 패키지를 찾을 수 있도록 먼저 연결 */
 
   defs.forEach(function(def){
@@ -1855,12 +1951,13 @@ function buildDemo(){
     });
   });
 
-  /* 필드 · 숏게임 별도 결제 데모 (수강권 미차감 · 따로 결제) */
+  /* 필드 · 숏게임 · 원포인트 별도 결제 데모 (수강권 미차감 · 따로 결제) */
   var sepSeed = [
     { name:'정민재',   day:-6, time:'08:00', kind:'field',     dur:240, fee:300000, loc:'남서울CC (아웃코스)', status:'completed' },
     { name:'이하늘',   day:-3, time:'13:00', kind:'shortgame', dur:90,  fee:120000, loc:'수원 그린 연습장',    status:'completed' },
     { guest:'한빛상사 팀', day:-2, time:'09:30', kind:'field',  dur:180, fee:450000, loc:'수원CC',              status:'completed' },
-    { name:'박서연',   day:2,  time:'16:00', kind:'shortgame', dur:60,  fee:80000,  loc:'판교 스크린레슨장',    status:'scheduled' }
+    { name:'박서연',   day:2,  time:'16:00', kind:'shortgame', dur:60,  fee:80000,  loc:'판교 스크린레슨장',    status:'scheduled' },
+    { name:'최유진',   day:-1, time:'19:00', kind:'onepoint',  dur:60,  fee:90000,  loc:'분당 실내연습장',      status:'completed' }
   ];
   sepSeed.forEach(function(d){
     var mm = d.name ? findMemberByName(d.name) : null;
@@ -2162,7 +2259,7 @@ function renderHeader(){
     h = '<div class="hd-left"><div><h1>오늘</h1><div class="sub">' + fmtLong(todayISO()) + ' · ' + esc(state.pro.name) + ' 프로</div></div></div>' +
         '<button class="iconbtn" data-act="tab" data-tab="settings" aria-label="설정">' + ICON.gear + '</button>';
   } else if (ui.tab === 'calendar') {
-    h = '<div class="hd-left"><div><h1>캘린더</h1><div class="sub">레슨 · 필드 · 숏게임 일정</div></div></div>' +
+    h = '<div class="hd-left"><div><h1>캘린더</h1><div class="sub">레슨 · 필드 · 숏게임 · 원포인트 일정</div></div></div>' +
         '<button class="iconbtn" data-act="book-open" aria-label="레슨 예약">' + ICON.plus + '</button>';
   } else if (ui.tab === 'members') {
     h = '<div class="hd-left"><div><h1>회원목록</h1><div class="sub">' + state.members.length + '명 · 활성 수강권 ' + activePkgCount() + '개</div></div></div>' +
@@ -2224,9 +2321,46 @@ function openSheet(opts){
   if (opts.footer) { footEl.innerHTML = opts.footer; footEl.style.display = ''; }
   document.getElementById('sheetRoot').appendChild(wrap);
   sheetStack.push(wrap);
-  wrap.addEventListener('click', function(e){ if (e.target === wrap) closeSheetEl(wrap); });
+  wrap.addEventListener('click', function(e){ if (e.target === wrap) requestSheetClose(wrap); });
   attachSheetGestures(wrap, sheet);
   return { el: wrap, sheet: sheet, body: bodyEl, footer: footEl, close: function(){ closeSheetEl(wrap); } };
+}
+
+/* 시트가 스스로 '지금 닫으면 안 되는 이유'를 말하게 한다 (한 줄 간편 입력에 적어 둔 글 보호).
+   wrap.__guardClose 가 문장을 돌려주면 그대로 닫지 않고 한 번 더 물어봅니다. */
+function sheetCloseGuard(wrap){
+  if (!wrap || typeof wrap.__guardClose !== 'function') return '';
+  try { return wrap.__guardClose() || ''; } catch(e){ return ''; }
+}
+function requestSheetClose(wrap){
+  var msg = sheetCloseGuard(wrap);
+  if (!msg) { closeSheetEl(wrap); return; }
+  askDiscardClose(wrap, msg);
+}
+
+var discardTarget = null;
+/* 확인 시트의 두 갈래 — 계속 작성 / 그래도 닫기 */
+function discardStay(){
+  discardTarget = null;
+}
+function discardAndClose(confirmWrap){
+  var target = discardTarget;
+  discardTarget = null;
+  if (confirmWrap) closeSheetEl(confirmWrap);
+  if (target) closeSheetEl(target);
+}
+/* 적어 둔 글을 지우고 닫을지 한 번만 물어보는 작은 시트 */
+function askDiscardClose(wrap, msg){
+  if (discardTarget) return;
+  discardTarget = wrap;
+  openSheet({
+    title: '작성 중인 내용이 있어요',
+    sub: '닫으면 방금 적어 둔 내용이 사라져요.',
+    body: '<div class="formnote">' + msg + '</div>',
+    footer: '<div style="display:flex;gap:8px">' +
+      '<button class="btn btn-ghost" style="flex:0 0 44%" data-act="discard-stay">계속 작성</button>' +
+      '<button class="btn btn-danger" style="flex:1" data-act="discard-close">그래도 닫기</button></div>'
+  });
 }
 
 function closeSheetEl(wrap){
@@ -2291,6 +2425,18 @@ function attachSheetGestures(wrap, sheet){
   function inField(t){
     return !!t && typeof t.closest === 'function' && !!t.closest('input,textarea,select,option');
   }
+  /* 입력칸 자체가 스크롤할 수 있는지 — 여러 줄을 적어 넘치는 textarea 는
+     손가락을 따라 안에서 스크롤해야 하므로 시트 닫기·새로고침 방해에서 빼야 한다 */
+  function fieldEl(t){
+    return (t && typeof t.closest === 'function') ? t.closest('textarea,input,select') : null;
+  }
+  function fieldCanScroll(el, dy){
+    if (!el) return false;
+    var sh = el.scrollHeight || 0, ch = el.clientHeight || 0;
+    if (sh <= ch + 1) return false;                 /* 넘치는 내용이 없음 */
+    if (dy > 0) return el.scrollTop > 0;            /* 손가락을 내림 = 위쪽 내용 보기 */
+    return el.scrollTop + ch < sh - 1;              /* 손가락을 올림 = 아래쪽 내용 보기 */
+  }
   function atTop(){ return !body || body.scrollTop <= 0; }
   function inBody(t){ return !!t && !!body && (t === body || (body.contains && body.contains(t))); }
 
@@ -2311,6 +2457,9 @@ function attachSheetGestures(wrap, sheet){
 
   /* 이 시트 하나만 아래로 흘려보내고 스택에서 뺌 → 이전 시트/탭이 그대로 드러남 */
   function dismissOut(){
+    /* 적어 둔 글이 있으면 흘러내리지 않고 제자리로 돌아온 뒤 한 번 물어봅니다 */
+    var guard = sheetCloseGuard(wrap);
+    if (guard) { snapBack(); askDiscardClose(wrap, guard); return; }
     wrap.classList.add('closing');
     sheet.style.transition = 'transform .2s cubic-bezier(.4,0,1,1)';
     wrap.style.transition = 'background-color .2s linear';
@@ -2327,7 +2476,8 @@ function attachSheetGestures(wrap, sheet){
     st = {
       x0: p.clientX, y0: p.clientY,
       t0: now, t1: now,
-      head: inHead(e.target), field: inField(e.target), backdrop: e.target === wrap,
+      head: inHead(e.target), field: inField(e.target), fieldEl: fieldEl(e.target),
+      backdrop: e.target === wrap,
       dy: 0, dragging: false, locked: false, blockPTR: false
     };
     sheet.style.animation = 'none';
@@ -2353,7 +2503,16 @@ function attachSheetGestures(wrap, sheet){
       if (Math.abs(dx) > Math.abs(dy)) { st.locked = true; return; }   /* 가로 → 그냥 둠 */
       if (dy <= 0) { st.locked = true; return; }                 /* 위로 → 그냥 스크롤 */
       if (!st.head && inBody(e.target) && !atTop()) { st.locked = true; return; }  /* 내용 중간 → 그냥 스크롤 */
-      if (st.field || st.backdrop){                              /* 입력칸·바깥 여백 → 끌지 않고 새로고침만 막음 */
+      if (st.field){                                             /* 입력칸 → 시트는 안 움직임 */
+        st.locked = true;
+        /* 안에서 스크롤할 여지가 있으면 그대로 두고(부드러운 스크롤),
+           위쪽 끝에서 더 내리는 동작만 사파리 '당겨서 새로고침'으로 새지 않게 막는다 */
+        if (dy < 0 || fieldCanScroll(st.fieldEl, dy)) return;
+        st.blockPTR = true;
+        if (e.cancelable !== false && e.preventDefault) e.preventDefault();
+        return;
+      }
+      if (st.backdrop){                                          /* 바깥 여백 → 끌지 않고 새로고침만 막음 */
         st.locked = true; st.blockPTR = true;
         if (e.cancelable !== false && e.preventDefault) e.preventDefault();
         return;
@@ -2702,7 +2861,7 @@ function viewToday(){
         '<span class="lg">노쇼 ' + (settled.counts.no_show || 0) + '</span>' +
         '<span class="lg">일반취소 ' + (settled.counts.excused_cancel || 0) + '</span>' +
         '<span class="lg">보강 ' + (settled.counts.makeup || 0) + '</span>' +
-        (settled.sepCount ? '<span class="lg">필드·숏게임 ' + settled.sepCount + '</span>' : '') + '</span>' +
+        (settled.sepCount ? '<span class="lg">별도 결제 ' + settled.sepCount + '</span>' : '') + '</span>' +
       '</div>' +
       '<div class="hint">차감 ' + settled.deducted + '회가 잔여 횟수에 반영됐어요. 잘못 찍었으면 위 버튼으로 다시 정산하세요. 차이는 자동으로 맞춰져요.</div>' +
     '</div>';
@@ -2716,7 +2875,7 @@ function viewToday(){
     '<div class="sguide-row"><span class="sguide-badge keep">미차감</span>' +
       '<span class="sguide-items">일반취소<span class="sep">·</span>보강</span></div>' +
     '<div class="sguide-row"><span class="sguide-badge sep">별도 결제</span>' +
-      '<span class="sguide-items">⛳ 필드<span class="sep">·</span>🎯 숏게임 — 수강권 미차감</span></div>' +
+      '<span class="sguide-items">⛳ 필드<span class="sep">·</span>🎯 숏게임<span class="sep">·</span>💡 원포인트 — 수강권 미차감</span></div>' +
     '<div class="sguide-note">하루가 끝나면 마감 정산에서 한 번에 확정해요.</div>' +
   '</div>';
 
@@ -2789,21 +2948,27 @@ function openStatusSheet(sid){
       '<div class="crow" style="margin-top:0">' +
         '<input class="input" id="sepFee" inputmode="numeric" value="' + (sepFee(s) || '') + '" placeholder="예: 150000">' +
         '<button class="btn btn-primary" data-act="sep-fee-save" data-sid="' + s.id + '" style="flex:none;height:45px;padding:0 15px">저장</button>' +
-      '</div><div class="hint">저장하면 이 달 <b>필드 · 숏게임 별도 수입</b>에 바로 반영돼요. 비워 두면 수입에서 빠져요.</div></div>';
+      '</div><div class="hint">저장하면 이 달 <b>별도 결제 수입</b>에 바로 반영돼요. 비워 두면 수입에서 빠져요.</div></div>';
   }
-  body += statusKeysFor(s).map(function(k){
+  /* 상태 5가지 — 예전에는 한 줄씩 쌓아 자리를 많이 차지해서,
+     절반 높이의 2열 타일(점 + 이름 + 차감 표시)로 바꿨습니다. 누르는 높이는 46px 유지 */
+  body += '<div class="statusgrid' + (sep ? ' n4' : '') + '">' + statusKeysFor(s).map(function(k){
     var on = s.status === k;
-    var right = sep ? (CHARGED[k] ? '수입 포함' : '수입 없음') : (STATUS[k].deducted ? '차감' : '미차감');
+    var tag = sep ? (CHARGED[k] ? '수입 포함' : '수입 없음') : (STATUS[k].deducted ? '차감' : '미차감');
     var desc = sep ? SEP_STATUS_DESC[k] : STATUS[k].desc;
-    return '<button class="statusrow' + (on ? ' on' : '') + '" data-act="status-set" data-sid="' + s.id + '" data-status="' + k + '">' +
-      '<span class="sr-i st st-' + STATUS[k].cls + '" aria-hidden="true">' + statusBadge(STATUS[k].label) + '</span>' +
-      '<span class="sr-b"><div class="sr-t">' + STATUS[k].label + '</div><div class="sr-d">' + desc + '</div></span>' +
-      '<span class="sr-k ' + (sep ? (CHARGED[k] ? 'keep' : '') : (STATUS[k].deducted ? 'ded' : 'keep')) + '">' + right + '</span>' +
+    return '<button class="stopt stopt-' + k + (on ? ' on' : '') + '" data-act="status-set" data-sid="' + s.id +
+        '" data-status="' + k + '" aria-label="' + esc(STATUS[k].label + ' · ' + desc) + '">' +
+      '<span class="so-dot" aria-hidden="true"></span>' +
+      '<span class="so-t">' + STATUS[k].label + '</span>' +
+      '<span class="so-k">' + tag + '</span>' +
     '</button>';
-  }).join('');
+  }).join('') + '</div>' +
+    '<div class="hint stophint">' + (sep
+      ? '별도 결제 레슨은 수강권 횟수를 건드리지 않고, <b>완료 · 당일취소 · 노쇼</b>만 수입에 잡혀요.'
+      : '<b>완료 · 당일취소 · 노쇼</b>는 횟수를 차감하고, <b>일반취소 · 보강</b>은 차감하지 않아요. 일반취소는 일정에서도 지워져요.') + '</div>';
   var sh = openSheet({
     title: sep ? sepKindLabel(s) + ' · 별도 결제' : '레슨 상태',
-    sub: sep ? '필드 · 숏게임 레슨은 수강권 횟수를 건드리지 않고, 별도 결제 수입만 정산해요.'
+    sub: sep ? '필드 · 숏게임 · 원포인트 레슨은 수강권 횟수를 건드리지 않고, 별도 결제 수입만 정산해요.'
              : '잔여 횟수는 상태 변경에 맞춰 자동으로 조정되고, 일반취소는 일정에서 지워져요.',
     body: body,
     footer: (s.memberId ? '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '" aria-label="' + esc((m ? m.name : '회원') + ' 정보와 레슨 차트 열기') + '" style="margin-bottom:8px">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
@@ -2883,7 +3048,7 @@ function settleBodyHTML(sel, list){
     '</div>';
   }).join('');
   return '<div class="formnote">완료 · 당일취소 · 노쇼는 횟수를 <b>차감</b>하고, 일반취소 · 보강은 <b>차감하지 않아요</b>.<br>' +
-    '<b>필드 · 숏게임(별도 결제)</b>은 수강권 횟수를 건드리지 않고 수입만 정산해요.<br>' +
+    '<b>필드 · 숏게임 · 원포인트(별도 결제)</b>은 수강권 횟수를 건드리지 않고 수입만 정산해요.<br>' +
     '일반취소로 확정하면 그 레슨은 오늘·캘린더에서 지워지고, 이미 처리된 레슨을 바꿔 정산하면 차이가 잔여 횟수에 자동으로 반영돼요.</div>' + rows;
 }
 
@@ -3287,9 +3452,9 @@ function openBookSheet(pre){
   var sh = openSheet({
     title: cur ? '레슨 수정' : '레슨 예약',
     sub: cur ? '날짜 · 시작 시간 · 소요시간 · 장소 · 메모를 고쳐요. 상태와 수강권 차감은 그대로 남아요.'
-             : '수강권으로 하는 레슨과, 필드 · 숏게임처럼 따로 결제받는 레슨을 한 곳에서 잡아요.'
+             : '수강권으로 하는 레슨과, 필드 · 숏게임 · 원포인트처럼 따로 결제받는 레슨을 한 곳에서 잡아요.'
   });
-  bookCtx = { sh: sh, mode: mode, kind: cur ? (cur.lessonKind === 'shortgame' ? 'shortgame' : 'field') : 'field',
+  bookCtx = { sh: sh, mode: mode, kind: cur ? normSepKind(cur.lessonKind) : 'field',
     target: cur ? (cur.memberId ? 'member' : 'guest') : (state.members.length ? 'member' : 'guest'),
     dur: dur, sepDur: cur && curSep ? cur.durationMinutes : 120,
     editing: cur ? cur.id : null,
@@ -3331,7 +3496,7 @@ function paintBook(){
 function bookModeSegHTML(){
   return '<div class="seg modeseg">' +
     '<button class="' + (bookCtx.mode === 'pass' ? 'on' : '') + '" data-act="bk-mode" data-v="pass">회원 수강권 레슨</button>' +
-    '<button class="' + (bookCtx.mode === 'sep' ? 'on' : '') + '" data-act="bk-mode" data-v="sep">필드·숏게임 (별도 결제)</button>' +
+    '<button class="' + (bookCtx.mode === 'sep' ? 'on' : '') + '" data-act="bk-mode" data-v="sep">별도 결제</button>' +
   '</div>';
 }
 
@@ -3346,7 +3511,7 @@ function bookPassBodyHTML(){
   });
   return '<div class="field"><label>회원</label>' +
       (opts.length ? pickFieldHTML('bkMember', opts, bookCtx.memberId)
-                   : '<div class="hint">등록된 회원이 없어요. 필드 · 숏게임으로 이름만 적어 저장할 수 있어요.</div>') + '</div>' +
+                   : '<div class="hint">등록된 회원이 없어요. 필드 · 숏게임 · 원포인트로 이름만 적어 저장할 수 있어요.</div>') + '</div>' +
     '<div class="row2">' +
       '<div class="field"><label>날짜</label>' + dateFieldHTML('bkDate', bookCtx.date) + '</div>' +
       '<div class="field"><label>시작 시간</label>' + timeFieldHTML('bkTime', bookCtx.time) + '</div>' +
@@ -3366,10 +3531,12 @@ function bookPassBodyHTML(){
 function sepFormHTML(p, cx){
   var kind = cx.kind || 'field';
   var target = cx.target || 'member';
-  var h = '<div class="field"><label>종류</label><div class="seg" id="' + p + 'Kind">' +
-    '<button class="' + (kind === 'field' ? 'on' : '') + '" data-act="' + p + '-kind" data-v="field">필드 레슨</button>' +
-    '<button class="' + (kind === 'shortgame' ? 'on' : '') + '" data-act="' + p + '-kind" data-v="shortgame">숏게임 레슨</button>' +
-  '</div><div class="hint">수강권 횟수는 차감하지 않고, 별도로 결제받은 금액만 수입에 잡혀요.</div></div>';
+  var h = '<div class="field"><label>종류</label><div class="seg kind3" id="' + p + 'Kind">' +
+    SEP_KIND_ORDER.map(function(k){
+      return '<button class="' + (kind === k ? 'on' : '') + '" data-act="' + p + '-kind" data-v="' + k + '">' +
+        SEP_KINDS[k].short + '</button>';
+    }).join('') +
+  '</div><div class="hint"><b>필드 · 숏게임 · 원포인트</b> 중에서 골라요. 수강권 횟수는 차감하지 않고, 별도로 결제받은 금액만 수입에 잡힙니다.</div></div>';
 
   h += '<div class="field"><label>대상</label><div class="seg" id="' + p + 'Target">' +
     '<button class="' + (target === 'member' ? 'on' : '') + '" data-act="' + p + '-target" data-v="member">회원</button>' +
@@ -3531,6 +3698,7 @@ function saveBooking(){
   if (bookCtx.editing && !cur) { toast('수정할 레슨을 찾지 못했어요'); return; }
   var sep = bookCtx.mode === 'sep';
   var mid = null, guest = '', fee = 0, kind = 'field', loc = '', memo = '', pkgId = '', dur = 0;
+  var addedName = '';   /* 이름만 적어 온 비회원을 새 회원으로 남겼을 때 */
 
   if (sep) {
     dur = bookSepDurNow();
@@ -3539,6 +3707,11 @@ function saveBooking(){
       var gEl = document.getElementById('bkGuest');
       guest = gEl ? gEl.value.trim() : '';
       if (!guest) { toast('비회원 이름이나 팀명을 적어주세요'); return; }
+      /* 별도 결제로 온 사람은 회원목록에 남겨 둔다 — 나중에 수강권을 끊을 수 있으니
+         (이미 정산된 레슨은 회원 연결을 바꾸지 않는다) */
+      var knownGuest = !!findMemberByName(guest);
+      var gm = (!cur || !(cur.deducted || cur.charged)) ? ensureMemberForGuest(guest) : null;
+      if (gm) { mid = gm.id; if (!knownGuest) addedName = gm.name; guest = ''; }
     } else {
       var mEl = document.getElementById('bkMember');
       mid = mEl ? mEl.value : '';
@@ -3546,7 +3719,7 @@ function saveBooking(){
     }
     var feeEl = document.getElementById('bkFee'), locEl = document.getElementById('bkLocation'), memoEl = document.getElementById('bkMemo');
     fee = feeNum(feeEl ? feeEl.value : bookCtx.fee);
-    kind = bookCtx.kind === 'shortgame' ? 'shortgame' : 'field';
+    kind = normSepKind(bookCtx.kind);
     loc = locEl ? locEl.value.trim() : '';
     memo = memoEl ? memoEl.value.trim() : '';
   } else {
@@ -3628,7 +3801,8 @@ function saveBooking(){
   if (memberCtx) paintMemberSheet();
   render();
   if (isNew) {
-    toast(label + ' · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분 추가');
+    toast(label + ' · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분 추가' +
+      (addedName ? ' · ' + addedName + ' 회원목록에 저장' : ''));
     calendarAfterAdd(s);
   } else {
     toast(label + ' 수정 · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분');
@@ -3715,7 +3889,9 @@ function memberRowsHTML(list){
     var low = rem > 0 && rem <= LOW_LIMIT;
     /* 수강권이 여러 개(재등록)면 합계 잔여만 보여 주고 분모는 생략합니다 */
     var multi = memberPkgs(m.id).length > 1;
-    var meta = [genderLabel(m.gender), m.region, m.level, main ? durName(main.durationMinutes) + ' 수강권' : ''];
+    var us = sepUsage(m.id);        /* 필드 · 숏게임 · 원포인트로 다닌 기록 */
+    var meta = [genderLabel(m.gender), m.region, m.level,
+      main ? durName(main.durationMinutes) + ' 수강권' : (us.count ? '별도 레슨 ' + us.count + '회' : '')];
     meta = meta.filter(function(x){ return !!x; }).map(esc).join(' · ');
     return '<button class="mrow" data-act="member-open" data-id="' + m.id + '">' +
       '<span class="av ' + avatarClass(m) + '">' + esc(m.name.slice(0,1)) + '</span>' +
@@ -3723,11 +3899,14 @@ function memberRowsHTML(list){
         '<span class="mn">' + esc(m.name) +
           (low ? '<span class="tagwarn">재등록 임박</span>' : '') +
           (!rem ? '<span class="tagnone">수강권 없음</span>' : '') +
+          (us.count ? '<span class="tagsep">별도 ' + us.count + '회</span>' : '') +
         '</span>' +
         '<span class="mm">' + meta + '</span>' +
       '</span>' +
-      '<span class="mr"><span class="rem' + (low ? ' low' : '') + '">' + (main ? rem : 0) +
-        (main && !multi ? '<small>/' + main.totalSessions + '회</small>' : (main ? '<small>회</small>' : '')) + '</span></span>' +
+      '<span class="mr">' + (main
+          ? '<span class="rem' + (low ? ' low' : '') + '">' + rem +
+            (multi ? '<small>회</small>' : '<small>/' + main.totalSessions + '회</small>') + '</span>'
+          : '<span class="rem none" aria-label="수강권 없음">–</span>') + '</span>' +
       '<span class="chev">' + ICON.chev + '</span></button>';
   }).join('');
 }
@@ -3948,7 +4127,7 @@ function openMemberSheet(memberId){
   sh.footer.style.display = '';
   sh.footer.innerHTML =
     '<div style="display:flex;gap:8px">' +
-      '<button class="btn btn-outline" style="flex:0 0 40%" data-act="pkg-add" data-id="' + m.id + '">+ 수강권</button>' +
+      '<button class="btn btn-outline" style="flex:0 0 40%" data-act="pkg-add" data-id="' + m.id + '">+ 수강권 추가</button>' +
       '<button class="btn btn-primary" style="flex:1" data-act="book-open" data-member="' + m.id + '">레슨 예약</button>' +
     '</div>';
   paintMemberSheet();
@@ -3985,6 +4164,8 @@ function memberBodyHTML(m){
   });
   var notes = notesByMember(m.id);
   var rem = totalRemaining(m.id);
+  var sepList = sepUsageMembers(m.id);
+  var us = sepUsage(m.id);
   var tf = (memberCtx && memberCtx.tagFilter) ? memberCtx.tagFilter : '전체';
   var shown = (tf === '전체') ? notes : notes.filter(function(n){ return noteTags(n).indexOf(tf) >= 0; });
   var renewCnt = isArr(m.passHistory) ? m.passHistory.length : 0;
@@ -4000,14 +4181,37 @@ function memberBodyHTML(m){
 
   h += '<div class="sec"><h2>수강권</h2><span class="aside">' + pkgs.length + '개' +
     (renewCnt ? ' · 재등록 ' + renewCnt + '회' : '') + '</span></div>';
-  if (!pkgs.length) h += '<div class="empty"><div class="et">등록된 수강권이 없어요</div><div class="ed">아래 <b>+ 수강권</b> 버튼으로 25분 · 55분 수강권을 추가해 보세요.</div></div>';
-  else h += pkgs.map(pkgCardHTML).join('');
+  if (!pkgs.length) {
+    h += '<div class="empty"><div class="et">등록된 수강권이 없어요</div><div class="ed">' +
+      (us.count
+        ? '별도 레슨 <b>' + us.count + '회</b>로 다닌 기록은 그대로 있어요. 아래 <b>+ 수강권 추가</b>로 수강권을 만들면 그 기록을 그대로 두고 이어서 관리할 수 있어요.'
+        : '아래 <b>+ 수강권 추가</b> 버튼으로 25분 · 55분 수강권을 추가해 보세요.') +
+      '</div></div>';
+  } else h += pkgs.map(pkgCardHTML).join('');
 
   h += '<button class="renewbtn" data-act="renew-open" data-id="' + m.id + '">' +
     '<span class="rb-t"><b>수강권 연장 (재등록)</b><span class="rb-sub">잔여 ' + rem + '회 · 1탭으로 새 수강권 시작</span></span>' +
     '<span class="rb-go">' + ICON.chev + '</span></button>';
   if (rem > 0 && rem <= LOW_LIMIT) {
     h += '<div class="hint" style="margin-top:7px">잔여 ' + rem + '회 · 지금이 재등록 골든타임이에요. 연장하면 새 수강권이 오늘부터 시작되고, 기존 레슨 차트는 그대로 남아요.</div>';
+  }
+
+  /* 별도 결제(필드 · 숏게임 · 원포인트)로 다닌 기록 — 수강권과 별개로 보존 */
+  if (sepList.length) {
+    var kindsTxt = SEP_KIND_ORDER.filter(function(k){ return us.kinds[k]; }).map(function(k){
+      return SEP_KINDS[k].short + ' ' + us.kinds[k];
+    }).join(' · ');
+    h += '<div class="sec"><h2>별도 레슨</h2><span class="aside">' + us.count + '회 · ' + money(us.fee) + '</span></div>' +
+      '<div class="card" style="padding:2px 14px 4px">' + sepList.map(function(s){
+        var sst = STATUS[s.status];
+        return '<button class="sepline" data-act="status-sheet" data-sid="' + s.id + '">' +
+          '<span class="sp-d">' + fmtDot(s.date) + '</span>' +
+          '<span class="sp-k">' + SEP_KINDS[sepKind(s)].icon + ' ' + esc(sepKindShort(s.lessonKind)) +
+            '<span class="sp-sub">' + s.durationMinutes + '분' + (sst ? ' · ' + sst.label : '') + '</span></span>' +
+          '<span class="sp-f">' + (sepFee(s) ? money(sepFee(s)) : '미입력') + '</span>' +
+          '<span class="chev">' + ICON.chev + '</span></button>';
+      }).join('') + '</div>' +
+      '<div class="hint" style="margin-top:7px">' + esc(kindsTxt) + ' · 수강권은 차감되지 않았어요. 수강권을 추가해도 이 기록은 그대로 남습니다.</div>';
   }
 
   h += '<div class="sec"><h2>스윙 메모</h2><span class="aside">매 레슨 공통</span></div>' +
@@ -4563,6 +4767,15 @@ function openAddMemberSheet(member, tpl){
   });
   addCtx = { sh: sh, editing: editing, memberId: member ? member.id : null, duration: 55, gender: member ? (member.gender || '') : '', rows: [], bulk: false };
   sh.body.innerHTML = addMemberBodyHTML(member, tpl);
+  /* 한 줄 간편 입력에 적어 둔 채로 바깥을 잘못 눌러도 글이 사라지지 않게 */
+  sh.el.__guardClose = function(){
+    var ta = document.getElementById('quickLine');
+    var v = ta ? String(ta.value || '').trim() : '';
+    if (!v) return '';
+    var n = v.split(/\n/).filter(function(x){ return String(x).trim(); }).length;
+    return (n > 1 ? n + '명분의 줄이' : '한 줄 간편 입력에 적은 내용이') +
+      ' 아직 저장되지 않았어요. <b>회원 추가</b>를 누르거나 <b>계속 작성</b>으로 돌아가 주세요.';
+  };
   sh.footer.style.display = '';
   sh.footer.innerHTML = '<div style="display:flex;gap:8px">' +
     '<button class="btn btn-ghost" style="flex:0 0 32%" data-act="sheet-close">취소</button>' +
@@ -5405,8 +5618,8 @@ function revDetailSep(rows){
   return '<div class="rvdetail">' + rows.map(function(r){
     var st = STATUS[r.status] ? STATUS[r.status].label : '';
     return '<div class="rvline sep' + (r.missing ? ' miss' : '') + '"><span class="n">' +
-      (r.kind === 'shortgame' ? '🎯' : '⛳') + ' ' + esc(r.name) +
-      '<span class="t">' + r.time + ' · ' + r.dur + '분 · ' + sepKindName(r.kind).replace(' 레슨', '') + ' · ' + st + '</span></span>' +
+      SEP_KINDS[normSepKind(r.kind)].icon + ' ' + esc(r.name) +
+      '<span class="t">' + r.time + ' · ' + r.dur + '분 · ' + sepKindShort(r.kind) + ' · ' + st + '</span></span>' +
       '<span class="a' + (r.missing ? ' miss' : '') + '">' + (r.missing ? '금액 미입력' : money(r.unit)) + '</span></div>';
   }).join('') + '</div>';
 }
@@ -5451,10 +5664,10 @@ function revMonthBody(ym, cur){
       smap[k].count++; smap[k].amount += r.unit;
     });
     slist.sort(function(a, b){ return b.amount - a.amount; });
-    h += '<div class="sec"><h2>필드 · 숏게임 별도 수입</h2><span class="aside">' + cur.sepCount + '건 · ' + money(cur.sepTotal) + '</span></div>';
+    h += '<div class="sec"><h2>별도 결제 수입</h2><span class="aside">필드·숏게임·원포인트 ' + cur.sepCount + '건 · ' + money(cur.sepTotal) + '</span></div>';
     h += '<div class="rvlist">' + slist.map(function(x){
       return '<div class="rvmem" style="cursor:default">' +
-        '<span class="rvmemhead"><span class="n">' + (x.kind === 'shortgame' ? '🎯' : '⛳') + ' ' + esc(x.name) + '</span>' +
+        '<span class="rvmemhead"><span class="n">' + SEP_KINDS[normSepKind(x.kind)].icon + ' ' + esc(x.name) + '</span>' +
           '<span class="c">' + x.count + '건</span>' +
           '<span class="a">' + money(x.amount) + '</span></span></div>';
     }).join('') + '</div>';
@@ -5565,7 +5778,7 @@ function viewRevenue(){
       '<div class="si"><span class="k">정규 수강권 수입</span>' +
         '<span class="v">' + money(cur.passTotal) + '</span>' +
         '<span class="m">차감 ' + cur.deducted + '회</span></div>' +
-      '<div class="si sep"><span class="k">⛳ 필드 · 숏게임 별도 수입</span>' +
+      '<div class="si sep"><span class="k">⛳ 필드 · 숏게임 · 원포인트 별도 수입</span>' +
         '<span class="v">' + money(cur.sepTotal) + '</span>' +
         '<span class="m">' + (cur.sepCount
           ? cur.sepCount + '건' + (cur.sepMissing ? ' · 금액 미입력 ' + cur.sepMissing + '건' : '')
@@ -5600,7 +5813,7 @@ function viewRevenue(){
   else if (unit === 'day') h += revDayBody(cur);
   else h += revMonthBody(ym, cur);
 
-  h += '<div class="hint">수입 = <b>정규 수강권 수입</b>(차감된 레슨 25·55분 × 수강권 회당 금액) + <b>필드 · 숏게임 별도 수입</b>(완료 · 당일취소 · 노쇼로 정산한 별도 레슨비). 예정 · 일반취소 · 보강은 빠지고, 회당 금액은 결제 금액 ÷ 총 횟수를 반올림해 계산해요.</div>';
+  h += '<div class="hint">수입 = <b>정규 수강권 수입</b>(차감된 레슨 25·55분 × 수강권 회당 금액) + <b>필드 · 숏게임 · 원포인트 별도 수입</b>(완료 · 당일취소 · 노쇼로 정산한 별도 레슨비). 예정 · 일반취소 · 보강은 빠지고, 회당 금액은 결제 금액 ÷ 총 횟수를 반올림해 계산해요.</div>';
   return h;
 }
 
@@ -5617,7 +5830,8 @@ var qaCtx = null;
 var QA_EXAMPLES = [
   '내일 오후 3시 김민준 55분 분당',
   '11월 25일 14:30 박서연 판교연습장',
-  '내일 오전 9시 필드 홍길동팀 120분 15만'
+  '내일 오전 9시 필드 홍길동팀 120분 15만',
+  '오늘 저녁 7시 원포인트 이서연 60분 8만'
 ];
 
 function parseQuickLesson(text){
@@ -5634,8 +5848,11 @@ function parseQuickLesson(text){
   }
   var m;
 
-  /* 필드 · 숏게임 = 별도 결제 레슨 */
-  if ((m = t.match(/숏\s*게임/))) {
+  /* 필드 · 숏게임 · 원포인트 = 별도 결제 레슨 */
+  if ((m = t.match(/원\s*포인트/))) {
+    res.separate = true; res.kind = 'onepoint'; res.found.separate = true;
+    t = t.replace(m[0], ' ');
+  } else if ((m = t.match(/숏\s*게임/))) {
     res.separate = true; res.kind = 'shortgame'; res.found.separate = true;
     t = t.replace(m[0], ' ');
   } else if ((m = t.match(/필드(?:\s*레슨)?/))) {
@@ -5710,13 +5927,21 @@ function parseQuickLesson(text){
 function openQuickAddSheet(){
   var sh = openSheet({
     title:'레슨 빠른 추가',
-    sub:'한 줄로 말하거나 적으면 날짜 · 시간 · 회원 · 장소를 알아서 채워요. "필드"나 "숏게임"이 들어가면 별도 결제 레슨으로 잡아요.'
+    sub:'한 줄로 말하거나 적으면 날짜 · 시간 · 회원 · 장소를 알아서 채워요. "필드" · "숏게임" · "원포인트"가 들어가면 별도 결제 레슨으로 잡아요.'
   });
   qaCtx = { sh: sh, mode: state.members.length ? 'pass' : 'sep',
     kind:'field', target: state.members.length ? 'member' : 'guest', duration: 55, sepDur: 120,
     date: ui.date, time: defaultTime(), memberId:'', location:'',
     parsedName:'', parsed:null, gender:'', fee:'', guest:'' };
   sh.body.innerHTML = qaQuickHTML() + '<div id="qaForm"></div>';
+  /* 한 줄 입력에 적어 둔 레슨 내용도 실수로 닫히면 사라지지 않게 */
+  sh.el.__guardClose = function(){
+    var ta = document.getElementById('qaLine');
+    var v = ta ? String(ta.value || '').trim() : '';
+    if (!v) return '';
+    return '한 줄 입력에 적어 둔 <b>' + esc(v.length > 24 ? v.slice(0, 24) + '…' : v) +
+      '</b> 이 아직 저장되지 않았어요.';
+  };
   sh.footer.style.display = '';
   sh.footer.innerHTML = '<button class="btn btn-primary btn-block" data-act="qa-save">캘린더에 추가</button>';
   paintQaForm();
@@ -5749,7 +5974,7 @@ function paintQaForm(){
 function qaFormHTML(){
   var h = '<div class="seg modeseg">' +
     '<button class="' + (qaCtx.mode === 'pass' ? 'on' : '') + '" data-act="qa-mode" data-v="pass">회원 수강권 레슨</button>' +
-    '<button class="' + (qaCtx.mode === 'sep' ? 'on' : '') + '" data-act="qa-mode" data-v="sep">필드·숏게임 (별도 결제)</button>' +
+    '<button class="' + (qaCtx.mode === 'sep' ? 'on' : '') + '" data-act="qa-mode" data-v="sep">별도 결제</button>' +
   '</div>';
   if (qaCtx.mode === 'sep') return h + sepFormHTML('qa', qaCtx);
   return h +
@@ -5920,11 +6145,15 @@ function saveQuickLesson(){
   if (qaCtx.mode === 'sep') {
     var dur = qaSepDurNow();
     if (!dur || dur < 15) { toast('소요시간을 넣어주세요'); return; }
-    var mid = null, guest = '';
+    var mid = null, guest = '', addedName = '';
     if (qaCtx.target === 'guest') {
       var gEl = document.getElementById('qaGuest');
       guest = gEl ? gEl.value.trim() : (qaCtx.guest || '');
       if (!guest) { toast('비회원 이름이나 팀명을 적어주세요'); return; }
+      /* 별도 결제로 온 사람은 회원목록에 남긴다 — 나중에 수강권으로 전환 가능 */
+      var knownGuest = !!findMemberByName(guest);
+      var gm = ensureMemberForGuest(guest);
+      if (gm) { mid = gm.id; if (!knownGuest) addedName = gm.name; guest = ''; }
     } else {
       var mSel = document.getElementById('qaMember');
       mid = mSel ? mSel.value : qaCtx.memberId;
@@ -5933,7 +6162,7 @@ function saveQuickLesson(){
     var lEl = document.getElementById('qaLocation'), fEl = document.getElementById('qaFee');
     s = {
       id: uid('lsn'), memberId: mid || null, packageId: '',
-      guestName: guest, lessonKind: qaCtx.kind === 'shortgame' ? 'shortgame' : 'field',
+      guestName: guest, lessonKind: normSepKind(qaCtx.kind),
       separatePay: true, fee: feeNum(fEl ? fEl.value : qaCtx.fee),
       date: date, startTime: time, durationMinutes: dur,
       location: lEl ? lEl.value.trim() : '',
@@ -5974,7 +6203,7 @@ function saveQuickLesson(){
   stopQaVoice();
   if (sh) sh.close();
   render();
-  toast(fmtShort(date) + ' ' + time + ' · ' + label + ' 추가');
+  toast(fmtShort(date) + ' ' + time + ' · ' + label + ' 추가' + (addedName ? ' · ' + addedName + ' 회원목록에 저장' : ''));
   calendarAfterAdd(s);
 }
 
@@ -6247,6 +6476,16 @@ function onClick(e){
       if (fn) fn();
       break;
     }
+
+    /* 적어 둔 글 보호 — 계속 작성 / 그래도 닫기 */
+    case 'discard-stay':
+      discardStay();
+      closeSheetEl(el.closest('.sheetwrap'));
+      break;
+
+    case 'discard-close':
+      discardAndClose(el.closest('.sheetwrap'));
+      break;
 
     /* ---------- 레슨 상태 ---------- */
     case 'status-sheet':
@@ -6624,7 +6863,7 @@ function onClick(e){
     case 'bk-kind':
       if (!bookCtx) break;
       bookSync();
-      bookCtx.kind = el.getAttribute('data-v') === 'shortgame' ? 'shortgame' : 'field';
+      bookCtx.kind = normSepKind(el.getAttribute('data-v'));
       paintBook();
       break;
 
@@ -6699,7 +6938,7 @@ function onClick(e){
     case 'qa-kind':
       if (!qaCtx) break;
       qaSyncFromDOM();
-      qaCtx.kind = el.getAttribute('data-v') === 'shortgame' ? 'shortgame' : 'field';
+      qaCtx.kind = normSepKind(el.getAttribute('data-v'));
       paintQaForm();
       validateQuick();
       break;
@@ -6869,9 +7108,9 @@ function onFieldChange(e){
 }
 
 /* =========================================================
-   실행 스플래시 (약 2초 · 탭하면 바로 넘어감)
+   실행 스플래시 (약 3.5초 · 탭하면 바로 넘어감)
    ========================================================= */
-var SPLASH_MS = 2000;      /* 스플래시가 머무는 시간 */
+var SPLASH_MS = 3500;      /* 스플래시가 머무는 시간 (3.5초) */
 var SPLASH_FADE = 440;     /* 사라지는 전환(420ms) + 여유 */
 function endSplash(){
   var el = document.getElementById('splash');
@@ -6924,7 +7163,7 @@ function init(){
   ui.month = todayISO().slice(0, 7);
   render();
   if (firstRun) {
-    /* 스플래시 아래에 미리 깔아 두고, 2초 스플래시가 걷히면 자연스럽게 이어집니다 */
+    /* 스플래시 아래에 미리 깔아 두고, 3.5초 스플래시가 걷히면 자연스럽게 이어집니다 */
     showOnboarding();
     setTimeout(focusOnboarding, SPLASH_MS + SPLASH_FADE + 120);
   }
