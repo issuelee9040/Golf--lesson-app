@@ -1823,9 +1823,8 @@ function closeAllSheets(){
 /* =========================================================
    시트 제스처 — 아래로 밀어 닫기 + 아이폰 사파리 '당겨서 새로고침' 막기
 
-   · 손잡이(grab)나 제목줄을 잡고 아래로 끌면, 또는 내용이 맨 위
-     (scrollTop <= 0)일 때 아래로 끌면 시트가 손가락을 따라 내려옵니다.
-   · 76px 넘게 내리거나 짧게 튕겨서(v >= 0.5px/ms, 28px 이상) 놓으면
+   · 손잡이(grab)나 제목줄, 맨 아래 버튼 줄을 잡고 아래로 끌면 — 또는 내용이
+     맨 위(scrollTop <= 0)일 때 본문을 끌면 — 시트가 손가락을 따라 내려옵니다.   · 76px 넘게 내리거나 짧게 튕겨서(v >= 0.5px/ms, 28px 이상) 놓으면
      그 시트 하나만 닫혀 바로 아래 화면(이전 시트 또는 원래 탭)으로 돌아갑니다.
      모자라면 제자리로 부드럽게 돌아갑니다.
    · 끌어내리는 동안 touchmove 를 preventDefault 해서 사파리가 이 동작을
@@ -1858,6 +1857,7 @@ function attachSheetGestures(wrap, sheet){
     return !!t && typeof t.closest === 'function' && !!t.closest('input,textarea,select,option');
   }
   function atTop(){ return !body || body.scrollTop <= 0; }
+  function inBody(t){ return !!t && !!body && (t === body || (body.contains && body.contains(t))); }
 
   /* 손가락을 따라 내려온 만큼 시트를 옮기고, 뒤 어둠은 조금씩 옅게 */
   function paint(ty){
@@ -1917,7 +1917,7 @@ function attachSheetGestures(wrap, sheet){
       if (Math.abs(dy) < 5 && Math.abs(dx) < 5) return;          /* 손떨림은 그냥 둠 */
       if (Math.abs(dx) > Math.abs(dy)) { st.locked = true; return; }   /* 가로 → 그냥 둠 */
       if (dy <= 0) { st.locked = true; return; }                 /* 위로 → 그냥 스크롤 */
-      if (!st.head && !atTop()) { st.locked = true; return; }    /* 내용 중간 → 그냥 스크롤 */
+      if (!st.head && inBody(e.target) && !atTop()) { st.locked = true; return; }  /* 내용 중간 → 그냥 스크롤 */
       if (st.field || st.backdrop){                              /* 입력칸·바깥 여백 → 끌지 않고 새로고침만 막음 */
         st.locked = true; st.blockPTR = true;
         if (e.cancelable !== false && e.preventDefault) e.preventDefault();
