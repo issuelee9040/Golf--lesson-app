@@ -524,6 +524,19 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .auto{font-size:9.5px;font-weight:800;color:var(--green-d);background:var(--green-soft);border-radius:5px;padding:1px 5px}
 .parsebar{margin-top:8px;font-size:11.5px;font-weight:700;color:var(--ink2);background:var(--field);border:1px dashed var(--green-mid);border-radius:10px;padding:8px 10px;line-height:1.5}
 .parsebar b{color:var(--green-d)}
+/* 여러 줄 일괄 등록 — 줄마다 한 명씩 미리보기 */
+.quicklist{margin-top:8px;display:flex;flex-direction:column;gap:5px}
+.qlrow{display:flex;align-items:center;gap:8px;background:var(--field);border:1px solid var(--line2);
+  border-radius:11px;padding:8px 10px}
+.qlrow.off{opacity:.55}
+.qln{flex:none;max-width:36%;font-size:13px;font-weight:800;letter-spacing:-.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qlm{flex:1;min-width:0;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:-.1px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qlb{flex:none;font-size:10px;font-weight:800;color:var(--muted);background:var(--gray-soft);border-radius:6px;padding:3px 6px}
+.qlb.on{color:#fff;background:var(--green-solid)}
+html[data-theme="black"] .qlrow{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)}
+html[data-theme="black"] .qlb{background:rgba(255,255,255,.08);color:#B9BEC7}
 /* 회원목록 맨 위 '한 줄로 회원 추가' — 앱에서 가장 먼저 누르는 카드라 에메랄드로 확실히 띄웁니다 */
 .quickadd{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;width:100%;
   background:linear-gradient(140deg,#12975A 0%,#0C7146 56%,#075537 100%);
@@ -661,19 +674,27 @@ html[data-theme="black"] .btn.micbtn{background:rgba(70,214,156,.16);border-colo
   border:1px solid var(--line);font-size:11px;font-weight:800;color:var(--ink2);letter-spacing:-.2px;box-shadow:var(--shadow)}
 .tagchip.on{border:1px solid var(--green);background:var(--green-soft);color:var(--green-d);box-shadow:inset 0 0 0 1px var(--green-mid)}
 .tagchip:active{transform:scale(.97)}
-/* ---------- 카톡 요약 복사 (1초 리포트) ---------- */
-.btn.btn-kakao{background:linear-gradient(180deg,#FFEF62,#FEE500);border:1px solid #E5C800;color:#3A2A00;font-weight:800;
-  box-shadow:0 6px 16px -6px rgba(190,150,0,.45),inset 0 1px 0 rgba(255,255,255,.55)}
-.btn.btn-kakao:active{background:#F3DC00}
+/* ---------- 카톡 요약 복사 (1초 리포트) — 반투명 노랑 ---------- */
+.btn.btn-kakao{background:rgba(250,204,21,.18);border:1px solid rgba(250,204,21,.45);color:#5C4300;font-weight:800;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 6px 16px -10px rgba(190,150,0,.55);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.btn.btn-kakao:active{background:rgba(250,204,21,.30)}
 /* 레슨 상태 시트 하단 — 아이콘 · 두 줄 설명 · '복사' 표시 */
 .kakao-cta{height:54px;gap:9px;padding:0 13px 0 11px;letter-spacing:0;border-radius:14px}
-.kakao-cta .kko-ic{flex:none;width:28px;height:28px;border-radius:9px;background:#3A2A00;color:#FEE500;
-  display:flex;align-items:center;justify-content:center}
+.kakao-cta .kko-ic{flex:none;width:28px;height:28px;border-radius:9px;background:rgba(250,204,21,.26);color:#6B4E00;
+  border:1px solid rgba(250,204,21,.50);display:flex;align-items:center;justify-content:center}
 .kakao-cta .kko-ic svg{width:15px;height:15px}
 .kakao-cta .kko-t{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
 .kakao-cta .kko-t b{font-size:14px;font-weight:800;letter-spacing:-.2px;line-height:1.15}
-.kakao-cta .kko-s{font-size:10.5px;font-weight:700;color:#6B5300;letter-spacing:-.1px;line-height:1.2}
-.kakao-cta .kko-go{flex:none;font-size:10.5px;font-weight:800;color:#6B5300;background:rgba(58,42,0,.09);border-radius:7px;padding:4px 7px}
+.kakao-cta .kko-s{font-size:10.5px;font-weight:700;color:#7A5F16;letter-spacing:-.1px;line-height:1.2}
+.kakao-cta .kko-go{flex:none;font-size:10.5px;font-weight:800;color:#5C4300;background:rgba(250,204,21,.30);
+  border:1px solid rgba(250,204,21,.55);border-radius:7px;padding:4px 7px}
+html[data-theme="black"] .btn.btn-kakao{background:rgba(250,204,21,.16);border-color:rgba(250,204,21,.42);color:#FDE68A;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 20px -14px rgba(250,204,21,.55)}
+html[data-theme="black"] .btn.btn-kakao:active{background:rgba(250,204,21,.24)}
+html[data-theme="black"] .kakao-cta .kko-ic{background:rgba(250,204,21,.20);border-color:rgba(250,204,21,.38);color:#FDE68A}
+html[data-theme="black"] .kakao-cta .kko-s{color:rgba(253,230,138,.75)}
+html[data-theme="black"] .kakao-cta .kko-go{color:#FDE68A;background:rgba(250,204,21,.18);border-color:rgba(250,204,21,.34)}
 /* 레슨 차트 제목 옆 — 같은 노란색의 작은 버튼 */
 .kakaochip{flex:none;display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 11px 0 9px;border-radius:10px;
   background:linear-gradient(180deg,#FFEF62,#FEE500);border:1px solid #E9D000;color:#3A2A00;
@@ -1852,8 +1873,12 @@ function findMemberByName(name){
 }
 
 /* =========================================================
-   한 줄 간편 입력 파서
-   "김민준 55분 10회 남 분당" → { name, duration, sessions, gender, region }
+   한 줄 간편 입력 파서 — 여러 줄 일괄 등록 · 진행 중 횟수
+   "김민준 55분 10회 남 분당"   → 55분 · 10회(잔여 10)
+   "김민수 4/10회 80만원"      → 55분 · 10회(잔여 4) · 800,000원(회당 8만원)
+   "박영희 10회중 4회남음"      → 55분 · 10회(잔여 4)
+   "이서연 잔여 4회"           → 55분 · 4회(잔여 4)
+   "정민재 회당 7만원 8회"      → 55분 · 8회(잔여 8) · 560,000원
    ========================================================= */
 var REGION_LIST = ['분당','판교','강남','서초','송파','잠실','수원','일산','용인','광교','위례','하남','미사',
   '평촌','안양','부천','인천','대전','대구','부산','울산','청주','전주','창원','제주','김포','파주','남양주',
@@ -1874,12 +1899,101 @@ function isRegionWord(v){
 }
 function isLevelWord(v){ return LEVEL_LIST.indexOf(v) >= 0; }
 
+/* ---------- 금액 표기 읽기 (80만원 · 8만5천 · 1,000,000원 · 70000) ---------- */
+var MONEY_UNIT = { '억': 100000000, '만': 10000, '천': 1000 };
+function moneyNum(s){ var n = parseFloat(String(s).replace(/,/g, '')); return isFinite(n) ? n : 0; }
+/* 만/천/억이 한 번에 두 번까지 붙는 표기(8만5천)를 한 값으로 */
+function moneyMatchToValue(m){
+  var v = moneyNum(m[1]) * MONEY_UNIT[m[2]];
+  if (m[3]) v += moneyNum(m[3]) * MONEY_UNIT[m[4]];
+  return Math.round(v);
+}
+/* 문장에서 금액 하나를 찾아 { value, text }. 단위(만·천·억·원)가 없으면 allowBare 일 때만 숫자 하나를 금액으로 봅니다 */
+function takeMoney(str, allowBare){
+  var m = str.match(/([0-9][0-9,]*(?:\.[0-9]+)?)\s*(억|만|천)(?:\s*([0-9][0-9,]*(?:\.[0-9]+)?)\s*(만|천))?\s*원?/);
+  if (m) return { value: moneyMatchToValue(m), text: m[0] };
+  m = str.match(/([0-9][0-9,]*(?:\.[0-9]+)?)\s*원/);
+  if (m) return { value: Math.round(moneyNum(m[1])), text: m[0] };
+  if (allowBare) {
+    m = str.match(/(?:^|[\s:：])([0-9]{4,9})(?=$|[\s,])/);
+    if (m) return { value: Math.round(moneyNum(m[1])), text: m[1] };
+  }
+  return null;
+}
+function cutText(str, idx, len){ return str.slice(0, idx) + ' ' + str.slice(idx + len); }
+
 function parseMemberLine(text){
   var raw = String(text || '');
-  var res = { name:'', duration:0, durationRaw:0, sessions:0, gender:'', region:'', phone:'', level:'', extra:'', found:{} };
+  var res = { name:'', duration:0, durationRaw:0, sessions:0, total:0, rem:0,
+              price:0, perLesson:0, gender:'', region:'', phone:'', level:'', extra:'', found:{} };
+  var m, n;
+
+  /* ① 회당 단가 — "회당 7만원" · "1회당 70000" */
+  if ((m = raw.match(/(?:1\s*회\s*당|회\s*당)\s*[:：]?\s*/))) {
+    var per = takeMoney(raw.slice(m.index + m[0].length), true);
+    if (per && per.value > 0) {
+      res.perLesson = per.value;
+      res.found.perLesson = true;
+      raw = cutText(raw, m.index, m[0].length + per.text.length);
+    }
+  }
+  /* ② 총 금액 — "80만원" · "8만5천" · "1,000,000원" */
+  var tot = takeMoney(raw, false);
+  if (tot && tot.value > 0) {
+    res.price = tot.value;
+    res.found.price = true;
+    raw = raw.replace(tot.text, ' ');
+  }
+
+  /* ③ 남은 횟수 / 전체 횟수 */
+  /* "4/10회" · "4/10" (앞뒤가 날짜가 아닐 때) */
+  if ((m = raw.match(/(\d{1,3})\s*\/\s*(\d{1,3})\s*(?:회|회권)?/))) {
+    var before = m.index > 0 ? raw.charAt(m.index - 1) : ' ';
+    var tail = raw.slice(m.index + m[0].length, m.index + m[0].length + 3);
+    var a = parseInt(m[1], 10), b = parseInt(m[2], 10);
+    /* "4/10"은 횟수, "11/24"처럼 날짜로 읽힐 수 있는 모양은 '회'가 붙었을 때만 횟수 */
+    var looksDate = /^\s*(부터|까지|예약|시작|일|월)/.test(tail) || (!/회/.test(m[0]) && a <= 12 && b <= 31 && a < b);
+    if (!/[0-9\/]/.test(before) && !looksDate && a > 0 && b > 0 && a <= 200 && b <= 200) {
+      res.rem = Math.min(a, b);
+      res.total = Math.max(a, b);
+      res.found.rem = true;
+      res.found.total = true;
+      raw = cutText(raw, m.index, m[0].length);
+    }
+  }
+  /* "10회중 4회남음" · "10회 중 4회 남음" */
+  if (!res.found.rem && (m = raw.match(/(\d{1,3})\s*회\s*(?:중에서|중에|중|에서)\s*(?:잔여\s*)?(\d{1,3})\s*회\s*(?:남음|남았|남아|남은)?/))) {
+    var tt = parseInt(m[1], 10), rr = parseInt(m[2], 10);
+    if (tt > 0 && rr > 0 && tt <= 200 && rr <= 200) {
+      res.total = tt;
+      res.rem = Math.min(rr, tt);
+      res.found.total = true;
+      res.found.rem = true;
+      raw = cutText(raw, m.index, m[0].length);
+    }
+  }
+  /* "잔여 4회" · "남은 4회" */
+  if (!res.found.rem && (m = raw.match(/(?:잔여|남은|남아\s*있는)\s*[:：]?\s*(\d{1,3})\s*회?/))) {
+    res.rem = parseInt(m[1], 10);
+    res.found.rem = true;
+    raw = cutText(raw, m.index, m[0].length);
+  }
+  /* "4회 남음" · "4회남음" · "4회 남아" */
+  if (!res.found.rem && (m = raw.match(/(\d{1,3})\s*회\s*(?:남음|남았|남아|남은)/))) {
+    res.rem = parseInt(m[1], 10);
+    res.found.rem = true;
+    raw = cutText(raw, m.index, m[0].length);
+  }
+  /* "총 10회" · "전체 10회" */
+  if (!res.found.total && (m = raw.match(/(?:총|전체)\s*(\d{1,3})\s*회/))) {
+    res.total = parseInt(m[1], 10);
+    res.found.total = true;
+    raw = cutText(raw, m.index, m[0].length);
+  }
+
+  /* ④ 나머지 기본 항목 */
   var t = ' ' + raw.replace(/[,/·|;\t\n]+/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
 
-  var m;
   if ((m = t.match(/0?1[016789][-\s]?\d{3,4}[-\s]?\d{4}/))) {
     res.phone = m[0].replace(/\s/g, '-');
     res.found.phone = true;
@@ -1894,9 +2008,9 @@ function parseMemberLine(text){
     }
     t = t.replace(m[0], ' ');
   }
-  if ((m = t.match(/(\d{1,3})\s*(?:회권|회짜리|회분|회|번)/))) {
-    var n = parseInt(m[1], 10);
-    if (n > 0 && n <= 200) { res.sessions = n; res.found.sessions = true; }
+  if (!res.found.total && (m = t.match(/(\d{1,3})\s*(?:회권|회짜리|회분|회|번)/))) {
+    n = parseInt(m[1], 10);
+    if (n > 0 && n <= 200) { res.total = n; res.found.total = true; }
     t = t.replace(m[0], ' ');
   }
   if ((m = t.match(/(남성|남자|여성|여자)/))) {
@@ -1932,17 +2046,48 @@ function parseMemberLine(text){
     }
   }
   res.extra = rest.join(' ').trim();
+
+  /* ⑤ 횟수 · 금액 정리 */
+  if (!res.found.total && res.total <= 0) {
+    if (res.found.rem) res.total = res.rem;
+    else if (res.sessions > 0) res.total = res.sessions;
+  }
+  if (res.total > 0 && (res.rem <= 0 || res.rem > res.total)) res.rem = res.total;
+  res.sessions = res.total || res.sessions;
+  if (!res.found.price && res.perLesson > 0 && res.total > 0) {
+    res.price = res.perLesson * res.total;
+    res.found.price = true;
+  }
+  if (res.price > 0 && res.total > 0) res.perLesson = Math.round(res.price / res.total);
   return res;
+}
+
+/* 여러 줄(카톡·메모·엑셀 붙여넣기)을 한 명씩 파싱 */
+function parseMemberLines(text){
+  var out = [];
+  String(text || '').split(/\r?\n/).forEach(function(line){
+    var s = String(line).replace(/\t/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!s) return;
+    s = s.replace(/^[-*•·]\s*/, '').replace(/^\d{1,2}[).]\s+/, '');
+    if (!s) return;
+    var p = parseMemberLine(s);
+    p.line = s;
+    if (!p.name && !p.total && !p.price && !p.extra) return;   /* 제목 줄·빈 줄은 버림 */
+    out.push(p);
+  });
+  return out;
 }
 
 function parseSummary(p){
   var bits = [];
   bits.push(p.found.name ? p.name : '이름 ?');
   bits.push((p.found.duration ? durName(p.duration) : '55분(기본)') + (p.found.duration && p.durationRaw && p.durationRaw !== p.duration ? ' ← ' + p.durationRaw + '분' : ''));
-  bits.push(p.found.sessions ? p.sessions + '회' : '횟수 ?');
+  if (p.total > 0) bits.push(p.total + '회' + (p.rem > 0 && p.rem < p.total ? ' 중 잔여 ' + p.rem + '회' : ''));
+  else bits.push('횟수 ?');
   if (p.found.gender) bits.push(p.gender === 'male' ? '남' : '여');
   if (p.found.region) bits.push(p.region);
   if (p.found.level) bits.push(p.level);
+  if (p.price > 0) bits.push(money(p.price) + (p.perLesson > 0 ? ' · 회당 ' + money(p.perLesson) : ''));
   return bits.join(' · ');
 }
 
@@ -2462,7 +2607,7 @@ function viewToday(){
   if (!state.members.length) {
     h += '<div class="card mt10" id="firstMemberCard">' +
       '<div style="font-size:14.5px;font-weight:800;letter-spacing:-.3px">첫 회원을 추가해 볼까요?</div>' +
-      '<div class="hint" style="margin-top:3px">한 줄로 <b>이름 · 수강권</b>만 적으면 알아서 정리해 드려요.</div>' +
+      '<div class="hint" style="margin-top:3px">한 줄로 <b>이름 · 수강권</b>만 적어도 되고, 명단을 통째로 붙여넣으면 한 번에 등록해요.</div>' +
       '<button class="btn btn-primary btn-block" data-act="member-add" style="margin-top:12px">+ 회원 추가</button>' +
     '</div>';
   }
@@ -2619,14 +2764,14 @@ function openStatusSheet(sid){
     sub: sep ? '필드 · 숏게임 레슨은 수강권 횟수를 건드리지 않고, 별도 결제 수입만 정산해요.'
              : '잔여 횟수는 상태 변경에 맞춰 자동으로 조정되고, 일반취소는 일정에서 지워져요.',
     body: body,
-    footer: '<button class="btn btn-outline btn-block" data-act="lesson-edit" data-sid="' + s.id + '" style="margin-bottom:8px">✏️ 내용 수정 (날짜 · 시간 · 장소 · 금액)</button>' +
+    footer: (s.memberId ? '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '" aria-label="' + esc((m ? m.name : '회원') + ' 정보와 레슨 차트 열기') + '" style="margin-bottom:8px">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
+        '<span class="cta-go">' + ICON.chev + '</span></button>' : '') +
       '<button class="btn btn-kakao kakao-cta btn-block" data-act="kakao-copy" data-sid="' + s.id + '" style="margin-bottom:8px">' +
         '<span class="kko-ic">' + ICON.chat + '</span>' +
         '<span class="kko-t"><b>카톡 요약 복사</b><span class="kko-s">레슨 내용 · 잔여 횟수 · 오늘 포인트를 한 번에</span></span>' +
         '<span class="kko-go">복사</span></button>' +
-      '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '" style="margin-bottom:8px">📅 내 캘린더에 추가</button>' +
-      (s.memberId ? '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '" aria-label="' + esc((m ? m.name : '회원') + ' 정보와 레슨 차트 열기') + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
-        '<span class="cta-go">' + ICON.chev + '</span></button>' : '')
+      '<button class="btn btn-outline btn-block" data-act="lesson-edit" data-sid="' + s.id + '" style="margin-bottom:8px">✏️ 내용 수정 (날짜 · 시간 · 장소 · 금액)</button>' +
+      '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '">📅 내 캘린더에 추가</button>'
   });
   return sh;
 }
@@ -3386,7 +3531,7 @@ function viewMembers(){
     '<span class="qa-ic">' + ICON.spark + '</span>' +
     '<span class="qa-t">' +
       '<span class="qa-k">한 줄로 회원 추가<span class="qa-new">간편 등록</span></span>' +
-      '<span class="qa-d">예: <b>김민준 10회 남 분당</b> · 이름만 적어도 돼요</span>' +
+      '<span class="qa-d">예: <b>김민수 4/10회 80만원</b> · 여러 줄 붙여넣기 가능</span>' +
     '</span>' +
     '<span class="qa-go">입력하기' + ICON.chev + '</span></button>';
   h += '<div class="sec" style="margin-top:4px"><h2>회원 목록 <span class="sec-cnt">' + list.length + '명</span></h2>' +
@@ -4252,6 +4397,12 @@ var QUICK_EXAMPLES = [
   '이서연, 25분 8회권, 여, 판교',
   '박지훈 1회 55분 남성 강남'
 ];
+/* 여러 줄 붙여넣기 예시 — 줄바꿈은 HTML 속성에서도 살도록 &#10; 로 넣습니다 */
+var QUICK_BULK_EXAMPLE = [
+  '김민수 4/10회 80만원',
+  '박영희 잔여 4회',
+  '이서연 55분 8회 여 판교'
+].join('\n');
 
 function openAddMemberSheet(member, tpl){
   var editing = !!member;
@@ -4259,7 +4410,7 @@ function openAddMemberSheet(member, tpl){
     title: editing ? '회원 정보 수정' : '회원 추가',
     sub: editing ? '이름 · 성별 · 지역 · 연락처를 고칠 수 있어요.' : '한 줄로 적으면 아래 항목이 알아서 채워져요.'
   });
-  addCtx = { sh: sh, editing: editing, memberId: member ? member.id : null, duration: 55, gender: member ? (member.gender || '') : '' };
+  addCtx = { sh: sh, editing: editing, memberId: member ? member.id : null, duration: 55, gender: member ? (member.gender || '') : '', rows: [], bulk: false };
   sh.body.innerHTML = addMemberBodyHTML(member, tpl);
   sh.footer.style.display = '';
   sh.footer.innerHTML = '<div style="display:flex;gap:8px">' +
@@ -4282,14 +4433,18 @@ function addMemberBodyHTML(m, tpl){
   var h = '';
   if (!m) {
     h += '<div class="quick">' +
-      '<div class="qt">' + ICON.spark + '한 줄 간편 입력 <span class="auto">자동 정리</span></div>' +
-      '<textarea class="input" id="quickLine" placeholder="예) 김민준 55분 10회 남 분당"></textarea>' +
+      '<div class="qt">' + ICON.spark + '한 줄 간편 입력 <span class="auto">여러 명 한꺼번에</span></div>' +
+      '<textarea class="input" id="quickLine" rows="3" placeholder="김민수 4/10회 80만원&#10;박영희 잔여 4회&#10;이서연 55분 8회 여 판교"></textarea>' +
       '<div class="chips mt10" style="gap:5px">' + QUICK_EXAMPLES.map(function(x){
         return '<button class="chip" style="font-size:11px;padding:5px 9px" data-act="quick-example" data-v="' + esc(x) + '">' + esc(x) + '</button>';
-      }).join('') + '</div>' +
-      '<div class="parsebar" id="parseBar">이름 · 시간 · 횟수 · 성별 · 지역을 알아서 나눠 담아요.</div>' +
+      }).join('') +
+        '<button class="chip" style="font-size:11px;padding:5px 9px" data-act="quick-example" data-v="' + esc(QUICK_BULK_EXAMPLE).replace(/\n/g, '&#10;') + '">📋 3명 한꺼번에</button>' +
+      '</div>' +
+      '<div class="parsebar" id="parseBar">한 줄이면 아래 칸을 채우고, 여러 줄을 붙여넣으면 한 번에 등록해요.</div>' +
+      '<div class="quicklist" id="quickList" style="display:none"></div>' +
     '</div>';
   }
+  h += '<div id="addForm">';
   h += '<div class="field"><label>이름</label><input class="input" id="mfName" value="' + esc(m ? m.name : '') + '" placeholder="예) 김민준"></div>';
   h += '<div class="row2">' +
     '<div class="field"><label>성별</label><div class="seg mini" id="mfGender">' +
@@ -4312,10 +4467,14 @@ function addMemberBodyHTML(m, tpl){
         '<button class="on" data-act="mf-dur" data-v="55">55분</button>' +
       '</div></div>' +
       '<div class="field"><label>횟수</label>' +
-        '<input class="input" id="mfSessions" type="number" inputmode="numeric" min="1" step="1" value="10">' +
+        '<div class="row2">' +
+          '<input class="input" id="mfSessions" type="number" inputmode="numeric" min="1" step="1" value="10" placeholder="총 횟수">' +
+          '<input class="input" id="mfRemain" type="number" inputmode="numeric" min="0" step="1" placeholder="남은 횟수(선택)">' +
+        '</div>' +
         '<div class="chips mt10">' + [1,5,8,10,16,20,30].map(function(n){
           return '<button class="chip" data-act="mf-count" data-v="' + n + '">' + n + '회</button>';
         }).join('') + '</div>' +
+        '<div class="hint" id="mfRemainHint">이미 몇 번 진행한 회원이면 <b>남은 횟수</b>를 같이 적어 주세요. 비우면 전체 횟수로 등록돼요.</div>' +
       '</div>' +
       '<div class="row2">' +
         '<div class="field wide"><label>시작일</label>' + dateFieldHTML('mfStart', d) + '</div>' +
@@ -4324,6 +4483,7 @@ function addMemberBodyHTML(m, tpl){
       '<div class="field"><label>금액 (선택)</label><input class="input" id="mfPrice" type="number" inputmode="numeric" placeholder="예) 800000">' +
         '<div class="hint" id="mfUnit">금액을 넣으면 회당 금액을 계산해 드려요.</div></div>';
   }
+  h += '</div>';
   return h;
 }
 
@@ -4361,12 +4521,48 @@ function updateUnit(){
   var el = document.getElementById('mfUnit');
   var c = document.getElementById('mfSessions');
   var pr = document.getElementById('mfPrice');
+  var rm = document.getElementById('mfRemain');
   if (!el) return;
   var n = c ? parseInt(c.value, 10) : 0;
   var price = pr ? parseInt(pr.value, 10) : 0;
+  var rn = rm ? parseInt(rm.value, 10) : 0;
   if (n > 0 && price > 0) el.innerHTML = '회당 약 <b>' + money(Math.round(price / n)) + '</b> · 총 ' + money(price);
   else el.innerHTML = '금액을 넣으면 회당 금액을 계산해 드려요.';
   if (c) setCountChips(n);
+  var hint = document.getElementById('mfRemainHint');
+  if (hint) {
+    if (n > 0 && rn > n) hint.innerHTML = '남은 횟수는 총 횟수보다 클 수 없어요.';
+    else if (n > 0 && rn > 0) hint.innerHTML = '총 <b>' + n + '회</b> 중 <b>잔여 ' + rn + '회</b>로 등록해요' + (price > 0 ? ' · 회당 약 <b>' + money(Math.round(price / n)) + '</b>' : '');
+    else hint.innerHTML = '이미 몇 번 진행한 회원이면 <b>남은 횟수</b>를 같이 적어 주세요. 비우면 전체 횟수로 등록돼요.';
+  }
+}
+
+function quickValidRows(rows){
+  return (rows || []).filter(function(p){ return p.found.name && !findMemberByName(p.name); });
+}
+
+function quickRowMeta(p){
+  var bits = [];
+  bits.push(p.found.duration ? durName(p.duration) : '55분');
+  if (p.total > 0) bits.push(p.total + '회' + (p.rem > 0 && p.rem < p.total ? ' · 잔여 ' + p.rem + '회' : ''));
+  else bits.push('횟수 ?');
+  if (p.gender) bits.push(p.gender === 'male' ? '남' : '여');
+  if (p.region) bits.push(p.region);
+  if (p.price > 0) bits.push(money(p.price) + (p.perLesson > 0 ? ' (회당 ' + money(p.perLesson) + ')' : ''));
+  return bits.join(' · ');
+}
+
+/* 여러 줄 미리보기 — 한 줄에 한 명씩, 등록될 회원과 건너뛸 줄을 색으로 구분 */
+function quickPreviewHTML(rows){
+  return rows.map(function(p){
+    var dup = p.found.name && findMemberByName(p.name);
+    var ok = p.found.name && !dup;
+    return '<div class="qlrow' + (ok ? '' : ' off') + '">' +
+      '<span class="qln">' + esc(p.found.name ? p.name : '이름 ?') + '</span>' +
+      '<span class="qlm">' + esc(quickRowMeta(p)) + '</span>' +
+      (ok ? '<span class="qlb on">등록</span>' : '<span class="qlb">' + (dup ? '이미 등록' : '건너뜀') + '</span>') +
+    '</div>';
+  }).join('');
 }
 
 function applyQuickLine(){
@@ -4374,8 +4570,23 @@ function applyQuickLine(){
   var bar = document.getElementById('parseBar');
   if (!ta || !addCtx) return;
   var text = ta.value;
-  var p = parseMemberLine(text);
-  if (text.trim()) {
+  var rows = parseMemberLines(text);
+  var bulk = rows.length > 1;
+  var p = rows[0] || null;
+  addCtx.rows = rows;
+  addCtx.bulk = bulk;
+
+  var form = document.getElementById('addForm');
+  if (form) form.style.display = bulk ? 'none' : '';
+  var listEl = document.getElementById('quickList');
+  if (listEl) {
+    listEl.style.display = bulk ? '' : 'none';
+    listEl.innerHTML = bulk ? quickPreviewHTML(rows) : '';
+  }
+  var saveBtn = addCtx.sh && addCtx.sh.footer ? addCtx.sh.footer.querySelector('[data-act="member-save"]') : null;
+  if (saveBtn) saveBtn.textContent = bulk ? (quickValidRows(rows).length ? quickValidRows(rows).length + '명 한꺼번에 추가' : '이름을 적어 주세요') : '회원 추가';
+
+  if (!bulk && text.trim() && p) {
     var el;
     if (p.found.name && (el = document.getElementById('mfName'))) el.value = p.name;
     if (p.found.region && (el = document.getElementById('mfRegion'))) el.value = p.region;
@@ -4383,17 +4594,51 @@ function applyQuickLine(){
     if (p.found.gender) setGenderUI(p.gender);
     if (p.found.level && (el = document.getElementById('mfLevel'))) { el.value = p.level; syncPickLabel('mfLevel'); }
     if (p.found.duration) { addCtx.duration = p.duration; setDurUI(p.duration); }
-    if (p.found.sessions && (el = document.getElementById('mfSessions'))) el.value = p.sessions;
+    if (p.total > 0 && (el = document.getElementById('mfSessions'))) el.value = p.total;
+    if (p.total > 0 && (el = document.getElementById('mfRemain'))) el.value = (p.rem > 0 && p.rem < p.total) ? p.rem : '';
+    if (p.price > 0 && (el = document.getElementById('mfPrice'))) el.value = p.price;
     if (p.extra && (el = document.getElementById('mfMemo')) && !el.value) el.value = p.extra;
     updateUnit();
   }
-  if (bar) bar.innerHTML = text.trim()
-    ? '인식 결과 · <b>' + esc(parseSummary(p)) + '</b><br><span style="font-weight:600;color:var(--subink)">아래 항목에서 고칠 수 있어요.</span>'
-    : '이름 · 시간 · 횟수 · 성별 · 지역을 알아서 나눠 담아요.';
+  if (bar) bar.innerHTML = !text.trim()
+    ? '한 줄이면 아래 칸을 채우고, 여러 줄을 붙여넣으면 한 번에 등록해요.'
+    : (bulk
+        ? '<b>' + rows.length + '줄</b>을 읽었어요 · 등록 <b>' + quickValidRows(rows).length + '명</b> · 아래를 확인하고 버튼 한 번이면 끝나요.'
+        : '인식 결과 · <b>' + esc(parseSummary(p)) + '</b><br><span style="font-weight:600;color:var(--subink)">아래 항목에서 고칠 수 있어요.</span>');
+}
+
+/* 여러 줄 일괄 등록 — 미리보기에서 '등록'으로 표시된 줄만 한 번에 저장 */
+function saveMembersBulk(){
+  if (!addCtx) return;
+  var rows = addCtx.rows || [];
+  var added = [], skipped = 0;
+  rows.forEach(function(p){
+    if (!p.found.name || findMemberByName(p.name)) { skipped++; return; }
+    var total = p.total > 0 ? p.total : 10;
+    var rem = p.rem > 0 ? Math.min(p.rem, total) : total;
+    var nm = {
+      id: uid('mem'), name: p.name, gender: p.gender || '', region: p.region || '',
+      phone: p.phone || '', level: p.level || '', memo: p.extra || '', since: todayISO()
+    };
+    state.members.push(nm);
+    state.packages.push({
+      id: uid('pkg'), memberId: nm.id, durationMinutes: p.duration || 55,
+      totalSessions: total, remainingSessions: rem, startDate: todayISO(),
+      expiryDate: addMonths(todayISO(), 6), price: p.price || 0, note: ''
+    });
+    added.push(p.name);
+  });
+  if (!added.length) { toast('새로 등록할 줄이 없어요 · 이름을 확인해 주세요'); return; }
+  save();
+  addCtx.sh.close(); addCtx = null;
+  ui.tab = 'members';
+  render();
+  toast(added.length + '명 한꺼번에 등록했어요' + (skipped ? ' · ' + skipped + '줄은 건너뜀' : ''));
 }
 
 function saveMember(){
   if (!addCtx) return;
+  if (addCtx.bulk && !addCtx.editing) { saveMembersBulk(); return; }
   var nameEl = document.getElementById('mfName');
   var name = nameEl ? nameEl.value.trim() : '';
   if (!name) { toast('이름을 적어주세요'); if (nameEl) nameEl.focus(); return; }
@@ -4417,6 +4662,9 @@ function saveMember(){
 
   var sessions = parseInt(val('mfSessions'), 10);
   if (!(sessions > 0)) sessions = 10;
+  /* 이미 차감된 회원은 '남은 횟수'로 등록 — 비우면 전체 횟수 */
+  var remain = parseInt(val('mfRemain'), 10);
+  if (!(remain > 0) || remain > sessions) remain = sessions;
   var start = val('mfStart') || todayISO();
   var months = parseInt(val('mfMonths'), 10);
   if (isNaN(months)) months = 6;
@@ -4431,7 +4679,7 @@ function saveMember(){
   state.members.push(nm);
   var pkg = {
     id: uid('pkg'), memberId: nm.id, durationMinutes: dur,
-    totalSessions: sessions, remainingSessions: sessions,
+    totalSessions: sessions, remainingSessions: remain,
     startDate: start, expiryDate: months > 0 ? addMonths(start, months) : '9999-12-31',
     price: price, note: ''
   };
@@ -4441,7 +4689,7 @@ function saveMember(){
   ui.tab = 'members';
   render();
   openMemberSheet(nm.id);
-  toast(name + ' 회원 추가 · ' + dur + '분 ' + sessions + '회');
+  toast(name + ' 회원 추가 · ' + dur + '분 ' + sessions + '회' + (remain < sessions ? ' (잔여 ' + remain + '회)' : ''));
 }
 
 /* =========================================================
@@ -6351,7 +6599,7 @@ function onFieldChange(e){
     if (box) box.innerHTML = memberRowsHTML(filteredMembers());
   } else if (id === 'quickLine') {
     applyQuickLine();
-  } else if (id === 'mfSessions' || id === 'mfPrice') {
+  } else if (id === 'mfSessions' || id === 'mfPrice' || id === 'mfRemain') {
     updateUnit();
   } else if (id === 'pkSessions' || id === 'pkPrice') {
     updatePkUnit();
