@@ -106,6 +106,19 @@ main::-webkit-scrollbar{width:0}
 .st-excused_cancel{background:var(--gray-soft);color:#6B7280}
 .st-makeup{background:var(--blue-soft);color:var(--blue)}
 .st-scheduled{background:#fff;color:var(--green);border:1px solid var(--green-mid)}
+/* ---------- 필드 · 숏게임 (별도 결제) ---------- */
+.lkind{flex:none;display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;
+  font-size:10.5px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+.lkind.lk-field{background:#E4F3F5;color:#0C6068;box-shadow:inset 0 0 0 1px #BFE0E4}
+.lkind.lk-shortgame{background:#F0EAFE;color:#5B34A8;box-shadow:inset 0 0 0 1px #DCD0F8}
+.guestpill{flex:none;display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:6px;
+  background:var(--gray-soft);color:#6B7280;font-size:10px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+.paytag{flex:none;display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:6px;
+  background:var(--amber-soft);color:var(--amber);font-size:10.5px;font-weight:800;white-space:nowrap}
+.modeseg{margin-bottom:13px}
+.modeseg button{font-size:12px;letter-spacing:-.4px}
+.sopts.n4{grid-template-columns:repeat(4,1fr)}
+.sguide-badge.sep{background:#E4F3F5;color:#0C6068;box-shadow:inset 0 0 0 1px #BFE0E4}
 .dur{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--blue-soft);color:var(--blue)}
 .dur.d55{background:var(--green-soft);color:var(--green-d)}
 .tagwarn{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--red-soft);color:var(--red)}
@@ -302,6 +315,16 @@ main::-webkit-scrollbar{width:0}
 .rvmiss .mrow .n{flex:1;min-width:0;font-size:12.5px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rvmiss .mrow .c{flex:none;font-size:11px;font-weight:700;opacity:.8}
 .rvmiss .btn{flex:none;height:28px;padding:0 10px;font-size:11.5px;border-radius:9px;background:#fff;border:1px solid var(--amber-line);color:var(--amber)}
+/* 수입 구성: 정규 수강권 vs 필드 · 숏게임 별도 */
+.rvsplit{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:11px;border-radius:18px;overflow:hidden;
+  background:var(--line);border:1px solid rgba(16,24,40,.05);box-shadow:var(--shadow)}
+.rvsplit .si{background:#fff;padding:13px 14px 12px}
+.rvsplit .si.sep{background:#F6FCFC}
+.rvsplit .k{display:block;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:-.2px;line-height:1.3}
+.rvsplit .v{display:block;font-size:17.5px;font-weight:800;letter-spacing:-.6px;margin-top:4px}
+.rvsplit .si.sep .v{color:#0C6068}
+.rvsplit .m{display:block;font-size:10.5px;font-weight:700;color:var(--muted);margin-top:2px;letter-spacing:-.1px}
+.rvline.sep{border-left-color:#BFE0E4}
 /* ---------- 선택 필드 · 피커 ---------- */
 .pickfield{display:flex;align-items:center;justify-content:space-between;gap:8px;line-height:1.2}
 .pickfield .pv{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:600}
@@ -654,6 +677,20 @@ var STATUS = {
   makeup:           { label:'보강',     deducted:false, cls:'makeup',           desc:'보강 진행 · 차감 없음' }
 };
 var STATUS_KEYS = ['completed','same_day_cancel','no_show','excused_cancel','makeup'];
+/* 필드 · 숏게임(별도 결제) 레슨은 수강권을 건드리지 않고 별도 수입만 잡는다 */
+var SEP_STATUS_KEYS = ['completed','same_day_cancel','no_show','excused_cancel'];
+var CHARGED = { completed:true, same_day_cancel:true, no_show:true, excused_cancel:false, makeup:false };
+var SEP_STATUS_DESC = {
+  completed:       '레슨 진행 완료 · 별도 결제 수입에 포함',
+  same_day_cancel: '당일 취소 · 별도 결제 수입에 포함',
+  no_show:         '무단 불참 · 별도 결제 수입에 포함',
+  excused_cancel:  '사전 취소 · 수입 없음 · 일정에서 삭제'
+};
+var SEP_KINDS = {
+  field:     { label:'필드 레슨',   badge:'⛳ 필드',   icon:'⛳' },
+  shortgame: { label:'숏게임 레슨', badge:'🎯 숏게임', icon:'🎯' }
+};
+var SEP_DURS = [60, 90, 120, 180, 240];
 var WEEK = ['일','월','화','수','목','금','토'];
 
 /* ---------- 아이콘 ---------- */
@@ -717,6 +754,37 @@ function durName(d){ return d + '분'; }
 function sum(arr, f){ var s = 0; for (var i = 0; i < arr.length; i++) s += f(arr[i]); return s; }
 
 /* =========================================================
+   필드 · 숏게임 (별도 결제) 레슨
+   - 수강권(remainingSessions)을 절대 건드리지 않는다
+   - 회원 / 비회원(팀) 모두 가능하다
+   - 수입 정산에서 정규 수강권 수입과 따로 집계한다
+   ========================================================= */
+function isSep(s){
+  if (!s) return false;
+  return s.separatePay === true || s.lessonKind === 'field' || s.lessonKind === 'shortgame';
+}
+function sepKind(s){ return (s && s.lessonKind === 'shortgame') ? 'shortgame' : 'field'; }
+function sepKindName(kind){ return SEP_KINDS[kind === 'shortgame' ? 'shortgame' : 'field'].label; }
+function sepKindLabel(s){ return sepKindName(sepKind(s)); }
+function sepBadge(s){ return SEP_KINDS[sepKind(s)].badge; }
+function sepIcon(s){ return SEP_KINDS[sepKind(s)].icon; }
+function sepFee(s){ var v = parseInt(String(s && s.fee === undefined ? '' : s.fee), 10); return v > 0 ? v : 0; }
+function feeNum(v){ v = String(v === undefined || v === null ? '' : v).replace(/[^0-9]/g, ''); return v ? parseInt(v, 10) : 0; }
+function feeHintHTML(v){
+  var n = feeNum(v);
+  if (!n) return '비워 두면 일정만 남고, 수입에는 잡히지 않아요.';
+  return '<b>' + money(n) + '</b> · 별도 결제 수입에 잡혀요';
+}
+/* 레슨의 사람 이름 (비회원 포함) */
+function sessionName(s){
+  if (!s) return '-';
+  if (s.memberId) return memberName(s.memberId);
+  return s.guestName || '비회원';
+}
+function statusKeysFor(s){ return isSep(s) ? SEP_STATUS_KEYS : STATUS_KEYS; }
+function sepFeeLine(s){ return sepFee(s) ? money(sepFee(s)) : '금액 미입력'; }
+
+/* =========================================================
    외부 캘린더 연동 (아이폰 캘린더 .ics · 구글 캘린더 템플릿 링크)
    ========================================================= */
 var CAL_TARGETS = [['both','둘 다'],['apple','아이폰 캘린더'],['google','구글 캘린더']];
@@ -738,15 +806,24 @@ function calTargetLabel(v){
 
 /* 레슨 하나 → 캘린더 내용 */
 function calSummary(s){
-  return '[골프 레슨] ' + memberName(s.memberId) + ' · ' + s.durationMinutes + '분';
+  var who = sessionName(s) + (s.memberId ? '' : ' (비회원)');
+  if (isSep(s)) return '[골프 레슨] ' + sepKindLabel(s) + ' · ' + who + ' · ' + s.durationMinutes + '분';
+  return '[골프 레슨] ' + who + ' · ' + s.durationMinutes + '분';
 }
 function calDescLines(s){
-  var m = memberById(s.memberId), pkg = pkgById(s.packageId), out = [];
-  var rem = '';
-  if (pkg) rem = ' · 잔여 ' + pkg.remainingSessions + '/' + pkg.totalSessions + '회';
-  else { var tr = totalRemaining(s.memberId); if (tr) rem = ' · 잔여 ' + tr + '회'; }
-  out.push('회원: ' + (m ? m.name : '회원') + rem);
-  out.push('레슨: ' + s.durationMinutes + '분');
+  var sep = isSep(s);
+  var m = s.memberId ? memberById(s.memberId) : null, pkg = sep ? null : pkgById(s.packageId), out = [];
+  if (sep) {
+    out.push('대상: ' + sessionName(s) + (s.memberId ? '' : ' (비회원)'));
+    out.push('레슨: ' + sepKindLabel(s) + ' ' + s.durationMinutes + '분');
+    out.push('별도 결제: ' + (sepFee(s) ? money(sepFee(s)) : '금액 미입력') + ' · 수강권 차감 없음');
+  } else {
+    var rem = '';
+    if (pkg) rem = ' · 잔여 ' + pkg.remainingSessions + '/' + pkg.totalSessions + '회';
+    else { var tr = totalRemaining(s.memberId); if (tr) rem = ' · 잔여 ' + tr + '회'; }
+    out.push('회원: ' + (m ? m.name : '회원') + rem);
+    out.push('레슨: ' + s.durationMinutes + '분');
+  }
   if (s.location) out.push('장소: ' + s.location);
   if (s.memo) out.push('메모: ' + s.memo);
   out.push('레슨 관리 앱에서 추가');
@@ -971,6 +1048,13 @@ function sessionEnd(s){ return minOf(s.startTime) + s.durationMinutes; }
 function applyStatus(s, status){
   var meta = STATUS[status];
   if (!meta) return false;
+  /* 필드 · 숏게임 = 수강권을 건드리지 않고, 별도 결제 수입만 정산한다 */
+  if (isSep(s)) {
+    s.status = status;
+    s.deducted = false;                 /* 수강권 차감 없음 */
+    s.charged = !!CHARGED[status];      /* 별도 수입에 잡히는지 */
+    return true;
+  }
   var was = !!s.deducted, next = !!meta.deducted;
   var pkg = pkgById(s.packageId);
   if (pkg && was !== next) {
@@ -989,7 +1073,7 @@ function cancelExcused(s){
   var snap = JSON.parse(JSON.stringify(s));       /* 되돌리기용 원본 */
   var remBefore = pkg ? pkg.remainingSessions : null;
   var wasDeducted = !!s.deducted;
-  var mname = memberName(s.memberId);
+  var mname = sessionName(s);
   applyStatus(s, 'excused_cancel');               /* 차감됐던 회차는 여기서 +1 복구 */
   var removed = false;
   for (var i = state.sessions.length - 1; i >= 0; i--) {
@@ -1149,6 +1233,24 @@ function buildDemo(){
     });
   });
 
+  /* 필드 · 숏게임 별도 결제 데모 (수강권 미차감 · 따로 결제) */
+  var sepSeed = [
+    { name:'정민재',   day:-6, time:'08:00', kind:'field',     dur:240, fee:300000, loc:'남서울CC (아웃코스)', status:'completed' },
+    { name:'이하늘',   day:-3, time:'13:00', kind:'shortgame', dur:90,  fee:120000, loc:'수원 그린 연습장',    status:'completed' },
+    { guest:'한빛상사 팀', day:-2, time:'09:30', kind:'field',  dur:180, fee:450000, loc:'수원CC',              status:'completed' },
+    { name:'박서연',   day:2,  time:'16:00', kind:'shortgame', dur:60,  fee:80000,  loc:'판교 스크린레슨장',    status:'scheduled' }
+  ];
+  sepSeed.forEach(function(d){
+    var mm = d.name ? findMemberByName(d.name) : null;
+    st.sessions.push({
+      id: uid('lsn'), memberId: mm ? mm.id : null, packageId: '',
+      guestName: d.guest || '', lessonKind: d.kind, separatePay: true, fee: d.fee,
+      date: addDays(today, d.day), startTime: d.time, durationMinutes: d.dur,
+      location: d.loc, status: d.status, deducted: false,
+      charged: d.status !== 'scheduled', memo: '', settledAt: '', source: 'demo'
+    });
+  });
+
   /* 레슨 차트 데모 기록 (날짜별) */
   var noteSeed = [
     ['김도현', -2, '드라이버 백스윙 톱에서 왼팔이 접히는 부분 교정. 오른팔 펴기 유지하고 7번 아이언 120m 일정하게.'],
@@ -1175,7 +1277,7 @@ function buildDemo(){
     var ded = 0;
     list.forEach(function(s){
       counts[s.status] = (counts[s.status] || 0) + 1;
-      if (STATUS[s.status] && STATUS[s.status].deducted) ded++;
+      if (s.deducted) ded++;
     });
     st.settlements.push({ date:d, settledAt:d + 'T21:12:00', counts: counts, deducted: ded });
   });
@@ -1313,7 +1415,7 @@ function renderHeader(){
     h = '<div class="hd-left"><div><h1>오늘</h1><div class="sub">' + fmtLong(todayISO()) + ' · ' + esc(state.pro.name) + ' 프로</div></div></div>' +
         '<button class="iconbtn" data-act="tab" data-tab="stats" aria-label="통계·설정">' + ICON.gear + '</button>';
   } else if (ui.tab === 'calendar') {
-    h = '<div class="hd-left"><div><h1>캘린더</h1><div class="sub">25분 · 55분 레슨 일정</div></div></div>' +
+    h = '<div class="hd-left"><div><h1>캘린더</h1><div class="sub">25 · 55분 · 필드 · 숏게임 일정</div></div></div>' +
         '<button class="iconbtn" data-act="book-open" aria-label="레슨 예약">' + ICON.plus + '</button>';
   } else if (ui.tab === 'members') {
     h = '<div class="hd-left"><div><h1>회원목록</h1><div class="sub">' + state.members.length + '명 · 활성 수강권 ' + activePkgCount() + '개</div></div></div>' +
@@ -1489,9 +1591,15 @@ function applyPick(fieldId, value){
     toast('회원 목록 · ' + memberSortLabel(value));
     return;
   }
-  if (fieldId === 'bkMember') refreshBkPkgs();
+  if (fieldId === 'bkMember') {
+    if (bookCtx) bookCtx.memberId = value;
+    if (bookCtx && bookCtx.mode !== 'sep') refreshBkPkgs(); else validateBook();
+  }
   else if (fieldId === 'bkPkg') validateBook();
-  else if (fieldId === 'qaMember') validateQuick();
+  else if (fieldId === 'qaMember') {
+    if (qaCtx) qaCtx.memberId = value === '__new__' ? '' : value;
+    validateQuick();
+  }
 }
 
 /* ---------- 날짜 · 시간 필드 (앱 안 달력 / 시간 칩) ---------- */
@@ -1610,8 +1718,10 @@ function paintTimePick(){
 function viewToday(){
   var t = todayISO(), list = sessionsByDate(t);
   var mins = sum(list, function(s){ return s.durationMinutes; });
-  var d25 = list.filter(function(s){ return s.durationMinutes === 25; }).length;
-  var d55 = list.length - d25;
+  var dsep = list.filter(isSep).length;
+  var dp = list.filter(function(s){ return !isSep(s); });
+  var d25 = dp.filter(function(s){ return s.durationMinutes === 25; }).length;
+  var d55 = dp.length - d25;
   var und = list.filter(function(s){ return s.status === 'scheduled'; }).length;
   var settled = settlementFor(t);
 
@@ -1621,6 +1731,7 @@ function viewToday(){
     '<div class="row"><span class="pillstat">' + hms(mins) + '</span>' +
       (d55 ? '<span class="pillstat">55분 ' + d55 + '</span>' : '') +
       (d25 ? '<span class="pillstat">25분 ' + d25 + '</span>' : '') +
+      (dsep ? '<span class="pillstat">⛳ 별도 ' + dsep + '</span>' : '') +
       '<span class="pillstat">' + (und ? '미정 ' + und + '건' : (list.length ? '전원 확인' : '레슨 없음')) + '</span>' +
     '</div>' +
     '<button class="herobtn" data-act="settle-open">' +
@@ -1677,7 +1788,8 @@ function viewToday(){
         '<span class="lg">당일취소 ' + (settled.counts.same_day_cancel || 0) + '</span>' +
         '<span class="lg">노쇼 ' + (settled.counts.no_show || 0) + '</span>' +
         '<span class="lg">일반취소 ' + (settled.counts.excused_cancel || 0) + '</span>' +
-        '<span class="lg">보강 ' + (settled.counts.makeup || 0) + '</span></span>' +
+        '<span class="lg">보강 ' + (settled.counts.makeup || 0) + '</span>' +
+        (settled.sepCount ? '<span class="lg">필드·숏게임 ' + settled.sepCount + '</span>' : '') + '</span>' +
       '</div>' +
       '<div class="hint">차감 ' + settled.deducted + '회가 오늘 잔여 횟수에 반영됐어요. 잘못 찍었다면 위 버튼으로 다시 정산하면 차이가 자동으로 맞춰집니다.</div>' +
     '</div>';
@@ -1690,6 +1802,8 @@ function viewToday(){
       '<span class="sguide-items">완료<span class="sep">·</span>당일취소<span class="sep">·</span>노쇼</span></div>' +
     '<div class="sguide-row"><span class="sguide-badge keep">미차감</span>' +
       '<span class="sguide-items">일반취소<span class="sep">·</span>보강</span></div>' +
+    '<div class="sguide-row"><span class="sguide-badge sep">별도 결제</span>' +
+      '<span class="sguide-items">⛳ 필드<span class="sep">·</span>🎯 숏게임 — 수강권 미차감</span></div>' +
     '<div class="sguide-note">하루가 끝나면 마감 정산에서 한 번에 확정해요.</div>' +
   '</div>';
 
@@ -1697,7 +1811,8 @@ function viewToday(){
 }
 
 function lessonCard(s){
-  var m = memberById(s.memberId), pkg = pkgById(s.packageId);
+  var sep = isSep(s);
+  var m = s.memberId ? memberById(s.memberId) : null, pkg = sep ? null : pkgById(s.packageId);
   var st = STATUS[s.status] || STATUS.scheduled;
   var rem = pkg ? pkg.remainingSessions : 0, tot = pkg ? pkg.totalSessions : 0;
   var pct = tot ? Math.round(rem / tot * 100) : 0;
@@ -1709,19 +1824,28 @@ function lessonCard(s){
   } else {
     actions = '<button class="btn btn-sm btn-outline" data-act="status-sheet" data-sid="' + s.id + '">상태 변경</button>';
   }
+  var nameline = sep
+    ? '<span class="lkind lk-' + sepKind(s) + '">' + sepBadge(s) + '</span>' +
+      (s.memberId
+        ? '<button class="name" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '-') + '</button>'
+        : '<span class="name">' + esc(s.guestName || '비회원') + '</span><span class="guestpill">비회원</span>')
+    : '<button class="name" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '-') + '</button>';
+  var metaline = sep
+    ? '별도 결제 <b>' + sepFeeLine(s) + '</b> · ' + sepKindLabel(s) +
+      (s.location ? ' · ' + esc(s.location) : '') + memo
+    : (pkg ? durName(pkg.durationMinutes) + ' 수강권 · 잔여 <b>' + rem + '</b>/' + tot + '회' : '수강권 없음') +
+      (s.location ? ' · ' + esc(s.location) : '') + memo;
   return '<div class="card lesson-card"><div class="lesson">' +
     '<div class="timecol"><div class="t">' + s.startTime + '</div><div class="d">' + s.durationMinutes + '분</div></div>' +
     '<div class="body">' +
-      '<div class="nameline">' +
-        '<button class="name" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '-') + '</button>' +
+      '<div class="nameline">' + nameline +
         '<span class="st st-' + st.cls + '">' + st.label + '</span>' +
       '</div>' +
-      '<div class="meta">' + (pkg ? durName(pkg.durationMinutes) + ' 수강권 · 잔여 <b>' + rem + '</b>/' + tot + '회' : '수강권 없음') +
-        (s.location ? ' · ' + esc(s.location) : '') + memo + '</div>' +
-      '<div class="bar"><i class="' + (rem <= LOW_LIMIT ? 'low' : '') + '" style="width:' + pct + '%"></i></div>' +
+      '<div class="meta">' + metaline + '</div>' +
+      (sep ? '' : '<div class="bar"><i class="' + (rem <= LOW_LIMIT ? 'low' : '') + '" style="width:' + pct + '%"></i></div>') +
       '<div class="chiprow mt10">' + actions +
         '<button class="btn btn-sm btn-ghost" data-act="note-open" data-sid="' + s.id + '">메모</button>' +
-        '<button class="btn btn-sm btn-ghost" data-act="member-open" data-id="' + s.memberId + '">레슨 차트</button>' +
+        (s.memberId ? '<button class="btn btn-sm btn-ghost" data-act="member-open" data-id="' + s.memberId + '">레슨 차트</button>' : '') +
       '</div>' +
     '</div></div></div>';
 }
@@ -1739,25 +1863,40 @@ function statusBadge(label){
 function openStatusSheet(sid){
   var s = findSession(sid);
   if (!s) return;
-  var m = memberById(s.memberId), pkg = pkgById(s.packageId);
-  var body = '<div class="formnote"><b>' + esc(m ? m.name : '-') + '</b> · ' + fmtShort(s.date) + ' ' + s.startTime +
-    ' · ' + s.durationMinutes + '분' + (s.location ? ' · ' + esc(s.location) : '') + (pkg ? ' · 잔여 ' + pkg.remainingSessions + '/' + pkg.totalSessions + '회' : '') + '</div>';
-  body += STATUS_KEYS.map(function(k){
+  var sep = isSep(s);
+  var m = s.memberId ? memberById(s.memberId) : null, pkg = sep ? null : pkgById(s.packageId);
+  var who = (sep ? '<span class="lkind lk-' + sepKind(s) + '">' + sepBadge(s) + '</span> ' : '') +
+    '<b>' + esc(sessionName(s)) + '</b>' + (s.memberId ? '' : ' <span class="guestpill">비회원</span>');
+  var body = '<div class="formnote">' + who + ' · ' + fmtShort(s.date) + ' ' + s.startTime +
+    ' · ' + s.durationMinutes + '분' + (s.location ? ' · ' + esc(s.location) : '') +
+    (sep ? ' · 별도 결제 ' + sepFeeLine(s) + ' · 수강권 미차감'
+         : (pkg ? ' · 잔여 ' + pkg.remainingSessions + '/' + pkg.totalSessions + '회' : '')) + '</div>';
+  if (sep) {
+    body += '<div class="field"><label>별도 레슨비 (원)</label>' +
+      '<div class="crow" style="margin-top:0">' +
+        '<input class="input" id="sepFee" inputmode="numeric" value="' + (sepFee(s) || '') + '" placeholder="예: 150000">' +
+        '<button class="btn btn-primary" data-act="sep-fee-save" data-sid="' + s.id + '" style="flex:none;height:45px;padding:0 15px">저장</button>' +
+      '</div><div class="hint">저장하면 이 달 <b>필드 · 숏게임 별도 수입</b>에 바로 반영돼요. 비워 두면 수입에서 빠집니다.</div></div>';
+  }
+  body += statusKeysFor(s).map(function(k){
     var on = s.status === k;
+    var right = sep ? (CHARGED[k] ? '수입 포함' : '수입 없음') : (STATUS[k].deducted ? '차감' : '미차감');
+    var desc = sep ? SEP_STATUS_DESC[k] : STATUS[k].desc;
     return '<button class="statusrow' + (on ? ' on' : '') + '" data-act="status-set" data-sid="' + s.id + '" data-status="' + k + '">' +
       '<span class="sr-i st st-' + STATUS[k].cls + '" aria-hidden="true">' + statusBadge(STATUS[k].label) + '</span>' +
-      '<span class="sr-b"><div class="sr-t">' + STATUS[k].label + '</div><div class="sr-d">' + STATUS[k].desc + '</div></span>' +
-      '<span class="sr-k ' + (STATUS[k].deducted ? 'ded' : 'keep') + '">' + (STATUS[k].deducted ? '차감' : '미차감') + '</span>' +
+      '<span class="sr-b"><div class="sr-t">' + STATUS[k].label + '</div><div class="sr-d">' + desc + '</div></span>' +
+      '<span class="sr-k ' + ((sep ? CHARGED[k] : STATUS[k].deducted) ? 'ded' : 'keep') + '">' + right + '</span>' +
     '</button>';
   }).join('');
   var sh = openSheet({
-    title:'레슨 상태',
-    sub: '잔여 횟수는 상태 변경에 맞춰 자동으로 조정되고, 일반취소는 일정에서 지워져요.',
+    title: sep ? sepKindLabel(s) + ' · 별도 결제' : '레슨 상태',
+    sub: sep ? '필드 · 숏게임 레슨은 수강권 횟수를 건드리지 않고, 별도 결제 수입만 정산해요.'
+             : '잔여 횟수는 상태 변경에 맞춰 자동으로 조정되고, 일반취소는 일정에서 지워져요.',
     body: body,
     footer: '<button class="btn btn-kakao btn-block" data-act="kakao-copy" data-sid="' + s.id + '" style="margin-bottom:8px">💬 카톡 요약 복사</button>' +
       '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '" style="margin-bottom:8px">📅 내 캘린더에 추가</button>' +
-      '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
-      '<span class="cta-go">' + ICON.chev + '</span></button>'
+      (s.memberId ? '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
+        '<span class="cta-go">' + ICON.chev + '</span></button>' : '')
   });
   return sh;
 }
@@ -1789,50 +1928,61 @@ function paintSettle(){
 }
 
 function settleTally(sel, list){
-  var ded = 0, keep = 0, und = 0;
+  var ded = 0, keep = 0, und = 0, sep = 0, sepCharge = 0;
   list.forEach(function(s){
     var c = sel.decisions[s.id];
     if (!c) { und++; return; }
+    if (isSep(s)) { sep++; if (CHARGED[c]) sepCharge++; return; }
     if (STATUS[c].deducted) ded++; else keep++;
   });
-  return { ded: ded, keep: keep, und: und, total: list.length };
+  return { ded: ded, keep: keep, und: und, total: list.length, sep: sep, sepCharge: sepCharge };
 }
 
 function settleBodyHTML(sel, list){
   var rows = list.map(function(s){
-    var m = memberById(s.memberId), pkg = pkgById(s.packageId);
+    var sep = isSep(s);
+    var pkg = pkgById(s.packageId);
     var cur = sel.decisions[s.id];
     var rem = pkg ? pkg.remainingSessions : 0;
     var proj = rem;
-    if (cur) proj = Math.max(0, rem - (STATUS[cur].deducted ? 1 : 0) + (s.deducted ? 1 : 0));
-    var opts = STATUS_KEYS.map(function(k){
-      return '<button class="sopt' + (cur === k ? ' on' : '') + (cur === k && STATUS[k].deducted ? ' opt-ded' : '') +
+    if (!sep && cur) proj = Math.max(0, rem - (STATUS[cur].deducted ? 1 : 0) + (s.deducted ? 1 : 0));
+    var opts = statusKeysFor(s).map(function(k){
+      return '<button class="sopt' + (cur === k ? ' on' : '') + (cur === k && (sep ? CHARGED[k] : STATUS[k].deducted) ? ' opt-ded' : '') +
         '" data-act="settle-set" data-sid="' + s.id + '" data-status="' + k + '">' + STATUS[k].label + '</button>';
     }).join('');
+    var projText = sep
+      ? (cur ? (CHARGED[cur] ? '별도 수입 포함' : '수입 없음') : '미정')
+      : (cur ? '잔여 ' + rem + ' → <b>' + proj + '</b>' : '미정');
     return '<div class="srow' + (cur ? '' : ' pend') + '">' +
       '<div class="srowh">' +
-        '<span class="sname">' + esc(m ? m.name : '-') + '</span>' +
-        '<span class="dur' + (s.durationMinutes === 55 ? ' d55' : '') + '">' + s.durationMinutes + '분</span>' +
+        (sep ? '<span class="lkind lk-' + sepKind(s) + '">' + sepBadge(s) + '</span>' : '') +
+        '<span class="sname">' + esc(sessionName(s)) + '</span>' +
+        (sep ? '<span class="paytag">별도 ' + (sepFee(s) ? money(sepFee(s)) : '미입력') + '</span>'
+             : '<span class="dur' + (s.durationMinutes === 55 ? ' d55' : '') + '">' + s.durationMinutes + '분</span>') +
         '<span class="stime">' + s.startTime + '</span>' +
-        '<span class="sproj' + (cur ? '' : ' dim') + '">' + (cur ? '잔여 ' + rem + ' → <b>' + proj + '</b>' : '미정') + '</span>' +
+        '<span class="sproj' + (cur ? '' : ' dim') + '">' + projText + '</span>' +
       '</div>' +
-      '<div class="sopts">' + opts + '</div>' +
+      '<div class="sopts' + (sep ? ' n4' : '') + '">' + opts + '</div>' +
     '</div>';
   }).join('');
-  return '<div class="formnote">완료 · 당일취소 · 노쇼는 횟수를 <b>차감</b>하고, 일반취소 · 보강은 <b>차감하지 않아요</b>.<br>일반취소로 확정하면 그 레슨은 오늘·캘린더에서 지워지고, 이미 처리된 레슨을 바꿔 정산하면 차이가 잔여 횟수에 자동 반영됩니다.</div>' + rows;
+  return '<div class="formnote">완료 · 당일취소 · 노쇼는 횟수를 <b>차감</b>하고, 일반취소 · 보강은 <b>차감하지 않아요</b>.<br>' +
+    '<b>필드 · 숏게임(별도 결제)</b>은 수강권 횟수를 건드리지 않고 수입만 정산해요.<br>' +
+    '일반취소로 확정하면 그 레슨은 오늘·캘린더에서 지워지고, 이미 처리된 레슨을 바꿔 정산하면 차이가 잔여 횟수에 자동 반영됩니다.</div>' + rows;
 }
 
 function settleFooterHTML(sel, list){
   var t = settleTally(sel, list);
   var dis = t.und ? ' disabled' : '';
   var h = '<div class="sumline"><span>차감 <b>' + t.ded + '회</b> · 미차감 <b>' + t.keep + '회</b>' +
+    (t.sep ? ' · 별도 <b>' + t.sep + '건</b>' : '') +
     (t.und ? ' · 미정 <b>' + t.und + '건</b>' : '') + '</span><span>' + t.total + '건</span></div>';
   if (t.und) {
     h += '<div class="hintline">미정 ' + t.und + '건을 고르면 정산할 수 있어요.</div>' +
       '<button class="btn btn-sm btn-ghost btn-block" data-act="settle-all">남은 레슨 모두 완료로</button>' +
       '<div style="height:8px"></div>';
   }
-  h += '<button class="btn btn-primary btn-block" data-act="settle-apply"' + dis + '>정산 완료 · 차감 ' + t.ded + '회 반영</button>';
+  h += '<button class="btn btn-primary btn-block" data-act="settle-apply"' + dis + '>정산 완료 · 차감 ' + t.ded + '회' +
+    (t.sep ? ' · 별도 ' + t.sep + '건' : '') + ' 반영</button>';
   return h;
 }
 
@@ -1841,7 +1991,7 @@ function settleApply(){
   var t = settleTally(settleCtx.sel, settleCtx.list);
   if (t.und) { toast('미정 ' + t.und + '건을 먼저 골라주세요'); return; }
   var counts = { completed:0, same_day_cancel:0, no_show:0, excused_cancel:0, makeup:0 };
-  var deducted = 0, cleared = 0;
+  var deducted = 0, cleared = 0, sepCount = 0;
   settleCtx.list.forEach(function(s){
     var target = settleCtx.sel.decisions[s.id];
     if (!target) return;
@@ -1852,7 +2002,8 @@ function settleApply(){
       applyStatus(s, target);
     }
     counts[target] = (counts[target] || 0) + 1;
-    if (STATUS[target].deducted) deducted++;
+    if (isSep(s)) sepCount++;
+    else if (STATUS[target].deducted) deducted++;
     s.settledAt = nowLocalISO();
   });
   var rec = settlementFor(settleCtx.sel.date);
@@ -1860,13 +2011,15 @@ function settleApply(){
   rec.settledAt = nowLocalISO();
   rec.counts = counts;
   rec.deducted = deducted;
+  rec.sepCount = sepCount;
   state.settlements.sort(function(a,b){ return a.date < b.date ? 1 : -1; });
   save();
   var sh = settleCtx.sh;
   settleCtx = null;
   if (sh) sh.close();
   render();
-  toast('마감 정산 완료 · 차감 ' + deducted + '회 반영' + (cleared ? ' · 일반취소 ' + cleared + '건 일정에서 지움' : ''));
+  toast('마감 정산 완료 · 차감 ' + deducted + '회 반영' + (sepCount ? ' · 별도 ' + sepCount + '건' : '') +
+    (cleared ? ' · 일반취소 ' + cleared + '건 일정에서 지움' : ''));
 }
 
 /* 메모(예약 메모) 시트 */
@@ -1934,7 +2087,9 @@ function viewCalendar(){
   }
 
   var list = sessionsByDate(sel);
-  var d25 = list.filter(function(s){ return s.durationMinutes === 25; }).length;
+  var sepN = list.filter(isSep).length;
+  var passN = list.length - sepN;
+  var d25 = list.filter(function(s){ return !isSep(s) && s.durationMinutes === 25; }).length;
 
   var h = '<div class="monhdr"><div class="m">' + y + '년 ' + (m + 1) + '월</div>' +
     '<div class="navs">' +
@@ -1947,7 +2102,7 @@ function viewCalendar(){
     '<div class="grid">' + cells + '</div></div>';
 
   h += '<div class="dayhead"><div><div class="dh">' + fmtShort(sel) + '</div>' +
-    '<div class="ds">' + (list.length ? '레슨 ' + list.length + '건 · 25분 ' + d25 + ' · 55분 ' + (list.length - d25) : '예약 없음') + '</div></div>' +
+    '<div class="ds">' + (list.length ? '레슨 ' + list.length + '건 · 25분 ' + d25 + ' · 55분 ' + (passN - d25) + (sepN ? ' · 별도 결제 ' + sepN : '') : '예약 없음') + '</div></div>' +
     '<button class="btn btn-sm btn-primary" data-act="book-open">' + ICON.plus + ' 레슨 예약</button></div>';
 
   h += dayListHTML(sel);
@@ -1965,12 +2120,16 @@ function dayListHTML(dateStr){
   if (!list.length) return '';
   return '<div class="card" style="padding:2px 14px;margin-top:10px">' + list.map(function(s){
     var st = STATUS[s.status] || STATUS.scheduled;
+    var sep = isSep(s);
     return '<button class="drow" data-act="status-sheet" data-sid="' + s.id + '">' +
       '<span class="drow-t">' + s.startTime + '</span>' +
       '<span class="drow-b">' +
-        '<span class="drow-n">' + esc(memberName(s.memberId)) +
-          '<span class="dur' + (s.durationMinutes === 55 ? ' d55' : '') + '">' + s.durationMinutes + '분</span></span>' +
-        '<span class="drow-m">' + esc(s.location || '장소 미입력') + '</span>' +
+        '<span class="drow-n">' + (sep ? '<span class="lkind lk-' + sepKind(s) + '">' + sepBadge(s) + '</span>' : '') +
+          esc(sessionName(s)) +
+          (sep ? '' : '<span class="dur' + (s.durationMinutes === 55 ? ' d55' : '') + '">' + s.durationMinutes + '분</span>') + '</span>' +
+        '<span class="drow-m">' + esc(sep
+          ? '별도 결제 ' + sepFeeLine(s) + (s.location ? ' · ' + s.location : '')
+          : (s.location || '장소 미입력')) + '</span>' +
       '</span>' +
       '<span class="st st-' + st.cls + '">' + st.label + '</span></button>';
   }).join('') + '</div>';
@@ -2028,12 +2187,15 @@ function timelineHTML(dateStr){
     var hgt = Math.max(26, (it.b - it.a) / 60 * HOUR_H - 3);
     var w = 100 / laneCount;
     var st = STATUS[s.status] || STATUS.scheduled;
-    var pkg = pkgById(s.packageId);
+    var pkg = isSep(s) ? null : pkgById(s.packageId);
+    var sep = isSep(s);
     return '<button class="ev ev-' + st.cls + '" style="top:' + top + 'px;height:' + hgt + 'px;left:' + (it.lane * w).toFixed(3) +
       '%;width:calc(' + w.toFixed(3) + '% - 5px)" data-act="status-sheet" data-sid="' + s.id + '">' +
-      '<span class="ev-t">' + s.startTime + ' · ' + s.durationMinutes + '분</span>' +
-      '<span class="ev-n">' + esc(memberName(s.memberId)) + '</span>' +
-      (hgt >= 56 ? '<span class="ev-m">' + (pkg ? '잔여 ' + pkg.remainingSessions + '회 · ' : '') + esc(s.location || st.label) + '</span>' : '') +
+      '<span class="ev-t">' + s.startTime + ' · ' + s.durationMinutes + '분' + (sep ? ' · 별도' : '') + '</span>' +
+      '<span class="ev-n">' + (sep ? sepIcon(s) + ' ' : '') + esc(sessionName(s)) + '</span>' +
+      (hgt >= 56 ? '<span class="ev-m">' + esc(sep
+        ? '별도 ' + sepFeeLine(s) + (s.location ? ' · ' + s.location : '')
+        : ((pkg ? '잔여 ' + pkg.remainingSessions + '회 · ' : '') + (s.location || st.label))) + '</span>' : '') +
     '</button>';
   }).join('');
 
@@ -2057,42 +2219,146 @@ function openBookSheet(pre){
   pre = pre || {};
   var date = pre.date || ui.date || todayISO();
   var memberId = pre.memberId || (state.members[0] ? state.members[0].id : '');
+  var mode = (!state.members.length || pre.mode === 'sep') ? 'sep' : 'pass';
   var dur = pre.durationMinutes || 0;
   if (!dur) {
-    var aps = activePkgs(memberId);
+    var aps = memberId ? activePkgs(memberId) : [];
     dur = aps.length ? aps[0].durationMinutes : 55;
   }
   var time = pre.startTime || defaultTime();
-  if (!state.members.length) { toast('먼저 회원을 등록해 주세요'); openAddMemberSheet(null); return; }
-
-  var sh = openSheet({ title:'레슨 예약', sub:'회원 · 날짜 · 시간 · 25분/55분을 고르면 끝나요.' });
-  bookCtx = { sh: sh, dur: dur };
-  sh.body.innerHTML = bookBodyHTML(date, memberId, time);
-  sh.footer.style.display = '';
-  sh.footer.innerHTML = '<button class="btn btn-primary btn-block" data-act="book-save">예약 추가</button>';
-  refreshBkPkgs();
+  var sh = openSheet({
+    title:'레슨 예약',
+    sub:'수강권으로 하는 레슨과, 필드 · 숏게임처럼 따로 결제받는 레슨을 한 곳에서 잡아요.'
+  });
+  bookCtx = { sh: sh, mode: mode, kind:'field', target: state.members.length ? 'member' : 'guest', dur: dur,
+    sepDur: 120, date: date, time: time, memberId: memberId,
+    guest:'', fee:'', location:'', memo:'' };
+  paintBook();
 }
 
-function bookBodyHTML(date, memberId, time){
+/* 화면에서 고친 값을 기억해 두었다가 모드를 바꿔도 유지한다 */
+function bookSync(){
+  if (!bookCtx) return;
+  var el;
+  if ((el = document.getElementById('bkDate')) && el.value) bookCtx.date = el.value;
+  if ((el = document.getElementById('bkTime')) && el.value) bookCtx.time = el.value;
+  if ((el = document.getElementById('bkMember')) && el.value) bookCtx.memberId = el.value;
+  if ((el = document.getElementById('bkGuest'))) bookCtx.guest = el.value;
+  if ((el = document.getElementById('bkFee'))) bookCtx.fee = el.value;
+  if ((el = document.getElementById('bkLocation'))) bookCtx.location = el.value;
+  if ((el = document.getElementById('bkMemo'))) bookCtx.memo = el.value;
+  if ((el = document.getElementById('bkSepDur'))) {
+    var v = parseInt(String(el.value).replace(/[^0-9]/g, ''), 10);
+    if (v) bookCtx.sepDur = v;
+  }
+}
+
+function paintBook(){
+  if (!bookCtx || !bookCtx.sh) return;
+  var sh = bookCtx.sh;
+  sh.body.innerHTML = bookBodyHTML();
+  sh.footer.style.display = '';
+  sh.footer.innerHTML = '<button class="btn btn-primary btn-block" data-act="book-save">' +
+    (bookCtx.mode === 'sep' ? '별도 결제 레슨 추가' : '예약 추가') + '</button>';
+  if (bookCtx.mode === 'pass') refreshBkPkgs();
+  validateBook();
+}
+
+function bookModeSegHTML(){
+  return '<div class="seg modeseg">' +
+    '<button class="' + (bookCtx.mode === 'pass' ? 'on' : '') + '" data-act="bk-mode" data-v="pass">회원 수강권 레슨</button>' +
+    '<button class="' + (bookCtx.mode === 'sep' ? 'on' : '') + '" data-act="bk-mode" data-v="sep">필드·숏게임 (별도 결제)</button>' +
+  '</div>';
+}
+
+function bookBodyHTML(){
+  if (bookCtx.mode === 'sep') return bookModeSegHTML() + sepFormHTML('bk', bookCtx);
+  return bookModeSegHTML() + bookPassBodyHTML();
+}
+
+function bookPassBodyHTML(){
   var opts = state.members.map(function(m){
     return { v: m.id, label: m.name, sub: '잔여 ' + totalRemaining(m.id) + '회' };
   });
-  return '<div class="field"><label>회원</label>' + pickFieldHTML('bkMember', opts, memberId) + '</div>' +
+  return '<div class="field"><label>회원</label>' +
+      (opts.length ? pickFieldHTML('bkMember', opts, bookCtx.memberId)
+                   : '<div class="hint">등록된 회원이 없어요. [필드·숏게임]으로 이름만 적고 저장할 수 있어요.</div>') + '</div>' +
     '<div class="row2">' +
-      '<div class="field"><label>날짜</label>' + dateFieldHTML('bkDate', date) + '</div>' +
-      '<div class="field"><label>시작 시간</label>' + timeFieldHTML('bkTime', time) + '</div>' +
+      '<div class="field"><label>날짜</label>' + dateFieldHTML('bkDate', bookCtx.date) + '</div>' +
+      '<div class="field"><label>시작 시간</label>' + timeFieldHTML('bkTime', bookCtx.time) + '</div>' +
     '</div>' +
     '<div class="field"><label>수업 시간</label><div class="seg" id="bkDur">' +
       '<button class="' + (bookCtx.dur === 25 ? 'on' : '') + '" data-act="bk-dur" data-v="25">25분</button>' +
       '<button class="' + (bookCtx.dur === 55 ? 'on' : '') + '" data-act="bk-dur" data-v="55">55분</button>' +
-    '</div><div class="hint">25분은 짧은 스윙 체크, 55분은 정규 레슨이에요. 다른 단위도 나중에 추가할 수 있습니다.</div></div>' +
+    '</div><div class="hint">25분은 짧은 스윙 체크, 55분은 정규 레슨이에요.</div></div>' +
     '<div class="field"><label>차감할 수강권</label>'+ pickFieldHTML('bkPkg', [], '') + '<div class="hint" id="bkPkgHint"></div></div>' +
-    '<div class="field"><label>메모 (선택)</label><input class="input" id="bkMemo" placeholder="예: 드라이버 위주"></div>' +
-    '<div class="field"><label>장소 (선택)</label><input class="input" id="bkLocation" placeholder="예: 분당 실내연습장"></div>' +
+    '<div class="field"><label>메모 (선택)</label><input class="input" id="bkMemo" value="' + esc(bookCtx.memo) + '" placeholder="예: 드라이버 위주"></div>' +
+    '<div class="field"><label>장소 (선택)</label><input class="input" id="bkLocation" value="' + esc(bookCtx.location) + '" placeholder="예: 분당 실내연습장"></div>' +
     '<div id="bkWarn"></div>';
 }
 
+/* 필드 · 숏게임 별도 결제 폼 (예약 시트 · 빠른 추가 시트 공용)
+   p = 'bk' | 'qa' — 입력칸 id 접두사 */
+function sepFormHTML(p, cx){
+  var kind = cx.kind || 'field';
+  var target = cx.target || 'member';
+  var h = '<div class="field"><label>종류</label><div class="seg" id="' + p + 'Kind">' +
+    '<button class="' + (kind === 'field' ? 'on' : '') + '" data-act="' + p + '-kind" data-v="field">필드 레슨</button>' +
+    '<button class="' + (kind === 'shortgame' ? 'on' : '') + '" data-act="' + p + '-kind" data-v="shortgame">숏게임 레슨</button>' +
+  '</div><div class="hint">수강권 횟수는 차감하지 않고, 별도로 결제받은 금액만 수입에 잡혀요.</div></div>';
+
+  h += '<div class="field"><label>대상</label><div class="seg" id="' + p + 'Target">' +
+    '<button class="' + (target === 'member' ? 'on' : '') + '" data-act="' + p + '-target" data-v="member">회원</button>' +
+    '<button class="' + (target === 'guest' ? 'on' : '') + '" data-act="' + p + '-target" data-v="guest">비회원 · 팀</button>' +
+  '</div></div>';
+
+  if (target === 'member') {
+    var opts = state.members.map(function(m){
+      return { v: m.id, label: m.name, sub: '잔여 ' + totalRemaining(m.id) + '회' };
+    });
+    h += '<div class="field"><label>회원</label>' +
+      (opts.length ? pickFieldHTML(p + 'Member', opts, cx.memberId)
+                   : '<div class="hint">등록된 회원이 없어요. [비회원 · 팀]을 골라 이름만 적어 주세요.</div>') +
+      '<div class="hint">회원이어도 이 레슨은 수강권에서 차감하지 않아요.</div></div>';
+  } else {
+    h += '<div class="field"><label>비회원 이름 / 팀명</label>' +
+      '<input class="input" id="' + p + 'Guest" value="' + esc(cx.guest || '') + '" placeholder="예: 홍길동, 한빛상사 팀">' +
+      '<div class="hint">회원목록에는 저장되지 않아요.</div></div>';
+  }
+
+  h += '<div class="row2">' +
+    '<div class="field"><label>날짜</label>' + dateFieldHTML(p + 'Date', cx.date) + '</div>' +
+    '<div class="field"><label>시작 시간</label>' + timeFieldHTML(p + 'Time', cx.time) + '</div>' +
+  '</div>';
+
+  var dur = cx.sepDur || 120;
+  h += '<div class="field"><label>소요시간</label><div class="chips">' +
+    SEP_DURS.map(function(d){
+      return '<button class="chip' + (dur === d ? ' on' : '') + '" data-act="' + p + '-sepdur" data-v="' + d + '">' +
+        d + '분' + (d === 180 ? ' (반일)' : '') + '</button>';
+    }).join('') +
+    '<input class="input" id="' + p + 'SepDur" inputmode="numeric" value="' + dur +
+      '" aria-label="소요시간 직접 입력" style="width:92px;height:33px;border-radius:999px;text-align:center;font-size:14px;font-weight:800;padding:0 6px">' +
+  '</div><div class="hint">분 단위로 직접 적어도 돼요. 180분은 반일 필드로 잡아요.</div></div>';
+
+  h += '<div class="field"><label>골프장 / 장소</label>' +
+    '<input class="input" id="' + p + 'Location" value="' + esc(cx.location || '') + '" placeholder="예: 남서울CC, 판교 실내연습장"></div>';
+  h += '<div class="field"><label>별도 레슨비 (원 · 선택)</label>' +
+    '<input class="input" id="' + p + 'Fee" inputmode="numeric" value="' + esc(cx.fee || '') + '" placeholder="예: 150000">' +
+    '<div class="hint" id="' + p + 'FeeHint">' + feeHintHTML(cx.fee) + '</div></div>';
+  if (p === 'bk') h += '<div class="field"><label>메모 (선택)</label><input class="input" id="bkMemo" value="' + esc(cx.memo || '') + '" placeholder="예: 벙커샷 · 어프로치 위주"></div>';
+  h += '<div id="' + p + 'Warn"></div>';
+  return h;
+}
+
+function bookSepDurNow(){
+  var el = document.getElementById('bkSepDur');
+  var v = el ? parseInt(String(el.value).replace(/[^0-9]/g, ''), 10) : parseInt(bookCtx ? bookCtx.sepDur : 0, 10);
+  return v > 0 ? v : 0;
+}
+
 function refreshBkPkgs(){
+  if (bookCtx && bookCtx.mode === 'sep') { validateBook(); return; }
   var mEl = document.getElementById('bkMember');
   if (!mEl || !bookCtx) return;
   var list = activePkgs(mEl.value).filter(function(p){ return p.durationMinutes === bookCtx.dur; });
@@ -2119,46 +2385,104 @@ function refreshBkPkgs(){
 
 function validateBook(){
   if (!bookCtx) return;
-  var dEl = document.getElementById('bkDate'), tEl = document.getElementById('bkTime'), mEl = document.getElementById('bkMember');
   var w = document.getElementById('bkWarn');
-  if (!dEl || !tEl || !w) return;
+  if (!w) return;
+  var dEl = document.getElementById('bkDate'), tEl = document.getElementById('bkTime');
   var msgs = [];
-  var date = dEl.value, time = tEl.value;
-  if (!mEl || !mEl.value) msgs.push('회원을 골라주세요.');
+  var date = dEl ? dEl.value : (bookCtx.date || '');
+  var time = tEl ? tEl.value : (bookCtx.time || '');
+  var sep = bookCtx.mode === 'sep';
+  var dur = sep ? bookSepDurNow() : bookCtx.dur;
+  var who = '';
   if (!date) msgs.push('날짜를 골라주세요.');
   if (!time) msgs.push('시작 시간을 골라주세요.');
-  if (date && time) {
-    var a = minOf(time), b = a + bookCtx.dur;
+  if (sep) {
+    if (bookCtx.target === 'guest') {
+      var g = document.getElementById('bkGuest');
+      who = g ? g.value.trim() : '';
+      if (!who) msgs.push('비회원 이름이나 팀명을 적어주세요.');
+    } else {
+      var mm = document.getElementById('bkMember');
+      var mid = mm ? mm.value : bookCtx.memberId;
+      if (!mid) msgs.push('회원을 골라주세요.');
+      who = mid ? memberName(mid) : '';
+    }
+    if (!dur || dur < 15) msgs.push('소요시간을 15분 이상으로 넣어주세요.');
+  } else {
+    var mEl = document.getElementById('bkMember');
+    if (!mEl || !mEl.value) msgs.push('회원을 골라주세요.');
+    else who = memberName(mEl.value);
+    var pSel = document.getElementById('bkPkg');
+    if (pSel && !pSel.value) msgs.push('수강권을 골라주세요.');
+  }
+  if (date && time && dur) {
+    var a = minOf(time), b = a + dur;
     var clash = sessionsByDate(date).filter(function(s){
       if (s.status === 'excused_cancel' || s.status === 'same_day_cancel' || s.status === 'no_show') return false;
       return a < sessionEnd(s) && minOf(s.startTime) < b;
     });
-    if (clash.length) msgs.push(clash[0].startTime + '~' + hhmm(sessionEnd(clash[0])) + '에 ' + memberName(clash[0].memberId) + ' 레슨이 있어요.');
+    if (clash.length) msgs.push(clash[0].startTime + '~' + hhmm(sessionEnd(clash[0])) + '에 ' + sessionName(clash[0]) + ' 레슨이 있어요.');
   }
-  var pSel = document.getElementById('bkPkg');
-  if (pSel && !pSel.value) msgs.push('수강권을 골라주세요.');
-  w.innerHTML = msgs.length
-    ? '<div class="err">' + esc(msgs.join(' ')) + '</div>'
-    : '<div class="ok">' + fmtShort(date) + ' ' + time + ' · ' + bookCtx.dur + '분 예약할 수 있어요.</div>';
+  if (msgs.length) {
+    w.innerHTML = '<div class="err">' + esc(msgs.join(' ')) + '</div>';
+  } else if (sep) {
+    var feeEl = document.getElementById('bkFee');
+    var fee = feeNum(feeEl ? feeEl.value : bookCtx.fee);
+    w.innerHTML = '<div class="ok">' + sepIcon({ lessonKind: bookCtx.kind }) + ' ' + esc(sepKindName(bookCtx.kind)) + ' · ' +
+      esc(who) + ' · ' + fmtShort(date) + ' ' + time + ' · ' + dur + '분 · ' + (fee ? money(fee) : '금액 미입력') + '</div>';
+  } else {
+    w.innerHTML = '<div class="ok">' + fmtShort(date) + ' ' + time + ' · ' + bookCtx.dur + '분 예약할 수 있어요.</div>';
+  }
   var btn = bookCtx.sh.footer.querySelector('[data-act="book-save"]');
   if (btn) btn.disabled = msgs.length > 0;
 }
 
 function saveBooking(){
   if (!bookCtx) return;
-  var mEl = document.getElementById('bkMember'), dEl = document.getElementById('bkDate'), tEl = document.getElementById('bkTime');
-  var pEl = document.getElementById('bkPkg'), memoEl = document.getElementById('bkMemo');
-  var locEl = document.getElementById('bkLocation');
-  if (!mEl || !dEl || !tEl || !pEl) return;
-  if (!mEl.value || !dEl.value || !tEl.value || !pEl.value) return;
-  var pkg = pkgById(pEl.value);
-  var s = {
-    id: uid('lsn'), memberId: mEl.value, packageId: pkg ? pkg.id : '',
-    date: dEl.value, startTime: tEl.value, durationMinutes: bookCtx.dur,
-    location: locEl ? locEl.value.trim() : '',
-    status: 'scheduled', deducted: false, memo: memoEl ? memoEl.value.trim() : '', settledAt: '',
-    source: 'manual'
-  };
+  var dEl = document.getElementById('bkDate'), tEl = document.getElementById('bkTime');
+  if (!dEl || !tEl || !dEl.value || !tEl.value) { toast('날짜와 시간을 골라주세요'); return; }
+  var date = dEl.value, time = tEl.value, s = null, label = '';
+
+  if (bookCtx.mode === 'sep') {
+    var dur = bookSepDurNow();
+    if (!dur || dur < 15) { toast('소요시간을 넣어주세요'); return; }
+    var mid = null, guest = '';
+    if (bookCtx.target === 'guest') {
+      var gEl = document.getElementById('bkGuest');
+      guest = gEl ? gEl.value.trim() : '';
+      if (!guest) { toast('비회원 이름이나 팀명을 적어주세요'); return; }
+    } else {
+      var mEl = document.getElementById('bkMember');
+      mid = mEl ? mEl.value : '';
+      if (!mid) { toast('회원을 골라주세요'); return; }
+    }
+    var feeEl = document.getElementById('bkFee'), locEl = document.getElementById('bkLocation'), memoEl = document.getElementById('bkMemo');
+    var fee = feeNum(feeEl ? feeEl.value : bookCtx.fee);
+    s = {
+      id: uid('lsn'), memberId: mid || null, packageId: '',
+      guestName: guest, lessonKind: bookCtx.kind === 'shortgame' ? 'shortgame' : 'field',
+      separatePay: true, fee: fee,
+      date: date, startTime: time, durationMinutes: dur,
+      location: locEl ? locEl.value.trim() : '',
+      status: 'scheduled', deducted: false, charged: false,
+      memo: memoEl ? memoEl.value.trim() : '', settledAt: '', source: 'manual'
+    };
+    label = sepIcon({ lessonKind: s.lessonKind }) + ' ' + sepKindName(s.lessonKind) + ' · ' + (guest || memberName(mid));
+  } else {
+    var mEl2 = document.getElementById('bkMember'), pEl = document.getElementById('bkPkg');
+    var memoEl2 = document.getElementById('bkMemo'), locEl2 = document.getElementById('bkLocation');
+    if (!mEl2 || !pEl || !mEl2.value || !pEl.value) { toast('회원과 수강권을 골라주세요'); return; }
+    var pkg = pkgById(pEl.value);
+    s = {
+      id: uid('lsn'), memberId: mEl2.value, packageId: pkg ? pkg.id : '',
+      date: date, startTime: time, durationMinutes: bookCtx.dur,
+      location: locEl2 ? locEl2.value.trim() : '',
+      status: 'scheduled', deducted: false, memo: memoEl2 ? memoEl2.value.trim() : '', settledAt: '',
+      source: 'manual'
+    };
+    label = sessionName(s);
+  }
+
   state.sessions.push(s);
   save();
   ui.tab = 'calendar';
@@ -2168,7 +2492,7 @@ function saveBooking(){
   if (sh) sh.close();
   if (memberCtx) paintMemberSheet();
   render();
-  toast(memberName(s.memberId) + ' · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분 예약 추가');
+  toast(label + ' · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분 추가');
   calendarAfterAdd(s);
 }
 
@@ -2376,13 +2700,15 @@ function kakaoReport(o){
   var when = [];
   if (o.date) when.push(kakaoMD(o.date));
   if (o.time) when.push(o.time);
-  if (o.duration) when.push('(' + o.duration + '분)');
-  var head = (o.name || '') + '님';
+  if (o.duration) when.push('(' + (o.kindLabel ? o.kindLabel + ' ' : '') + o.duration + '분)');
+  var head = (o.name || '') + (o.guest ? '' : '님');
   if (when.length) head += ' · ' + when.join(' ');
   lines.push(head);
   if (o.total > 0 && o.remaining !== null && o.remaining !== undefined) {
     lines.push('잔여 횟수: ' + o.remaining + '/' + o.total + '회');
   }
+  if (o.fee) lines.push('별도 결제: ' + money(o.fee));
+  else if (o.sep) lines.push('별도 결제: 금액 미입력');
   if (o.point) lines.push('오늘 포인트: ' + o.point);
   return lines.join('\n');
 }
@@ -2390,14 +2716,18 @@ function kakaoReport(o){
 function kakaoReportForSession(sid){
   var s = findSession(sid);
   if (!s) return '';
-  var m = memberById(s.memberId);
-  var pkg = pkgById(s.packageId) || (m ? activePkgs(m.id)[0] : null);
+  var sep = isSep(s);
+  var m = s.memberId ? memberById(s.memberId) : null;
+  var pkg = sep ? null : (pkgById(s.packageId) || (m ? activePkgs(m.id)[0] : null));
   return kakaoReport({
     pro: (state.pro && state.pro.name) || '프로',
-    name: m ? m.name : '',
+    name: sep ? sessionName(s) : (m ? m.name : ''),
+    guest: sep && !s.memberId,
     date: s.date, time: s.startTime, duration: s.durationMinutes,
+    kindLabel: sep ? sepKindName(s.lessonKind) : '',
     remaining: pkg ? pkg.remainingSessions : null,
     total: pkg ? pkg.totalSessions : 0,
+    sep: sep, fee: sep ? sepFee(s) : 0,
     point: kakaoPointText(s, m)
   });
 }
@@ -3519,7 +3849,8 @@ function monthStats(ym){
     if (s.status === 'scheduled') return;
     r[s.status] = (r[s.status] || 0) + 1;
     r.total++;
-    if (STATUS[s.status] && STATUS[s.status].deducted) r.deducted++;
+    if (s.deducted) r.deducted++;
+    if (isSep(s)) r.sep = (r.sep || 0) + 1;
   });
   /* 일반취소는 일정에서 지워지므로 남겨 둔 기록(state.cancelLog)으로 집계한다 */
   (state.cancelLog || []).forEach(function(c){
@@ -3677,9 +4008,21 @@ function sessionPkg(s){
 
 function revenueRange(from, to){
   var all = [], total = 0, missing = 0, mmap = {}, rows = [];
+  var sepRows = [], sepTotal = 0, sepMissing = 0, sepCount = 0;
   state.sessions.forEach(function(s){
-    if (!s.deducted) return;
     if (s.date < from || s.date > to) return;
+    /* 필드 · 숏게임 = 별도 결제 수입 (수강권과 무관하게 따로 집계) */
+    if (isSep(s)) {
+      if (!s.charged) return;
+      var fee = sepFee(s);
+      sepCount++;
+      if (!fee) sepMissing++; else sepTotal += fee;
+      sepRows.push({ id: s.id, date: s.date, time: s.startTime, status: s.status,
+        memberId: s.memberId || '', name: sessionName(s), guest: !s.memberId,
+        kind: sepKind(s), dur: s.durationMinutes, unit: fee, missing: !(fee > 0), sep: true });
+      return;
+    }
+    if (!s.deducted) return;
     var unit = perSessionPrice(sessionPkg(s));
     all.push({ id: s.id, date: s.date, time: s.startTime, status: s.status,
       memberId: s.memberId, name: memberName(s.memberId), dur: s.durationMinutes,
@@ -3698,8 +4041,13 @@ function revenueRange(from, to){
     total += r.unit;
     rows.push(r);
   });
-  return { all: all, rows: rows, total: total, count: rows.length,
-    deducted: all.length, missing: missing, missingByMember: mmap };
+  sepRows.sort(function(a, b){
+    if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+    return minOf(b.time) - minOf(a.time);
+  });
+  return { all: all, rows: rows, passTotal: total, total: total + sepTotal, count: rows.length,
+    deducted: all.length, missing: missing, missingByMember: mmap,
+    sepRows: sepRows, sepTotal: sepTotal, sepCount: sepCount, sepMissing: sepMissing };
 }
 
 function revenueByMember(rows){
@@ -3745,6 +4093,18 @@ function revDetailSessions(rows){
   }).join('') + '</div>';
 }
 
+/* 필드 · 숏게임 별도 결제 상세 줄 */
+function revDetailSep(rows){
+  if (!rows || !rows.length) return '';
+  return '<div class="rvdetail">' + rows.map(function(r){
+    var st = STATUS[r.status] ? STATUS[r.status].label : '';
+    return '<div class="rvline sep' + (r.missing ? ' miss' : '') + '"><span class="n">' +
+      (r.kind === 'shortgame' ? '🎯' : '⛳') + ' ' + esc(r.name) +
+      '<span class="t">' + r.time + ' · ' + r.dur + '분 · ' + sepKindName(r.kind).replace(' 레슨', '') + ' · ' + st + '</span></span>' +
+      '<span class="a' + (r.missing ? ' miss' : '') + '">' + (r.missing ? '금액 미입력' : money(r.unit)) + '</span></div>';
+  }).join('') + '</div>';
+}
+
 function revMonthBody(ym, cur){
   var months = [], max = 1;
   for (var i = 5; i >= 0; i--) {
@@ -3765,15 +4125,34 @@ function revMonthBody(ym, cur){
     }).join('') + '</div></div>';
 
   var list = revenueByMember(cur.rows);
+  var shareBase = cur.passTotal || 0;
   h += '<div class="sec"><h2>회원별 기여</h2><span class="aside">' + list.length + '명 · 금액순</span></div>';
   h += '<div class="rvlist">' + (list.length ? list.map(function(x){
-    var share = cur.total ? Math.round(x.amount / cur.total * 100) : 0;
+    var share = shareBase ? Math.round(x.amount / shareBase * 100) : 0;
     return '<button class="rvmem" data-act="member-open" data-id="' + x.memberId + '">' +
       '<span class="rvmemhead"><span class="n">' + esc(x.name) + '</span>' +
         '<span class="c">' + x.count + '회 · ' + share + '%</span>' +
         '<span class="a">' + money(x.amount) + '</span></span>' +
       '<span class="rvshare"><i style="width:' + Math.max(3, share) + '%"></i></span></button>';
   }).join('') : '<div class="hint" style="margin:12px 2px">이 달에는 차감된 레슨이 없어요.</div>') + '</div>';
+
+  /* 필드 · 숏게임 별도 수입을 회원/비회원별로 따로 */
+  if (cur.sepCount) {
+    var smap = {}, slist = [];
+    cur.sepRows.forEach(function(r){
+      var k = r.name;
+      if (!smap[k]) { smap[k] = { name: r.name, kind: r.kind, count: 0, amount: 0 }; slist.push(smap[k]); }
+      smap[k].count++; smap[k].amount += r.unit;
+    });
+    slist.sort(function(a, b){ return b.amount - a.amount; });
+    h += '<div class="sec"><h2>필드 · 숏게임 별도 수입</h2><span class="aside">' + cur.sepCount + '건 · ' + money(cur.sepTotal) + '</span></div>';
+    h += '<div class="rvlist">' + slist.map(function(x){
+      return '<div class="rvmem" style="cursor:default">' +
+        '<span class="rvmemhead"><span class="n">' + (x.kind === 'shortgame' ? '🎯' : '⛳') + ' ' + esc(x.name) + '</span>' +
+          '<span class="c">' + x.count + '건</span>' +
+          '<span class="a">' + money(x.amount) + '</span></span></div>';
+    }).join('') + '</div>';
+  }
   return h;
 }
 
@@ -3782,7 +4161,9 @@ function revWeekBody(ym){
   for (var d = 1; d <= rng.last; d += 7) {
     var to = Math.min(rng.last, d + 6);
     var g = revenueRange(ym + '-' + pad(d), ym + '-' + pad(to));
-    weeks.push({ key: 'w' + d, idx: weeks.length + 1, from: d, to: to, total: g.total, deducted: g.deducted, missing: g.missing, rows: g.rows, missingByMember: g.missingByMember });
+    weeks.push({ key: 'w' + d, idx: weeks.length + 1, from: d, to: to, total: g.total,
+      passTotal: g.passTotal, sepTotal: g.sepTotal, deducted: g.deducted, sepCount: g.sepCount,
+      missing: g.missing, rows: g.rows, missingByMember: g.missingByMember, sepRows: g.sepRows });
     max = Math.max(max, g.total);
   }
   return '<div class="rvlist" style="margin-top:16px">' + weeks.map(function(w){
@@ -3791,27 +4172,38 @@ function revWeekBody(ym){
     return '<div class="rvitem">' +
       '<button class="rvrow" data-act="rev-open" data-key="' + w.key + '" data-open="' + (open ? 1 : 0) + '">' +
         '<span class="rvmain"><span class="rvtitle">' + w.idx + '주차</span>' +
-          '<span class="rvmeta">' + fmtDot(ym + '-' + pad(w.from)) + '~' + fmtDot(ym + '-' + pad(w.to)) + ' · 차감 ' + w.deducted + '회</span>' +
+          '<span class="rvmeta">' + fmtDot(ym + '-' + pad(w.from)) + '~' + fmtDot(ym + '-' + pad(w.to)) + ' · 차감 ' + w.deducted + '회' +
+            (w.sepCount ? ' · 별도 ' + w.sepCount + '건' : '') + '</span>' +
           '<span class="rvshare"><i style="width:' + share + '%"></i></span></span>' +
         '<span class="rvright"><span class="rvamt">' + money(w.total) + '</span>' +
           (w.missing ? '<span class="rvcnt">미입력 ' + w.missing + '건</span>' : '') + '</span>' +
         '<span class="rvchev">' + ICON.chev + '</span>' +
       '</button>' +
-      (open ? revDetailMembers(w.rows, w.missingByMember) : '') +
+      (open ? revDetailMembers(w.rows, w.missingByMember) + revDetailSep(w.sepRows) : '') +
     '</div>';
   }).join('') + '</div>';
 }
 
 function revDayBody(cur){
   var map = {}, days = [];
+  function bucket(date){
+    if (!map[date]) { map[date] = { key: 'd' + date, date: date, pass: 0, sep: 0, total: 0, count: 0, sepCount: 0, missing: 0, rows: [], sepRows: [] }; days.push(map[date]); }
+    return map[date];
+  }
   cur.all.forEach(function(r){
-    if (!map[r.date]) { map[r.date] = { key: 'd' + r.date, date: r.date, total: 0, count: 0, missing: 0, rows: [] }; days.push(map[r.date]); }
-    var d = map[r.date];
+    var d = bucket(r.date);
     d.count++;
     d.rows.push(r);
     if (r.missing) d.missing++;
-    else d.total += r.unit;
+    else d.pass += r.unit;
   });
+  cur.sepRows.forEach(function(r){
+    var d = bucket(r.date);
+    d.sepCount++;
+    d.sepRows.push(r);
+    if (!r.missing) d.sep += r.unit;
+  });
+  days.forEach(function(d){ d.total = d.pass + d.sep; });
   days.sort(function(a, b){ return a.date < b.date ? 1 : -1; });
   var max = 1;
   days.forEach(function(d){ max = Math.max(max, d.total); });
@@ -3825,13 +4217,14 @@ function revDayBody(cur){
     return '<div class="rvitem">' +
       '<button class="rvrow" data-act="rev-open" data-key="' + d.key + '" data-open="' + (open ? 1 : 0) + '">' +
         '<span class="rvmain"><span class="rvtitle">' + fmtDot(d.date) + ' (' + dow + ')</span>' +
-          '<span class="rvmeta">차감 ' + d.count + '회 · 회원 ' + revenueByMember(d.rows).length + '명</span>' +
+          '<span class="rvmeta">차감 ' + d.count + '회' + (d.sepCount ? ' · 별도 ' + d.sepCount + '건' : '') +
+            ' · 회원 ' + revenueByMember(d.rows).length + '명</span>' +
           '<span class="rvshare"><i style="width:' + share + '%"></i></span></span>' +
         '<span class="rvright"><span class="rvamt">' + money(d.total) + '</span>' +
           (d.missing ? '<span class="rvcnt">미입력 ' + d.missing + '건</span>' : '') + '</span>' +
         '<span class="rvchev">' + ICON.chev + '</span>' +
       '</button>' +
-      (open ? revDetailSessions(d.rows) : '') +
+      (open ? revDetailSessions(d.rows) + revDetailSep(d.sepRows) : '') +
     '</div>';
   }).join('') + '</div>';
 }
@@ -3844,21 +4237,39 @@ function viewRevenue(){
   var prng = monthFromTo(prevYm);
   var prev = revenueRange(prng.from, prng.to);
   var unit = ui.revUnit || 'month';
-  var avg = cur.count ? Math.round(cur.total / cur.count) : 0;
+  var avg = cur.count ? Math.round(cur.passTotal / cur.count) : 0;
   var diff = cur.total - prev.total;
 
   var h = statsMonthNav();
 
   h += '<div class="hero rvhero">' +
-      '<div class="k">' + monthLabel(ym) + ' 수입 · 차감된 레슨 기준</div>' +
+      '<div class="k">' + monthLabel(ym) + ' 수입 · 정산된 레슨 기준</div>' +
       '<div class="big">' + Number(cur.total).toLocaleString('ko-KR') + '<small>원</small></div>' +
       '<div class="row">' +
-        '<span class="pillstat">차감 ' + cur.deducted + '회</span>' +
-        (avg ? '<span class="pillstat">회당 평균 ' + money(avg) + '</span>' : '') +
+        '<span class="pillstat">수강권 ' + cur.deducted + '회</span>' +
+        (cur.sepCount ? '<span class="pillstat">⛳ 별도 ' + cur.sepCount + '건</span>' : '') +
+        (avg ? '<span class="pillstat">수강권 회당 ' + money(avg) + '</span>' : '') +
         (cur.missing ? '<span class="pillstat">미입력 ' + cur.missing + '건</span>' : '') +
         (prev.total ? '<span class="pillstat">' + (diff >= 0 ? '▲ ' : '▼ ') + money(Math.abs(diff)) + ' 전월 대비</span>' : '') +
       '</div>' +
     '</div>';
+
+  /* 수입 구성: 정규 수강권 / 필드 · 숏게임 별도 */
+  h += '<div class="rvsplit">' +
+      '<div class="si"><span class="k">정규 수강권 수입</span>' +
+        '<span class="v">' + money(cur.passTotal) + '</span>' +
+        '<span class="m">차감 ' + cur.deducted + '회</span></div>' +
+      '<div class="si sep"><span class="k">⛳ 필드 · 숏게임 별도 수입</span>' +
+        '<span class="v">' + money(cur.sepTotal) + '</span>' +
+        '<span class="m">' + (cur.sepCount
+          ? cur.sepCount + '건' + (cur.sepMissing ? ' · 금액 미입력 ' + cur.sepMissing + '건' : '')
+          : '이번 달 없음') + '</span></div>' +
+    '</div>';
+
+  if (cur.sepMissing > 0) {
+    h += '<div class="rvmiss" style="margin-top:10px"><div class="t">별도 결제 금액 미입력 ' + cur.sepMissing + '건</div>' +
+      '<div class="d">레슨어서 그 레슨을 열어 <b>별도 레슨비</b>를 넣으면 그만큼 수입에 더해집니다.</div></div>';
+  }
 
   if (cur.missing > 0) {
     h += '<div class="rvmiss"><div class="t">금액 미입력 ' + cur.missing + '건은 수입에서 빠졌어요</div>' +
@@ -3883,7 +4294,7 @@ function viewRevenue(){
   else if (unit === 'day') h += revDayBody(cur);
   else h += revMonthBody(ym, cur);
 
-  h += '<div class="hint">수입 = 차감된 레슨(완료·당일취소·노쇼) × 수강권 회당 금액. 예정·일반취소·보강은 빠지고, 회당 금액은 결제 금액 ÷ 총 횟수를 반올림해 계산합니다.</div>';
+  h += '<div class="hint">수입 = <b>정규 수강권 수입</b>(차감된 레슨 25·55분 × 수강권 회당 금액) + <b>필드 · 숏게임 별도 수입</b>(완료 · 당일취소 · 노쇼로 정산한 별도 레슨비). 예정 · 일반취소 · 보강은 빠지고, 회당 금액은 결제 금액 ÷ 총 횟수를 반올림해 계산합니다.</div>';
   return h;
 }
 
@@ -3900,12 +4311,13 @@ var qaCtx = null;
 var QA_EXAMPLES = [
   '내일 오후 3시 김민준 55분 분당',
   '11월 25일 14:30 박서연 판교연습장',
-  '모레 오전 10시 30분 이서연 강남'
+  '내일 오전 9시 필드 홍길동팀 120분 15만'
 ];
 
 function parseQuickLesson(text){
   var raw = String(text || '').trim();
-  var res = { date:'', time:'', location:'', memberName:'', memberId:'', duration:0, gender:'', found:{} };
+  var res = { date:'', time:'', location:'', memberName:'', memberId:'', duration:0, minutes:0,
+              gender:'', separate:false, kind:'', fee:0, found:{} };
   if (!raw) return res;
   var t = raw;
   var dp = parseDateFromText(raw);
@@ -3915,6 +4327,19 @@ function parseQuickLesson(text){
     if (dp.matchedRaw) t = t.replace(dp.matchedRaw, ' ');
   }
   var m;
+
+  /* 필드 · 숏게임 = 별도 결제 레슨 */
+  if ((m = t.match(/숏\s*게임/))) {
+    res.separate = true; res.kind = 'shortgame'; res.found.separate = true;
+    t = t.replace(m[0], ' ');
+  } else if ((m = t.match(/필드(?:\s*레슨)?/))) {
+    res.separate = true; res.kind = 'field'; res.found.separate = true;
+    t = t.replace(m[0], ' ');
+  }
+  if (res.separate) {
+    if ((m = t.match(/(\d+)\s*만\s*원?/))) { res.fee = (+m[1]) * 10000; res.found.fee = true; t = t.replace(m[0], ' '); }
+    else if ((m = t.match(/(\d{4,7})\s*원/))) { res.fee = +m[1]; res.found.fee = true; t = t.replace(m[0], ' '); }
+  }
 
   /* 시간 */
   if ((m = t.match(/(오전|오후|아침|저녁|밤)\s*(\d{1,2})\s*시(?:\s*(\d{1,2})\s*분)?/))) {
@@ -3934,10 +4359,14 @@ function parseQuickLesson(text){
     t = t.replace(m[0], ' ');
   }
 
-  /* 수업 시간 25분 / 55분 */
+  /* 수업 시간 25분 / 55분 (필드 · 숏게임은 적힌 분을 그대로 쓴다) */
   if ((m = t.match(/(\d{2,3})\s*분/))) {
     var v = +m[1];
-    if (v >= 10 && v <= 240) { res.duration = (v <= 35 ? 25 : 55); res.durationRaw = v; res.found.duration = true; }
+    if (v >= 10 && v <= 720) {
+      res.minutes = v;
+      res.duration = (v <= 35 ? 25 : 55);
+      res.durationRaw = v; res.found.duration = true;
+    }
     t = t.replace(m[0], ' ');
   }
 
@@ -3956,7 +4385,7 @@ function parseQuickLesson(text){
   toks.forEach(function(tok){
     var v = tok.replace(/[()\[\]"]/g, '').replace(/(님|씨|회원)$/, '').trim();
     if (!v) return;
-    if (!res.memberName && /^[가-힣]{2,4}$/.test(v) && !isRegionWord(v) && !isLevelWord(v) && !isNameStopWord(v)) { res.memberName = v; res.found.member = true; return; }
+    if (!res.memberName && /^[가-힣]{2,5}$/.test(v) && !isRegionWord(v) && !isLevelWord(v) && !isNameStopWord(v)) { res.memberName = v; res.found.member = true; return; }
     if (!res.memberName && /^[A-Za-z][A-Za-z.]{1,14}$/.test(v)) { res.memberName = v; res.found.member = true; return; }
     if (isLevelWord(v)) { res.level = v; return; }
     loc.push(v);
@@ -3973,16 +4402,23 @@ function parseQuickLesson(text){
 }
 
 function openQuickAddSheet(){
-  var sh = openSheet({ title:'레슨 빠른 추가', sub:'한 줄로 말하거나 적으면 날짜 · 시간 · 회원 · 장소를 알아서 채워요.' });
-  qaCtx = { sh: sh, duration: 55, parsedName: '', gender: '' };
-  sh.body.innerHTML = qaBodyHTML();
+  var sh = openSheet({
+    title:'레슨 빠른 추가',
+    sub:'한 줄로 말하거나 적으면 날짜 · 시간 · 회원 · 장소를 알아서 채워요. "필드"나 "숏게임"이 들어가면 별도 결제 레슨으로 잡아요.'
+  });
+  qaCtx = { sh: sh, mode: state.members.length ? 'pass' : 'sep',
+    kind:'field', target: state.members.length ? 'member' : 'guest', duration: 55, sepDur: 120,
+    date: ui.date, time: defaultTime(), memberId:'', location:'',
+    parsedName:'', parsed:null, gender:'', fee:'', guest:'' };
+  sh.body.innerHTML = qaQuickHTML() + '<div id="qaForm"></div>';
   sh.footer.style.display = '';
   sh.footer.innerHTML = '<button class="btn btn-primary btn-block" data-act="qa-save">캘린더에 추가</button>';
-  refreshQaMemberOptions(null, null);
+  paintQaForm();
   validateQuick();
 }
 
-function qaBodyHTML(){
+/* 위쪽 한 줄 입력 상자 (모드를 바꿔도 다시 그리지 않는다) */
+function qaQuickHTML(){
   return '<div class="quick">' +
     '<div class="qt">' + ICON.spark + '한 줄 입력 <span class="auto">자동 정리</span></div>' +
     '<textarea class="input" id="qaLine" placeholder="예) 내일 오후 3시 김민준 55분 분당"></textarea>' +
@@ -3991,18 +4427,37 @@ function qaBodyHTML(){
       return '<button class="chip" style="font-size:11px;padding:5px 9px" data-act="qa-example" data-v="' + esc(x) + '">' + esc(x) + '</button>';
     }).join('') + '</div>' +
     '<div class="parsebar" id="qaBar">날짜 · 시간 · 회원 · 장소를 알아서 나눠 담아요.</div>' +
-  '</div>' +
-  '<div class="row2">' +
-    '<div class="field"><label>날짜</label>' + dateFieldHTML('qaDate', ui.date) + '</div>' +
-    '<div class="field"><label>시간</label>' + timeFieldHTML('qaTime', defaultTime()) + '</div>' +
-  '</div>' +
-  '<div class="field"><label>회원</label>' + pickFieldHTML('qaMember', [], '') + '</div>' +
-  '<div class="field"><label>장소</label><input class="input" id="qaLocation" placeholder="예: 분당 실내연습장"></div>' +
-  '<div class="field"><label>수업 시간</label><div class="seg" id="qaDur">' +
-    '<button data-act="qa-dur" data-v="25">25분</button>' +
-    '<button class="on" data-act="qa-dur" data-v="55">55분</button>' +
-  '</div></div>' +
-  '<div id="qaWarn"></div>';
+  '</div>';
+}
+
+function paintQaForm(){
+  if (!qaCtx || !qaCtx.sh) return;
+  var el = document.getElementById('qaForm');
+  if (!el) return;
+  el.innerHTML = qaFormHTML();
+  var btn = qaCtx.sh.footer.querySelector('[data-act="qa-save"]');
+  if (btn) btn.textContent = qaCtx.mode === 'sep' ? '별도 결제 레슨 추가' : '캘린더에 추가';
+  if (qaCtx.mode === 'pass') refreshQaMemberOptions(qaCtx.parsed, qaCtx.memberId);
+}
+
+function qaFormHTML(){
+  var h = '<div class="seg modeseg">' +
+    '<button class="' + (qaCtx.mode === 'pass' ? 'on' : '') + '" data-act="qa-mode" data-v="pass">회원 수강권 레슨</button>' +
+    '<button class="' + (qaCtx.mode === 'sep' ? 'on' : '') + '" data-act="qa-mode" data-v="sep">필드·숏게임 (별도 결제)</button>' +
+  '</div>';
+  if (qaCtx.mode === 'sep') return h + sepFormHTML('qa', qaCtx);
+  return h +
+    '<div class="row2">' +
+      '<div class="field"><label>날짜</label>' + dateFieldHTML('qaDate', qaCtx.date) + '</div>' +
+      '<div class="field"><label>시간</label>' + timeFieldHTML('qaTime', qaCtx.time) + '</div>' +
+    '</div>' +
+    '<div class="field"><label>회원</label>' + pickFieldHTML('qaMember', [], qaCtx.memberId) + '</div>' +
+    '<div class="field"><label>장소</label><input class="input" id="qaLocation" value="' + esc(qaCtx.location) + '" placeholder="예: 분당 실내연습장"></div>' +
+    '<div class="field"><label>수업 시간</label><div class="seg" id="qaDur">' +
+      '<button class="' + (qaCtx.duration === 25 ? 'on' : '') + '" data-act="qa-dur" data-v="25">25분</button>' +
+      '<button class="' + (qaCtx.duration === 55 ? 'on' : '') + '" data-act="qa-dur" data-v="55">55분</button>' +
+    '</div></div>' +
+    '<div id="qaWarn"></div>';
 }
 
 function refreshQaMemberOptions(parsed, keep){
@@ -4027,28 +4482,55 @@ function setSegValue(segId, v){
   }
 }
 
+/* 화면에서 고친 값을 기억 (모드 전환 · 다시 그리기 전에) */
+function qaSyncFromDOM(){
+  if (!qaCtx) return;
+  var el;
+  if ((el = document.getElementById('qaDate')) && el.value) qaCtx.date = el.value;
+  if ((el = document.getElementById('qaTime')) && el.value) qaCtx.time = el.value;
+  if ((el = document.getElementById('qaLocation'))) qaCtx.location = el.value;
+  if ((el = document.getElementById('qaFee'))) qaCtx.fee = el.value;
+  if ((el = document.getElementById('qaGuest'))) qaCtx.guest = el.value;
+  if ((el = document.getElementById('qaMember')) && el.value && el.value !== '__new__') qaCtx.memberId = el.value;
+  if ((el = document.getElementById('qaSepDur'))) {
+    var v = parseInt(String(el.value).replace(/[^0-9]/g, ''), 10);
+    if (v) qaCtx.sepDur = v;
+  }
+}
+
+function qaSepDurNow(){
+  var el = document.getElementById('qaSepDur');
+  var v = el ? parseInt(String(el.value).replace(/[^0-9]/g, ''), 10) : parseInt(qaCtx ? qaCtx.sepDur : 0, 10);
+  return v > 0 ? v : 0;
+}
+
 function applyQuickParse(){
   if (!qaCtx) return;
   var ta = document.getElementById('qaLine');
   var bar = document.getElementById('qaBar');
   if (!ta) return;
   var p = parseQuickLesson(ta.value);
+  qaCtx.parsed = p;
   qaCtx.parsedName = p.memberName || '';
   qaCtx.gender = p.gender || '';
+  if (p.date) qaCtx.date = p.date;
+  if (p.time) qaCtx.time = p.time;
+  if (p.location) qaCtx.location = p.location;
 
-  var dEl = document.getElementById('qaDate'), tEl = document.getElementById('qaTime'), lEl = document.getElementById('qaLocation');
-  if (dEl && p.date) { dEl.value = p.date; syncDateLabel('qaDate'); }
-  if (tEl && p.time) { tEl.value = p.time; syncTimeLabel('qaTime'); }
-  if (lEl && p.location) lEl.value = p.location;
-  if (p.duration) { qaCtx.duration = p.duration; setSegValue('qaDur', p.duration); }
-
-  var sel = document.getElementById('qaMember');
-  if (sel) {
-    refreshQaMemberOptions(p, null);
-    if (p.memberId) sel.value = p.memberId;
-    else if (p.memberName) sel.value = '__new__';
-    syncPickLabel('qaMember');
+  if (p.separate) {
+    qaCtx.mode = 'sep';
+    qaCtx.kind = p.kind || 'field';
+    if (p.memberId) { qaCtx.target = 'member'; qaCtx.memberId = p.memberId; }
+    else if (p.memberName) { qaCtx.target = 'guest'; qaCtx.guest = p.memberName; qaCtx.memberId = ''; }
+    if (p.minutes) qaCtx.sepDur = p.minutes;
+    if (p.fee) qaCtx.fee = String(p.fee);
+  } else {
+    if (p.duration) qaCtx.duration = p.duration;
+    if (p.memberId) qaCtx.memberId = p.memberId;
+    else if (p.memberName) qaCtx.memberId = '__new__';
   }
+
+  paintQaForm();
 
   if (bar) {
     if (!ta.value.trim()) bar.innerHTML = '날짜 · 시간 · 회원 · 장소를 알아서 나눠 담아요.';
@@ -4056,8 +4538,15 @@ function applyQuickParse(){
       var bits = [];
       bits.push(p.date ? fmtShort(p.date) : '날짜 ?');
       bits.push(p.time || '시간 ?');
-      bits.push(p.memberName ? p.memberName + (p.memberId ? '' : '(새 회원)') : '회원 ?');
-      bits.push((p.duration || 55) + '분');
+      if (p.separate) {
+        bits.push(sepKindName(p.kind));
+        bits.push(p.memberName ? p.memberName + (p.memberId ? '' : '(비회원)') : '대상 ?');
+        bits.push((p.minutes || qaCtx.sepDur) + '분');
+        if (p.fee) bits.push(money(p.fee));
+      } else {
+        bits.push(p.memberName ? p.memberName + (p.memberId ? '' : '(새 회원)') : '회원 ?');
+        bits.push((p.duration || 55) + '분');
+      }
       if (p.location) bits.push(p.location);
       bar.innerHTML = '인식 결과 · <b>' + esc(bits.join(' · ')) + '</b>';
     }
@@ -4067,27 +4556,54 @@ function applyQuickParse(){
 
 function validateQuick(){
   if (!qaCtx) return;
+  var w = document.getElementById('qaWarn');
+  if (!w) return;
   var dEl = document.getElementById('qaDate'), tEl = document.getElementById('qaTime');
-  var sel = document.getElementById('qaMember'), w = document.getElementById('qaWarn');
-  if (!dEl || !tEl || !w || !sel) return;
   var msgs = [];
-  var date = dEl.value, time = tEl.value, mid = sel.value;
+  var date = dEl ? dEl.value : (qaCtx.date || '');
+  var time = tEl ? tEl.value : (qaCtx.time || '');
+  var sep = qaCtx.mode === 'sep';
+  var dur = sep ? qaSepDurNow() : (qaCtx.duration || 55);
+  var who = '';
   if (!date) msgs.push('날짜를 골라주세요.');
   if (!time) msgs.push('시간을 골라주세요.');
-  if (!mid) msgs.push('회원을 골라주세요.');
-  if (mid === '__new__' && !qaCtx.parsedName) msgs.push('새 회원 이름을 적어주세요.');
-  if (date && time) {
-    var a = minOf(time), b = a + (qaCtx.duration || 55);
+  if (sep) {
+    if (qaCtx.target === 'guest') {
+      var g = document.getElementById('qaGuest');
+      who = g ? g.value.trim() : (qaCtx.guest || '');
+      if (!who) msgs.push('비회원 이름이나 팀명을 적어주세요.');
+    } else {
+      var mm = document.getElementById('qaMember');
+      var mid = mm ? mm.value : qaCtx.memberId;
+      if (!mid) msgs.push('회원을 골라주세요.');
+      who = mid ? memberName(mid) : '';
+    }
+    if (!dur || dur < 15) msgs.push('소요시간을 15분 이상으로 넣어주세요.');
+  } else {
+    var sel = document.getElementById('qaMember');
+    var mid2 = sel ? sel.value : '';
+    if (!mid2) msgs.push('회원을 골라주세요.');
+    if (mid2 === '__new__' && !qaCtx.parsedName) msgs.push('새 회원 이름을 적어주세요.');
+    who = mid2 === '__new__' ? qaCtx.parsedName : (mid2 ? memberName(mid2) : '');
+  }
+  if (date && time && dur) {
+    var a = minOf(time), b = a + dur;
     var clash = sessionsByDate(date).filter(function(s){
       if (s.status === 'excused_cancel' || s.status === 'same_day_cancel' || s.status === 'no_show') return false;
       return a < sessionEnd(s) && minOf(s.startTime) < b;
     });
-    if (clash.length) msgs.push(clash[0].startTime + '에 ' + memberName(clash[0].memberId) + ' 레슨이 있어요.');
+    if (clash.length) msgs.push(clash[0].startTime + '에 ' + sessionName(clash[0]) + ' 레슨이 있어요.');
   }
-  w.innerHTML = msgs.length
-    ? '<div class="err">' + esc(msgs.join(' ')) + '</div>'
-    : '<div class="ok">' + fmtShort(date) + ' ' + time + ' · ' +
-      (mid === '__new__' ? '새 회원 ' + esc(qaCtx.parsedName) : memberName(mid)) + ' ' + (qaCtx.duration || 55) + '분</div>';
+  if (msgs.length) {
+    w.innerHTML = '<div class="err">' + esc(msgs.join(' ')) + '</div>';
+  } else if (sep) {
+    var fEl = document.getElementById('qaFee');
+    var fee = feeNum(fEl ? fEl.value : qaCtx.fee);
+    w.innerHTML = '<div class="ok">' + sepIcon({ lessonKind: qaCtx.kind }) + ' ' + esc(sepKindName(qaCtx.kind)) + ' · ' +
+      esc(who) + ' · ' + fmtShort(date) + ' ' + time + ' · ' + dur + '분 · ' + (fee ? money(fee) : '금액 미입력') + '</div>';
+  } else {
+    w.innerHTML = '<div class="ok">' + fmtShort(date) + ' ' + time + ' · ' + esc(who) + ' ' + (qaCtx.duration || 55) + '분</div>';
+  }
   var btn = qaCtx.sh.footer.querySelector('[data-act="qa-save"]');
   if (btn) btn.disabled = msgs.length > 0;
 }
@@ -4095,28 +4611,58 @@ function validateQuick(){
 function saveQuickLesson(){
   if (!qaCtx) return;
   var dEl = document.getElementById('qaDate'), tEl = document.getElementById('qaTime');
-  var sel = document.getElementById('qaMember'), lEl = document.getElementById('qaLocation');
-  if (!dEl || !tEl || !sel) return;
-  var date = dEl.value, time = tEl.value, mid = sel.value;
-  var loc = lEl ? lEl.value.trim() : '';
-  if (!date || !time || !mid) { toast('날짜 · 시간 · 회원을 채워주세요'); return; }
-  var dur = qaCtx.duration || 55;
-  if (mid === '__new__') {
-    var name = (qaCtx.parsedName || '').trim();
-    if (!name) { toast('새 회원 이름을 적어주세요'); return; }
-    var nm = { id: uid('mem'), name: name, gender: qaCtx.gender || '', region: '', phone: '', level: '', memo: '', since: todayISO() };
-    state.members.push(nm);
-    mid = nm.id;
+  if (!dEl || !tEl || !dEl.value || !tEl.value) { toast('날짜 · 시간을 채워주세요'); return; }
+  var date = dEl.value, time = tEl.value, s = null, label = '';
+
+  if (qaCtx.mode === 'sep') {
+    var dur = qaSepDurNow();
+    if (!dur || dur < 15) { toast('소요시간을 넣어주세요'); return; }
+    var mid = null, guest = '';
+    if (qaCtx.target === 'guest') {
+      var gEl = document.getElementById('qaGuest');
+      guest = gEl ? gEl.value.trim() : (qaCtx.guest || '');
+      if (!guest) { toast('비회원 이름이나 팀명을 적어주세요'); return; }
+    } else {
+      var mSel = document.getElementById('qaMember');
+      mid = mSel ? mSel.value : qaCtx.memberId;
+      if (!mid || mid === '__new__') { toast('회원을 골라주세요'); return; }
+    }
+    var lEl = document.getElementById('qaLocation'), fEl = document.getElementById('qaFee');
+    s = {
+      id: uid('lsn'), memberId: mid || null, packageId: '',
+      guestName: guest, lessonKind: qaCtx.kind === 'shortgame' ? 'shortgame' : 'field',
+      separatePay: true, fee: feeNum(fEl ? fEl.value : qaCtx.fee),
+      date: date, startTime: time, durationMinutes: dur,
+      location: lEl ? lEl.value.trim() : '',
+      status: 'scheduled', deducted: false, charged: false,
+      memo: '', settledAt: '', source: 'quick'
+    };
+    label = sepIcon({ lessonKind: s.lessonKind }) + ' ' + sepKindName(s.lessonKind) + ' · ' + (guest || memberName(mid));
+  } else {
+    var sel = document.getElementById('qaMember'), lEl2 = document.getElementById('qaLocation');
+    var mid3 = sel ? sel.value : '';
+    if (!mid3) { toast('회원을 골라주세요'); return; }
+    if (mid3 === '__new__') {
+      var name = (qaCtx.parsedName || '').trim();
+      if (!name) { toast('새 회원 이름을 적어주세요'); return; }
+      var nm = { id: uid('mem'), name: name, gender: qaCtx.gender || '', region: '', phone: '', level: '', memo: '', since: todayISO() };
+      state.members.push(nm);
+      mid3 = nm.id;
+    }
+    var dur2 = qaCtx.duration || 55;
+    var pkg = null;
+    activePkgs(mid3).forEach(function(p){
+      if (p.durationMinutes === dur2 && !pkg && !(p.expiryDate && p.expiryDate < todayISO())) pkg = p;
+    });
+    if (!pkg) activePkgs(mid3).forEach(function(p){ if (p.durationMinutes === dur2 && !pkg) pkg = p; });
+    s = {
+      id: uid('lsn'), memberId: mid3, packageId: pkg ? pkg.id : '', date: date, startTime: time,
+      durationMinutes: dur2, location: lEl2 ? lEl2.value.trim() : '',
+      status:'scheduled', deducted:false, memo:'', settledAt:'', source:'quick'
+    };
+    label = memberName(mid3) + ' ' + dur2 + '분';
   }
-  var pkg = null;
-  activePkgs(mid).forEach(function(p){
-    if (p.durationMinutes === dur && !pkg && !(p.expiryDate && p.expiryDate < todayISO())) pkg = p;
-  });
-  if (!pkg) activePkgs(mid).forEach(function(p){ if (p.durationMinutes === dur && !pkg) pkg = p; });
-  var s = {
-    id: uid('lsn'), memberId: mid, packageId: pkg ? pkg.id : '', date: date, startTime: time,
-    durationMinutes: dur, location: loc, status:'scheduled', deducted:false, memo:'', settledAt:'', source:'quick'
-  };
+
   state.sessions.push(s);
   save();
   ui.tab = 'calendar'; ui.date = date; ui.month = date.slice(0, 7);
@@ -4125,7 +4671,7 @@ function saveQuickLesson(){
   stopQaVoice();
   if (sh) sh.close();
   render();
-  toast(fmtShort(date) + ' ' + time + ' · ' + memberName(mid) + ' ' + dur + '분 추가');
+  toast(fmtShort(date) + ' ' + time + ' · ' + label + ' 추가');
   calendarAfterAdd(s);
 }
 
@@ -4379,7 +4925,8 @@ function onClick(e){
       save();
       if (w) closeSheetEl(w);
       render(true);
-      toast(STATUS[st].label + ' 처리' + (pkg ? ' · ' + memberName(s.memberId) + ' 잔여 ' + pkg.remainingSessions + '회' : ''));
+      if (isSep(s)) toast(STATUS[st].label + ' 처리 · ' + sessionName(s) + ' · 별도 수입 ' + (CHARGED[st] ? '포함' : '없음'));
+      else toast(STATUS[st].label + ' 처리' + (pkg ? ' · ' + memberName(s.memberId) + ' 잔여 ' + pkg.remainingSessions + '회' : ''));
       break;
     }
 
@@ -4393,7 +4940,7 @@ function onClick(e){
         save();
         render(true);
         var bs = uc.snap;
-        toast(memberName(bs.memberId) + ' ' + fmtDot(bs.date) + ' ' + bs.startTime + ' · ' +
+        toast(sessionName(bs) + ' ' + fmtDot(bs.date) + ' ' + bs.startTime + ' · ' +
           (STATUS[bs.status] ? STATUS[bs.status].label : '예정') + ' 상태로 되돌렸어요' +
           (uc.wasDeducted ? ' · 차감도 원래대로' : ''));
       }
@@ -4677,6 +5224,55 @@ function onClick(e){
       refreshBkPkgs();
       break;
 
+    /* ---------- 필드 · 숏게임 (별도 결제) ---------- */
+    case 'bk-mode':
+      if (!bookCtx) break;
+      bookSync();
+      bookCtx.mode = el.getAttribute('data-v') === 'sep' ? 'sep' : 'pass';
+      if (bookCtx.mode === 'sep' && !bookCtx.sepDur) bookCtx.sepDur = 120;
+      paintBook();
+      break;
+
+    case 'bk-kind':
+      if (!bookCtx) break;
+      bookSync();
+      bookCtx.kind = el.getAttribute('data-v') === 'shortgame' ? 'shortgame' : 'field';
+      paintBook();
+      break;
+
+    case 'bk-target':
+      if (!bookCtx) break;
+      bookSync();
+      bookCtx.target = el.getAttribute('data-v') === 'guest' ? 'guest' : 'member';
+      paintBook();
+      break;
+
+    case 'bk-sepdur':
+      if (!bookCtx) break;
+      bookCtx.sepDur = parseInt(el.getAttribute('data-v'), 10) || 120;
+      w = document.getElementById('bkSepDur');
+      if (w) w.value = bookCtx.sepDur;
+      for (i = 0; i < el.parentNode.children.length; i++) {
+        if (el.parentNode.children[i].getAttribute('data-act') === 'bk-sepdur') {
+          el.parentNode.children[i].classList.toggle('on', el.parentNode.children[i] === el);
+        }
+      }
+      validateBook();
+      break;
+
+    case 'sep-fee-save': {
+      var sf = findSession(el.getAttribute('data-sid'));
+      var fe = document.getElementById('sepFee');
+      if (!sf || !fe) break;
+      sf.fee = feeNum(fe.value);
+      save();
+      w = el.closest('.sheetwrap');
+      if (w) closeSheetEl(w);
+      render(true);
+      toast(sessionName(sf) + ' 별도 레슨비 ' + (sepFee(sf) ? money(sepFee(sf)) : '미입력') + ' 저장');
+      break;
+    }
+
     case 'book-save':
       saveBooking();
       break;
@@ -4700,6 +5296,44 @@ function onClick(e){
       if (!qaCtx) break;
       qaCtx.duration = parseInt(el.getAttribute('data-v'), 10) || 55;
       setSegValue('qaDur', qaCtx.duration);
+      validateQuick();
+      break;
+
+    case 'qa-mode': {
+      if (!qaCtx) break;
+      qaSyncFromDOM();
+      qaCtx.mode = el.getAttribute('data-v') === 'sep' ? 'sep' : 'pass';
+      paintQaForm();
+      validateQuick();
+      break;
+    }
+
+    case 'qa-kind':
+      if (!qaCtx) break;
+      qaSyncFromDOM();
+      qaCtx.kind = el.getAttribute('data-v') === 'shortgame' ? 'shortgame' : 'field';
+      paintQaForm();
+      validateQuick();
+      break;
+
+    case 'qa-target':
+      if (!qaCtx) break;
+      qaSyncFromDOM();
+      qaCtx.target = el.getAttribute('data-v') === 'guest' ? 'guest' : 'member';
+      paintQaForm();
+      validateQuick();
+      break;
+
+    case 'qa-sepdur':
+      if (!qaCtx) break;
+      qaCtx.sepDur = parseInt(el.getAttribute('data-v'), 10) || 120;
+      w = document.getElementById('qaSepDur');
+      if (w) w.value = qaCtx.sepDur;
+      for (i = 0; i < el.parentNode.children.length; i++) {
+        if (el.parentNode.children[i].getAttribute('data-act') === 'qa-sepdur') {
+          el.parentNode.children[i].classList.toggle('on', el.parentNode.children[i] === el);
+        }
+      }
       validateQuick();
       break;
 
@@ -4794,11 +5428,38 @@ function onFieldChange(e){
     if (b) b.textContent = fmtShort(e.target.value || todayISO());
   } else if (id === 'bkMember') {
     refreshBkPkgs();
+  } else if (id === 'bkGuest' || id === 'bkFee' || id === 'bkSepDur' || id === 'bkLocation' || id === 'bkMemo') {
+    if (bookCtx) {
+      if (id === 'bkGuest') bookCtx.guest = t.value;
+      else if (id === 'bkFee') {
+        bookCtx.fee = t.value;
+        var bh = document.getElementById('bkFeeHint');
+        if (bh) bh.innerHTML = feeHintHTML(t.value);
+      } else if (id === 'bkSepDur') {
+        var bv = parseInt(String(t.value).replace(/[^0-9]/g, ''), 10);
+        if (bv) bookCtx.sepDur = bv;
+      } else if (id === 'bkLocation') bookCtx.location = t.value;
+      else if (id === 'bkMemo') bookCtx.memo = t.value;
+    }
+    validateBook();
   } else if (id === 'bkDate' || id === 'bkTime') {
     validateBook();
   } else if (id === 'qaLine') {
     applyQuickParse();
-  } else if (id === 'qaDate' || id === 'qaTime' || id === 'qaMember' || id === 'qaLocation') {
+  } else if (id === 'qaGuest' || id === 'qaFee' || id === 'qaSepDur' || id === 'qaLocation') {
+    if (qaCtx) {
+      if (id === 'qaGuest') qaCtx.guest = t.value;
+      else if (id === 'qaFee') {
+        qaCtx.fee = t.value;
+        var qh = document.getElementById('qaFeeHint');
+        if (qh) qh.innerHTML = feeHintHTML(t.value);
+      } else if (id === 'qaSepDur') {
+        var qv = parseInt(String(t.value).replace(/[^0-9]/g, ''), 10);
+        if (qv) qaCtx.sepDur = qv;
+      } else if (id === 'qaLocation') qaCtx.location = t.value;
+    }
+    validateQuick();
+  } else if (id === 'qaDate' || id === 'qaTime' || id === 'qaMember') {
     validateQuick();
   }
 }
