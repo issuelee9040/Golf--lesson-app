@@ -112,6 +112,7 @@ function setup(){
   registry['sheetRoot'] = new FakeEl('div');
   sheetStack.length = 0;
   discardTarget = null;
+  discardConfirm = null;
   return registry['sheetRoot'];
 }
 
@@ -224,6 +225,18 @@ ok(!sh7.el.classList.contains('closing'), '7-1 글이 있으면 밀어도 닫히
 ok(sh7.sheet.style.transform === 'translateY(0)', '7-2 제자리로 돌아옴');
 ok(sheetStack.length === 2, '7-3 대신 확인 시트가 뜸');
 
+/* ---------- 8. 확인 시트를 Esc/바깥 탭으로 닫으면 다음에도 다시 물어본다 ---------- */
+setup();
+var sh8 = openSheet({ title: '회원 추가' });
+sh8.el.__guardClose = function(){ return '적은 내용이 있어요'; };
+sh8.el.fire('click', { target: sh8.el });
+var conf8 = sheetStack[sheetStack.length - 1];
+closeTopSheet();                                   /* Esc → 맨 위 확인 시트만 닫힘 */
+ok(sheetStack.length === 1 && sheetStack[0] === sh8.el, '9-1 확인 시트만 닫히고 원래 시트는 남음');
+ok(discardTarget === null && discardConfirm === null, '9-2 안내 대기 상태도 해제');
+sh8.el.fire('click', { target: sh8.el });           /* 다시 바깥을 누르면 또 물어봐야 함 */
+ok(sheetStack.length === 2, '9-3 다음 시도에 다시 확인 시트');
+
 JSON.stringify({ pass: log, fail: fails });
 """
 
@@ -245,16 +258,16 @@ def ok(c, n):
     checks.append((bool(c), n))
 
 ok('.quick textarea{min-height:78px;max-height:150px;background:var(--field);overflow-y:auto;' in CSS,
-   '8-1 한 줄 입력 칸은 최대 150px 에서 안에서 스크롤')
+   '9-1 한 줄 입력 칸은 최대 150px 에서 안에서 스크롤')
 ok('-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain;resize:none}' in CSS,
-   '8-2 아이폰 부드러운 스크롤 · 당겨서 새로고침 차단')
-ok('id="quickLine" rows="3" placeholder="김민수' in HTML, '8-3 회원 추가 한 줄 입력은 3줄 높이')
-ok("sh.el.__guardClose = function(){" in HTML, '8-4 회원 추가 시트에 글 보호 장치')
+   '9-2 아이폰 부드러운 스크롤 · 당겨서 새로고침 차단')
+ok('id="quickLine" rows="3" placeholder="김민수' in HTML, '9-3 회원 추가 한 줄 입력은 3줄 높이')
+ok("sh.el.__guardClose = function(){" in HTML, '9-4 회원 추가 시트에 글 보호 장치')
 ok("document.getElementById('quickLine')" in HTML and "document.getElementById('qaLine')" in HTML,
-   '8-5 두 한 줄 입력(회원·레슨) 모두 보호')
-ok('function fieldCanScroll(el, dy){' in HTML, '8-6 입력칸 스크롤 여지 판단 함수')
-ok('fieldCanScroll(st.fieldEl, dy)' in HTML, '8-7 스크롤 여지가 있으면 손대지 않음')
-ok('if (st.backdrop){' in HTML, '8-8 바깥 여백은 예전처럼 새로고침만 막음')
+   '9-5 두 한 줄 입력(회원·레슨) 모두 보호')
+ok('function fieldCanScroll(el, dy){' in HTML, '9-6 입력칸 스크롤 여지 판단 함수')
+ok('fieldCanScroll(st.fieldEl, dy)' in HTML, '9-7 스크롤 여지가 있으면 손대지 않음')
+ok('if (st.backdrop){' in HTML, '9-8 바깥 여백은 예전처럼 새로고침만 막음')
 
 for c, n in checks:
     print(('PASS ' if c else 'FAIL ') + n)

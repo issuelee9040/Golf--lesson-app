@@ -2339,6 +2339,7 @@ function requestSheetClose(wrap){
 }
 
 var discardTarget = null;
+var discardConfirm = null;   /* 확인 시트 그 자체 (Esc·바깥 탭으로 닫히면 대기 상태도 풀기) */
 /* 확인 시트의 두 갈래 — 계속 작성 / 그래도 닫기 */
 function discardStay(){
   discardTarget = null;
@@ -2353,7 +2354,7 @@ function discardAndClose(confirmWrap){
 function askDiscardClose(wrap, msg){
   if (discardTarget) return;
   discardTarget = wrap;
-  openSheet({
+  var sh = openSheet({
     title: '작성 중인 내용이 있어요',
     sub: '닫으면 방금 적어 둔 내용이 사라져요.',
     body: '<div class="formnote">' + msg + '</div>',
@@ -2361,10 +2362,15 @@ function askDiscardClose(wrap, msg){
       '<button class="btn btn-ghost" style="flex:0 0 44%" data-act="discard-stay">계속 작성</button>' +
       '<button class="btn btn-danger" style="flex:1" data-act="discard-close">그래도 닫기</button></div>'
   });
+  discardConfirm = sh.el;
 }
 
 function closeSheetEl(wrap){
   if (!wrap) return;
+  if (wrap === discardConfirm){       /* 확인 시트가 다른 경로(Esc·바깥 탭)로 닫혀도 안내 대기 해제 */
+    discardConfirm = null;
+    discardTarget = null;
+  }
   var i = sheetStack.indexOf(wrap);
   if (i >= 0) sheetStack.splice(i, 1);
   if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
