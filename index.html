@@ -366,6 +366,7 @@ main::-webkit-scrollbar{width:0}
 .tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
   padding:6px 0 4px;border-radius:12px;color:#9AA0A8;font-size:10.5px;font-weight:800;letter-spacing:-.2px}
 .tabbar button svg{width:23px;height:23px}
+.tabbar button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .tabbar button.on{color:var(--green)}
 /* ---------- sheet ---------- */
 .sheetwrap{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;
@@ -1408,7 +1409,8 @@ function render(keepScroll){
   if (ui.tab === 'today') html = viewToday();
   else if (ui.tab === 'calendar') html = viewCalendar();
   else if (ui.tab === 'members') html = viewMembers();
-  else html = viewStats();
+  else if (ui.tab === 'stats') html = viewStats();
+  else html = viewSettings();
   mainEl.innerHTML = html;
   renderTabbar();
   mainEl.scrollTop = sc;
@@ -1424,21 +1426,23 @@ function renderHeader(){
   var h = '';
   if (ui.tab === 'today') {
     h = '<div class="hd-left"><div><h1>오늘</h1><div class="sub">' + fmtLong(todayISO()) + ' · ' + esc(state.pro.name) + ' 프로</div></div></div>' +
-        '<button class="iconbtn" data-act="tab" data-tab="stats" aria-label="통계·설정">' + ICON.gear + '</button>';
+        '<button class="iconbtn" data-act="tab" data-tab="settings" aria-label="설정">' + ICON.gear + '</button>';
   } else if (ui.tab === 'calendar') {
     h = '<div class="hd-left"><div><h1>캘린더</h1><div class="sub">25 · 55분 · 필드 · 숏게임 일정</div></div></div>' +
         '<button class="iconbtn" data-act="book-open" aria-label="레슨 예약">' + ICON.plus + '</button>';
   } else if (ui.tab === 'members') {
     h = '<div class="hd-left"><div><h1>회원목록</h1><div class="sub">' + state.members.length + '명 · 활성 수강권 ' + activePkgCount() + '개</div></div></div>' +
         '<button class="iconbtn" data-act="member-add" aria-label="회원 추가">' + ICON.plus + '</button>';
-  } else {
+  } else if (ui.tab === 'stats') {
     h = '<div class="hd-left"><div><h1>통계</h1><div class="sub">' + (ui.stats === 'revenue' ? '월 · 주 · 일 수입' : monthLabel(ui.month) + ' 운영 현황') + '</div></div></div>';
+  } else {
+    h = '<div class="hd-left"><div><h1>설정</h1><div class="sub">프로 정보 · 외부 캘린더 · 출시 로드맵</div></div></div>';
   }
   document.getElementById('hd').innerHTML = h;
 }
 
 function renderTabbar(){
-  var tabs = [['today','오늘','sun'],['calendar','캘린더','cal'],['members','회원목록','users'],['stats','통계','chart']];
+  var tabs = [['today','오늘','sun'],['calendar','캘린더','cal'],['members','회원목록','users'],['stats','통계','chart'],['settings','설정','gear']];
   document.getElementById('tabbar').innerHTML = tabs.map(function(t){
     return '<button class="' + (ui.tab === t[0] ? 'on' : '') + '" data-act="tab" data-tab="' + t[0] + '">' +
       ICON[t[2]] + '<span>' + t[1] + '</span></button>';
@@ -3981,6 +3985,12 @@ function viewLessonStats(){
         '<div class="ts">' + t.durationMinutes + '분 · ' + t.sessions + '회 · ' + money(t.price) + '</div></div>' +
         '<button class="btn btn-sm btn-outline" data-act="tpl-use" data-id="' + t.id + '">등록</button></div>';
     }).join('') + '</div>';
+  return h;
+}
+
+/* 설정 탭 = 프로 정보 · 외부 캘린더 연동 · 앱스토어 출시 로드맵 */
+function viewSettings(){
+  var h = '';
 
   h += '<div class="sec"><h2>앱스토어 출시 로드맵</h2><span class="aside">현재 1단계</span></div><div class="card"><div class="rm">' +
     roadmapStep('cur', '1단계 · MVP 프로토타입', '지금 보고 있는 화면. 운동장에서 한 손으로 쓰는 흐름과 데이터 구조를 먼저 검증해요.') +
