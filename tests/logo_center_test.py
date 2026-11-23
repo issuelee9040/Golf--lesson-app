@@ -132,7 +132,7 @@ ok('4-2b 아이콘에 워드마크를 깃발 아래로 넣음', 'ICON_WORD_W' in
 ok('4-3 락업을 워드마크 중심에 맞춤', 'WORD_CENTER - POLE_X' in GEN)
 
 SPEC = open('/workspace/golf-lesson-app/spec.md', encoding='utf-8').read()
-ok('4-4 spec 에 깃대 정렬 기록', '깃대를 정확히 가운데로' in SPEC and 'logo_center_test' in SPEC)
+ok('4-4 spec 에 깃대 정렬 기록', '깃대' in SPEC and '깃발 위 · `ProPlan` 아래 정중앙' in SPEC and 'logo_center_test' in SPEC)
 
 failed = [n for n, c, d in OUT if not c]
 for n, c, d in OUT:
