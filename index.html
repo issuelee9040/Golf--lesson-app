@@ -72,9 +72,18 @@ h1,h2,h3,p{margin:0}
   margin:0 auto;height:100vh;height:100dvh;background:var(--bg);overflow:hidden;overscroll-behavior:none;
   box-shadow:0 0 0 1px rgba(16,24,40,.06),0 24px 70px rgba(16,24,40,.14);
 }
+/* ---------- 상단 브랜드 바 — 깃발 + ProPlan 워드마크가 왼쪽 ---------- */
+.brandbar{flex:none;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.brandbar .bb-lockup{display:block;height:21px}
+.brandbar .bb-lockup img{display:block;height:21px;width:auto}
+.brandbar .bb-black{display:none}
+html[data-theme="black"] .brandbar{background:#1B1B1F;border-bottom-color:rgba(255,255,255,.08)}
+html[data-theme="black"] .brandbar .bb-green{display:none}
+html[data-theme="black"] .brandbar .bb-black{display:block}
 /* ---------- header ---------- */
 .hd{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:16px 16px 8px;background:linear-gradient(180deg,var(--bg) 72%,rgba(242,242,247,0))}
+  padding:12px 16px 8px;background:linear-gradient(180deg,var(--bg) 72%,rgba(242,242,247,0))}
 .hd h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.2}
 .hd .sub{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
 .hd-left{display:flex;align-items:center;gap:10px;min-width:0}
@@ -180,6 +189,15 @@ html[data-theme="black"] .seg{background:#202026;border-color:rgba(255,255,255,.
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.16)}
 html[data-theme="black"] .seg button.on{background:#2E2E36;box-shadow:0 1px 3px rgba(0,0,0,.5)}
 .seg.mini{max-width:210px}
+/* 남/여 — 반투명 회색 띠가 아니라 '고르는 상자' 두 칸으로 보이게 */
+.seg.boxed{background:transparent;border:0;padding:0;gap:8px;max-width:210px}
+.seg.boxed button{height:45px;border-radius:12px;background:var(--field);border:1px solid #D3D8DF;
+  color:var(--ink2);box-shadow:var(--shadow)}
+.seg.boxed button.on{background:var(--green);border-color:var(--green-d);color:#fff;
+  box-shadow:0 6px 14px -7px rgba(15,123,74,.6)}
+html[data-theme="black"] .seg.boxed button{background:#202026;border-color:rgba(255,255,255,.16);color:#C9CDD4}
+html[data-theme="black"] .seg.boxed button.on{background:var(--green-solid);border-color:#34D399;color:#fff;
+  box-shadow:0 6px 16px -8px rgba(52,211,153,.65)}
 .statsseg button.on,.rvunit button.on{color:var(--green-d)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{padding:7px 12px;border-radius:999px;background:var(--gray-soft);font-size:12.5px;font-weight:800;color:var(--ink2);border:1px solid transparent}
@@ -187,6 +205,9 @@ html[data-theme="black"] .seg button.on{background:#2E2E36;box-shadow:0 1px 3px 
 /* 소요시간 직접 입력 — 프리셋 칩과 같은 모양의 빈 입력칸(반투명 '직접 입력' 안내) */
 .chips.durchips{gap:5px}
 .chips.durchips .chip{padding:7px 11px}
+/* 횟수 프리셋 — 30회를 빼고 다섯 개가 390px에서도 한 줄에 꽉 차게 */
+.chips.countrow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.chips.countrow .chip{padding:8px 0;text-align:center;border-radius:11px;font-size:12.5px}
 input.chipinp{flex:none;width:104px;height:33px;border-radius:999px;padding:0 10px;text-align:center;
   font-size:16px;font-weight:800;letter-spacing:-.3px}
 input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);opacity:.8;letter-spacing:-.2px}
@@ -466,6 +487,11 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .sopts{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:9px}
 .sopt{height:31px;border-radius:8px;background:var(--gray-soft);font-size:10.5px;font-weight:800;color:var(--sopt-ink);
   text-align:center;letter-spacing:-.3px;display:flex;align-items:center;justify-content:center}
+/* 고르기 전에도 '1회 차감' 성격이 보이도록 당일취소는 옅은 호박, 노쇼는 옅은 빨강 */
+.sopt.sopt-same_day_cancel:not(.on){background:var(--amber-soft);color:var(--amber-ink);
+  box-shadow:inset 0 0 0 1px var(--amber-line)}
+.sopt.sopt-no_show:not(.on){background:var(--red-soft);color:var(--red-ink);
+  box-shadow:inset 0 0 0 1px var(--red-line)}
 .sopt.on{background:#111820;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.18)}
 .sopt.on.opt-ded{background:var(--green-d)}
 .statusrow{display:flex;align-items:center;gap:9px;width:100%;padding:8px 12px;border-radius:12px;
@@ -540,7 +566,7 @@ html[data-theme="black"] .qlb{background:rgba(255,255,255,.08);color:#B9BEC7}
 /* 회원목록 맨 위 '한 줄로 회원 추가' — 앱에서 가장 먼저 누르는 카드라 에메랄드로 확실히 띄웁니다 */
 .quickadd{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;width:100%;
   background:linear-gradient(140deg,#12975A 0%,#0C7146 56%,#075537 100%);
-  border:1px solid rgba(6,58,36,.34);border-radius:18px;padding:14px;margin-bottom:10px;text-align:left;
+  border:1px solid rgba(6,58,36,.34);border-radius:18px;padding:15px 14px;margin-bottom:10px;text-align:left;
   box-shadow:0 12px 26px -14px rgba(7,64,40,.62),inset 0 1px 0 rgba(255,255,255,.18)}
 .quickadd:before{content:"";position:absolute;right:-30px;top:-52px;width:140px;height:140px;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle at 36% 36%,rgba(255,255,255,.22),rgba(255,255,255,0) 70%)}
@@ -553,8 +579,8 @@ html[data-theme="black"] .qlb{background:rgba(255,255,255,.08);color:#B9BEC7}
 .quickadd .qa-k{display:flex;align-items:center;gap:6px;font-size:14.5px;font-weight:800;color:#fff;letter-spacing:-.3px}
 .quickadd .qa-k .qa-new{flex:none;font-size:9.5px;font-weight:800;letter-spacing:.2px;color:#0A5133;
   background:#CFEFDD;border-radius:5px;padding:2px 5px}
-.quickadd .qa-d{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.83);margin-top:3px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.1px}
+.quickadd .qa-d{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.86);margin-top:4px;
+  white-space:normal;overflow:visible;text-overflow:clip;line-height:1.5;letter-spacing:-.1px}
 .quickadd .qa-d b{color:#fff;font-weight:800}
 .quickadd .qa-go{position:relative;flex:none;display:inline-flex;align-items:center;gap:2px;height:30px;
   padding:0 9px 0 11px;border-radius:10px;background:rgba(255,255,255,.95);color:#0A5C37;
@@ -674,6 +700,11 @@ html[data-theme="black"] .btn.micbtn{background:rgba(70,214,156,.16);border-colo
   border:1px solid var(--line);font-size:11px;font-weight:800;color:var(--ink2);letter-spacing:-.2px;box-shadow:var(--shadow)}
 .tagchip.on{border:1px solid var(--green);background:var(--green-soft);color:var(--green-d);box-shadow:inset 0 0 0 1px var(--green-mid)}
 .tagchip:active{transform:scale(.97)}
+/* 오늘 레슨 메모 — 입력칸 아래 날짜 표시와 자동 태그 미리보기 */
+.tm-when{margin-left:auto;font-size:11px;font-weight:800;color:var(--green-d);letter-spacing:-.2px}
+.tm-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-height:19px;margin-top:9px}
+.tm-taghint{font-size:10.5px;font-weight:700;color:var(--muted)}
+html[data-theme="black"] .tm-when{color:#9BF0C9}
 /* ---------- 카톡 요약 복사 (1초 리포트) — 반투명 노랑 ---------- */
 .btn.btn-kakao{background:rgba(250,204,21,.18);border:1px solid rgba(250,204,21,.45);color:#5C4300;font-weight:800;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 6px 16px -10px rgba(190,150,0,.55);
@@ -976,6 +1007,10 @@ html[data-theme="black"] .sheet .sf{border-color:var(--line)}
 html[data-theme="black"] .srow.pend{background:#1F1B14;border-color:var(--amber-line)}
 html[data-theme="black"] .sopt.on{background:#E9EBEF;color:#0B0F14}
 html[data-theme="black"] .sopt.on.opt-ded{background:var(--green-solid);color:#fff}
+html[data-theme="black"] .sopt.sopt-same_day_cancel:not(.on){background:rgba(240,168,60,.14);color:#F0BE7A;
+  box-shadow:inset 0 0 0 1px rgba(240,168,60,.28)}
+html[data-theme="black"] .sopt.sopt-no_show:not(.on){background:rgba(242,106,90,.15);color:#F2AEA5;
+  box-shadow:inset 0 0 0 1px rgba(242,106,90,.30)}
 html[data-theme="black"] .statusrow.on{box-shadow:0 0 0 2px rgba(70,214,156,.16)}
 /* 빠른 추가 · 한 줄 입력 */
 html[data-theme="black"] .quick{background:linear-gradient(180deg,rgba(70,214,156,.10),rgba(70,214,156,.04));border-color:rgba(70,214,156,.24)}
@@ -1067,6 +1102,12 @@ html[data-theme="black"] .sp-bar>i{background:linear-gradient(90deg,rgba(255,255
   </div>
 </div>
 <div id="app">
+  <div class="brandbar" id="brandbar">
+    <span class="bb-lockup">
+      <img class="bb-green" src="assets/proplan-bar-green.png" alt="ProPlan" width="634" height="120" decoding="async">
+      <img class="bb-black" src="assets/proplan-bar-black.png" alt="ProPlan" width="634" height="120" decoding="async">
+    </span>
+  </div>
   <header class="hd" id="hd"></header>
   <main id="main"></main>
   <button class="fab" id="fab" data-act="quick-add" aria-label="레슨 빠른 추가" style="display:none"><span>+</span></button>
@@ -2195,7 +2236,8 @@ function closeSheetEl(wrap){
   if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
   if (memberCtx && memberCtx.sh && memberCtx.sh.el === wrap) { stopVoice(); memberCtx = null; }
   if (settleCtx && settleCtx.sh && settleCtx.sh.el === wrap) settleCtx = null;
-  if (addCtx && addCtx.sh && addCtx.sh.el === wrap) addCtx = null;
+  if (addCtx && addCtx.sh && addCtx.sh.el === wrap) { if (voice.kind === 'am') vrStop(); addCtx = null; }
+  if (tmCtx && tmCtx.sh && tmCtx.sh.el === wrap) { if (voice.kind === 'tm') vrStop(); tmCtx = null; }
   if (bookCtx && bookCtx.sh && bookCtx.sh.el === wrap) bookCtx = null;
   if (pkgCtx && pkgCtx.sh && pkgCtx.sh.el === wrap) pkgCtx = null;
   if (qaCtx && qaCtx.sh && qaCtx.sh.el === wrap) { stopQaVoice(); qaCtx = null; }
@@ -2716,7 +2758,7 @@ function lessonCard(s){
       (sep ? '' : '<div class="bar"><i class="' + (rem <= LOW_LIMIT ? 'low' : '') + '" style="width:' + pct + '%"></i></div>') +
       '<div class="chiprow mt10">' + actions +
         '<button class="btn btn-sm btn-ghost" data-act="note-open" data-sid="' + s.id + '">메모</button>' +
-        (s.memberId ? '<button class="btn btn-sm btn-ghost" data-act="member-open" data-id="' + s.memberId + '">레슨 차트</button>' : '') +
+        (s.memberId ? '<button class="btn btn-sm btn-ghost" data-act="tm-open" data-sid="' + s.id + '">레슨 차트</button>' : '') +
       '</div>' +
     '</div></div></div>';
 }
@@ -2822,7 +2864,7 @@ function settleBodyHTML(sel, list){
     var proj = rem;
     if (!sep && cur) proj = Math.max(0, rem - (STATUS[cur].deducted ? 1 : 0) + (s.deducted ? 1 : 0));
     var opts = statusKeysFor(s).map(function(k){
-      return '<button class="sopt' + (cur === k ? ' on' : '') + (cur === k && (sep ? CHARGED[k] : STATUS[k].deducted) ? ' opt-ded' : '') +
+      return '<button class="sopt sopt-' + k + (cur === k ? ' on' : '') + (cur === k && (sep ? CHARGED[k] : STATUS[k].deducted) ? ' opt-ded' : '') +
         '" data-act="settle-set" data-sid="' + s.id + '" data-status="' + k + '">' + STATUS[k].label + '</button>';
     }).join('');
     var projText = sep
@@ -2911,6 +2953,107 @@ function openSessionMemoSheet(sid){
     footer: '<button class="btn btn-primary btn-block" data-act="sm-save" data-sid="' + s.id + '">저장</button>'
   });
   sh.el.setAttribute('data-sheet', 'session-memo');
+}
+
+/* =========================================================
+   오늘 레슨 메모 — 오늘 탭 카드의 [레슨 차트]
+   그 회원의 '그 레슨 날짜' 기록만 빠르게 적는 작은 창입니다.
+   여러 날짜 기록 고치기·지우기·태그 필터는 예전처럼 회원 정보창과
+   캘린더(레슨 상태 → 정보·레슨 차트 열기)에서 합니다.
+   ========================================================= */
+var tmCtx = null;
+
+function memoNoteFor(memberId, date){
+  var hit = null;
+  (state.notes || []).forEach(function(n){
+    if (n.memberId === memberId && n.date === date) hit = n;
+  });
+  return hit;
+}
+
+function openTodayMemoSheet(sid){
+  var s = findSession(sid);
+  if (!s) return;
+  if (!s.memberId) { toast('비회원 레슨은 레슨 메모를 써 주세요'); return; }
+  var m = memberById(s.memberId);
+  var date = s.date || todayISO();
+  var prev = memoNoteFor(s.memberId, date);
+  var when = fmtDot(date) + ' ' + s.startTime + (isSep(s) ? '' : ' · ' + s.durationMinutes + '분');
+  var sh = openSheet({
+    title: '오늘 레슨 메모',
+    sub: esc(m ? m.name : '-') + ' · ' + when
+  });
+  tmCtx = { sh: sh, sid: s.id, memberId: s.memberId, date: date, voiceUsed: false };
+  sh.el.setAttribute('data-sheet', 'today-memo');
+  sh.body.innerHTML =
+    '<div class="field"><label>오늘 레슨에서 다룬 내용</label>' +
+      '<textarea class="input" id="tmText" placeholder="예: 드라이버 백스윙 교정, 오른팔 펴기 유지">' + esc(prev ? prev.text : '') + '</textarea></div>' +
+    '<div class="crow">' +
+      '<button class="btn btn-sm micbtn" id="tmVoiceBtn" data-act="tm-voice">🎤 음성 입력</button>' +
+      '<span class="tm-when">' + fmtShort(date) + ' 차트에 저장</span>' +
+    '</div>' +
+    '<div class="tm-tags" id="tmTags"></div>' +
+    '<div class="hint" id="tmHint">' + (prev
+      ? '이 날짜에 적어 둔 메모를 불러왔어요. 고쳐서 저장하면 차트의 그 기록이 바뀝니다.'
+      : '말하거나 적으면 클럽·영역 태그가 자동으로 붙어요.') + '</div>' +
+    '<div class="hint">전체 레슨 차트는 회원 정보에서 볼 수 있어요.</div>';
+  sh.footer.style.display = '';
+  sh.footer.innerHTML = '<div style="display:flex;gap:8px">' +
+    '<button class="btn btn-ghost" style="flex:0 0 38%" data-act="tm-kakao" data-sid="' + s.id + '">카톡 요약</button>' +
+    '<button class="btn btn-primary" style="flex:1" data-act="tm-save" data-sid="' + s.id + '">차트에 저장</button></div>';
+  paintTodayMemoTags();
+}
+
+/* 적는 동안 붙는 태그 미리보기 */
+function paintTodayMemoTags(){
+  var box = document.getElementById('tmTags');
+  if (!box) return;
+  var ta = document.getElementById('tmText');
+  var tags = detectGolfTags(ta ? ta.value : '');
+  box.innerHTML = tags.length
+    ? tags.map(noteTagHTML).join('')
+    : '<span class="tm-taghint">태그 자동</span>';
+}
+
+function toggleTmVoice(){
+  if (!document.getElementById('tmText')) return;
+  if (voice.want) {
+    var wasTm = (voice.kind === 'tm');
+    vrStop();
+    if (wasTm) {
+      var h = document.getElementById('tmHint');
+      if (h) h.innerHTML = '음성 입력을 멈췄어요. 🎤를 다시 누르면 이어서 들을 수 있어요.';
+    }
+    return;
+  }
+  vrStart('tm');
+}
+
+function saveTodayMemo(){
+  if (!tmCtx) return;
+  var ta = document.getElementById('tmText');
+  var text = ta ? ta.value.trim() : '';
+  if (!text) { toast('오늘 레슨 내용을 먼저 적어주세요'); if (ta) ta.focus(); return; }
+  var mid = tmCtx.memberId, date = tmCtx.date;
+  var wasVoice = !!(tmCtx.voiceUsed || (voice.want && voice.kind === 'tm'));
+  var tags = detectGolfTags(text);
+  var prev = memoNoteFor(mid, date);
+  if (prev) {
+    prev.text = text; prev.tags = tags; prev.createdAt = nowLocalISO();
+    if (wasVoice) prev.source = 'voice';
+  } else {
+    state.notes.push({
+      id: uid('note'), memberId: mid, date: date, text: text,
+      createdAt: nowLocalISO(), source: wasVoice ? 'voice' : 'text', raw: text, tags: tags
+    });
+  }
+  save();
+  var sh = tmCtx.sh;
+  tmCtx = null;
+  if (voice.kind === 'tm') vrStop();
+  if (sh) sh.close();
+  render(true);
+  toast(fmtShort(date) + ' · 레슨 차트에 저장했어요');
 }
 
 /* =========================================================
@@ -4101,25 +4244,29 @@ function vrSR(){ return window.SpeechRecognition || window.webkitSpeechRecogniti
 
 function vrEls(kind){
   if (kind === 'qa') return { ta: document.getElementById('qaLine'), btn: document.getElementById('qaVoiceBtn'), hint: document.getElementById('qaBar') };
+  if (kind === 'am') return { ta: document.getElementById('quickLine'), btn: document.getElementById('amVoiceBtn'), hint: document.getElementById('parseBar') };
+  if (kind === 'tm') return { ta: document.getElementById('tmText'), btn: document.getElementById('tmVoiceBtn'), hint: document.getElementById('tmHint') };
   return { ta: document.getElementById('noteText'), btn: document.getElementById('voiceBtn'), hint: document.getElementById('noteHint') };
+}
+
+/* 음성 버튼 하나를 '듣는 중' 으로 칠하고/되돌립니다 */
+function vrPaintBtn(btn, on){
+  if (!btn) return;
+  if (on) btn.classList.add('rec'); else btn.classList.remove('rec');
+  btn.textContent = on ? '듣는 중…' : '🎤 음성 입력';
 }
 
 function vrPaint(){
   var on = !!voice.want, kind = voice.kind;
-  var nb = document.getElementById('voiceBtn');
-  if (nb) {
-    if (on && kind === 'note') nb.classList.add('rec'); else nb.classList.remove('rec');
-    nb.textContent = (on && kind === 'note') ? '듣는 중…' : '🎤 음성 입력';
-  }
-  var qb = document.getElementById('qaVoiceBtn');
-  if (qb) {
-    if (on && kind === 'qa') qb.classList.add('rec'); else qb.classList.remove('rec');
-    qb.textContent = (on && kind === 'qa') ? '듣는 중…' : '🎤 음성 입력';
-  }
+  vrPaintBtn(document.getElementById('voiceBtn'), on && kind === 'note');
+  vrPaintBtn(document.getElementById('qaVoiceBtn'), on && kind === 'qa');
+  vrPaintBtn(document.getElementById('amVoiceBtn'), on && kind === 'am');
+  vrPaintBtn(document.getElementById('tmVoiceBtn'), on && kind === 'tm');
   /* 멈춘 뒤에도 입력칸은 항상 열려 있어야 합니다 */
-  var nt = document.getElementById('noteText'), qt = document.getElementById('qaLine');
-  if (nt) { nt.disabled = false; nt.readOnly = false; }
-  if (qt) { qt.disabled = false; qt.readOnly = false; }
+  ['noteText', 'qaLine', 'quickLine', 'tmText'].forEach(function(id){
+    var t = document.getElementById(id);
+    if (t) { t.disabled = false; t.readOnly = false; }
+  });
 }
 
 /* 인식기에서 손을 떼고 마이크 세션을 반납합니다 */
@@ -4143,6 +4290,8 @@ function vrJoin(a, b){
 function vrRefresh(kind){
   try {
     if (kind === 'qa') applyQuickParse();
+    else if (kind === 'am') applyQuickLine();
+    else if (kind === 'tm') paintTodayMemoTags();
     else { refreshNoteDate(); refreshNoteTags(); }
   } catch(e){}
 }
@@ -4170,6 +4319,7 @@ function vrTakeResult(e){
   if (finals) {
     voice.committed = vrJoin(voice.committed, finals);
     if (kind === 'note' && memberCtx) memberCtx.voiceUsed = true;
+    if (kind === 'tm' && tmCtx) tmCtx.voiceUsed = true;
   }
   var next = vrJoin(vrJoin(voice.base, voice.committed), interim);
   if (ta.value !== next) ta.value = next;
@@ -4312,6 +4462,7 @@ function vrStart(kind){
   voice.committed = '';
   voice.lastWritten = els.ta.value;
   if (kind === 'note' && memberCtx) memberCtx.voiceUsed = false;
+  if (kind === 'tm' && tmCtx) tmCtx.voiceUsed = false;
   vrPaint();
   toast('말씀하세요 · 다시 누르면 멈춰요');
   vrAttempt(voice.gen);
@@ -4435,6 +4586,7 @@ function addMemberBodyHTML(m, tpl){
     h += '<div class="quick">' +
       '<div class="qt">' + ICON.spark + '한 줄 간편 입력 <span class="auto">여러 명 한꺼번에</span></div>' +
       '<textarea class="input" id="quickLine" rows="3" placeholder="김민수 4/10회 80만원&#10;박영희 잔여 4회&#10;이서연 55분 8회 여 판교"></textarea>' +
+      '<div class="crow"><button class="btn btn-sm btn-outline" id="amVoiceBtn" data-act="am-voice">🎤 음성 입력</button></div>' +
       '<div class="chips mt10" style="gap:5px">' + QUICK_EXAMPLES.map(function(x){
         return '<button class="chip" style="font-size:11px;padding:5px 9px" data-act="quick-example" data-v="' + esc(x) + '">' + esc(x) + '</button>';
       }).join('') +
@@ -4447,7 +4599,7 @@ function addMemberBodyHTML(m, tpl){
   h += '<div id="addForm">';
   h += '<div class="field"><label>이름</label><input class="input" id="mfName" value="' + esc(m ? m.name : '') + '" placeholder="예) 김민준"></div>';
   h += '<div class="row2">' +
-    '<div class="field"><label>성별</label><div class="seg mini" id="mfGender">' +
+    '<div class="field"><label>성별</label><div class="seg mini boxed" id="mfGender">' +
       '<button class="' + (m && m.gender === 'male' ? 'on' : '') + '" data-act="mf-gender" data-v="male">남</button>' +
       '<button class="' + (m && m.gender === 'female' ? 'on' : '') + '" data-act="mf-gender" data-v="female">여</button>' +
     '</div></div>' +
@@ -4466,14 +4618,15 @@ function addMemberBodyHTML(m, tpl){
         '<button data-act="mf-dur" data-v="25">25분</button>' +
         '<button class="on" data-act="mf-dur" data-v="55">55분</button>' +
       '</div></div>' +
-      '<div class="field"><label>횟수</label>' +
+      '<div class="field"><label>횟수 (선택)</label>' +
         '<div class="row2">' +
-          '<input class="input" id="mfSessions" type="number" inputmode="numeric" min="1" step="1" value="10" placeholder="총 횟수">' +
+          '<input class="input" id="mfSessions" type="number" inputmode="numeric" min="1" step="1" placeholder="횟수 입력">' +
           '<input class="input" id="mfRemain" type="number" inputmode="numeric" min="0" step="1" placeholder="남은 횟수(선택)">' +
         '</div>' +
-        '<div class="chips mt10">' + [1,5,8,10,16,20,30].map(function(n){
+        '<div class="chips countrow mt10" id="mfCountChips">' + [1,5,8,10,20].map(function(n){
           return '<button class="chip" data-act="mf-count" data-v="' + n + '">' + n + '회</button>';
         }).join('') + '</div>' +
+        '<div class="hint" id="mfCountHint">횟수는 비워도 돼요 — 비우면 <b>수강권 없이 회원만</b> 등록되고, 나중에 회원 정보에서 넣을 수 있어요.</div>' +
         '<div class="hint" id="mfRemainHint">이미 몇 번 진행한 회원이면 <b>남은 횟수</b>를 같이 적어 주세요. 비우면 전체 횟수로 등록돼요.</div>' +
       '</div>' +
       '<div class="row2">' +
@@ -4511,9 +4664,9 @@ function setGenderUI(v){
   if (addCtx) addCtx.gender = v;
 }
 function setCountChips(v){
-  var wrap = document.getElementById('mfSessions');
+  var wrap = document.getElementById('mfCountChips');
   if (!wrap) return;
-  var chips = wrap.parentNode.querySelectorAll('.chip');
+  var chips = wrap.querySelectorAll('.chip');
   for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', chips[i].getAttribute('data-v') === String(v));
 }
 
@@ -4531,9 +4684,10 @@ function updateUnit(){
   if (c) setCountChips(n);
   var hint = document.getElementById('mfRemainHint');
   if (hint) {
+    hint.style.display = n > 0 ? '' : 'none';
     if (n > 0 && rn > n) hint.innerHTML = '남은 횟수는 총 횟수보다 클 수 없어요.';
     else if (n > 0 && rn > 0) hint.innerHTML = '총 <b>' + n + '회</b> 중 <b>잔여 ' + rn + '회</b>로 등록해요' + (price > 0 ? ' · 회당 약 <b>' + money(Math.round(price / n)) + '</b>' : '');
-    else hint.innerHTML = '이미 몇 번 진행한 회원이면 <b>남은 횟수</b>를 같이 적어 주세요. 비우면 전체 횟수로 등록돼요.';
+    else if (n > 0) hint.innerHTML = '이미 몇 번 진행한 회원이면 <b>남은 횟수</b>를 같이 적어 주세요. 비우면 전체 횟수로 등록돼요.';
   }
 }
 
@@ -4667,10 +4821,10 @@ function saveMember(){
   }
 
   var sessions = parseInt(val('mfSessions'), 10);
-  if (!(sessions > 0)) sessions = 10;
-  /* 이미 차감된 회원은 '남은 횟수'로 등록 — 비우면 전체 횟수 */
-  var remain = parseInt(val('mfRemain'), 10);
-  if (!(remain > 0) || remain > sessions) remain = sessions;
+  var hasPass = sessions > 0;          /* 횟수는 선택 — 비우면 수강권 없이 회원만 */
+  /* 이미 차감된 회원은 '남은 횟수'로 등록 — 비우면 전체 개수 */
+  var remain = hasPass ? parseInt(val('mfRemain'), 10) : 0;
+  if (hasPass && (!(remain > 0) || remain > sessions)) remain = sessions;
   var start = val('mfStart') || todayISO();
   var months = parseInt(val('mfMonths'), 10);
   if (isNaN(months)) months = 6;
@@ -4683,19 +4837,22 @@ function saveMember(){
     phone: phone, level: level, memo: memo, since: todayISO()
   };
   state.members.push(nm);
-  var pkg = {
-    id: uid('pkg'), memberId: nm.id, durationMinutes: dur,
-    totalSessions: sessions, remainingSessions: remain,
-    startDate: start, expiryDate: months > 0 ? addMonths(start, months) : '9999-12-31',
-    price: price, note: ''
-  };
-  state.packages.push(pkg);
+  if (hasPass) {
+    state.packages.push({
+      id: uid('pkg'), memberId: nm.id, durationMinutes: dur,
+      totalSessions: sessions, remainingSessions: remain,
+      startDate: start, expiryDate: months > 0 ? addMonths(start, months) : '9999-12-31',
+      price: price, note: ''
+    });
+  }
   save();
   addCtx.sh.close(); addCtx = null;
   ui.tab = 'members';
   render();
   openMemberSheet(nm.id);
-  toast(name + ' 회원 추가 · ' + dur + '분 ' + sessions + '회' + (remain < sessions ? ' (잔여 ' + remain + '회)' : ''));
+  toast(hasPass
+    ? (name + ' 회원 추가 · ' + dur + '분 ' + sessions + '회' + (remain < sessions ? ' (잔여 ' + remain + '회)' : ''))
+    : (name + ' 회원 추가 · 수강권 없이'));
 }
 
 /* =========================================================
@@ -5837,6 +5994,23 @@ function toggleQaVoice(){
 
 function stopQaVoice(){ vrStop(); }
 
+/* 회원 추가 시트의 한 줄 입력 — 선택형 음성 입력 */
+function toggleAmVoice(){
+  if (!document.getElementById('quickLine')) return;
+  if (voice.want) {
+    var wasAm = (voice.kind === 'am');
+    vrStop();
+    if (wasAm) {
+      var bar = document.getElementById('parseBar');
+      if (bar) bar.innerHTML = '음성 입력을 멈췄어요. 🎤를 다시 누르면 이어서 들을 수 있어요.';
+    }
+    return;
+  }
+  vrStart('am');
+}
+
+function stopAmVoice(){ vrStop(); }
+
 /* =========================================================
    이벤트
    ========================================================= */
@@ -6217,6 +6391,28 @@ function onClick(e){
       openSessionMemoSheet(el.getAttribute('data-sid'));
       break;
 
+    /* ---------- 오늘 레슨 메모 (오늘 탭 카드의 [레슨 차트]) ---------- */
+    case 'tm-open':
+      openTodayMemoSheet(el.getAttribute('data-sid'));
+      break;
+
+    case 'tm-voice':
+      toggleTmVoice();
+      break;
+
+    case 'tm-save':
+      saveTodayMemo();
+      break;
+
+    case 'tm-kakao': {
+      var tmk = kakaoReportForSession(el.getAttribute('data-sid'));
+      if (!tmk) { toast('복사할 레슨 정보가 없어요'); break; }
+      copyText(tmk, function(ok){
+        toast(ok ? '카톡용 레슨 요약이 복사됐어요' : '복사가 안 됐어요 · 다시 눌러 주세요', { ms: ok ? 2200 : 3000 });
+      });
+      break;
+    }
+
     /* ---------- 카톡 요약 복사 ---------- */
     case 'kakao-copy': {
       var ksid = el.getAttribute('data-sid');
@@ -6474,6 +6670,10 @@ function onClick(e){
       toggleQaVoice();
       break;
 
+    case 'am-voice':
+      toggleAmVoice();
+      break;
+
     case 'qa-example': {
       var ql = document.getElementById('qaLine');
       if (ql) { ql.value = el.getAttribute('data-v'); applyQuickParse(); }
@@ -6612,6 +6812,8 @@ function onFieldChange(e){
   } else if (id === 'noteText') {
     refreshNoteDate();
     refreshNoteTags();
+  } else if (id === 'tmText') {
+    paintTodayMemoTags();
   } else if (id === 'rqSessions') {
     if (!renewCtx) return;
     var rn = parseInt(e.target.value, 10);
