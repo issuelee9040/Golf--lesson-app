@@ -3,9 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F6F7F8">
+<meta name="theme-color" content="#F2F2F7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<!-- 홈 화면에 추가(standalone)했을 때 상태 바 글자색: 그린 화이트는 어두운 글자(default),
+     시크 블랙은 밝은 글자(black). 아래 부트스트랩이 첫 페인트 전에 저장된 테마에 맞춰 바꿉니다. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="ProPlan">
 <meta name="application-name" content="ProPlan">
 <meta name="description" content="ProPlan — 프로의 레슨 · 회원 · 일정 관리">
@@ -30,7 +33,9 @@
   } catch(e){}
   document.documentElement.setAttribute('data-theme', t);
   var mc = document.querySelector('meta[name="theme-color"]');
-  if (mc) mc.setAttribute('content', t === 'black' ? '#141416' : '#F6F7F8');
+  if (mc) mc.setAttribute('content', t === 'black' ? '#131316' : '#F2F2F7');
+  var sb = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+  if (sb) sb.setAttribute('content', t === 'black' ? 'black' : 'default');
 })();
 </script>
 <style>
@@ -77,7 +82,11 @@ h1,h2,h3,p{margin:0}
    같은 로고를 글자 모양 그대로 딴 벡터 경로(인라인 SVG)로 그립니다.
    바탕은 아래 .hd 그라데이션과 같은 --bg 로 이어 붙여 경계선·흐림이 없습니다. */
 .brandbar{flex:none;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:9px 16px 8px;background:var(--bg);border-bottom:0}
+  padding:9px 16px 8px;background:var(--bg);border-bottom:0;
+  /* 홈 화면에 추가한 앱은 viewport-fit=cover 라 화면이 상태 바 밑까지 올라갑니다.
+     그대로 두면 시계·배터리 뒤로 로고가 비쳐 흐릿하게 겹치므로, 상태 바 높이만큼 바탕색을 더 채웁니다.
+     사파리 브라우저 안에서는 env() 값이 0 이라 지금과 똑같이 보입니다. */
+  padding-top:calc(9px + env(safe-area-inset-top, 0px))}
 .brandbar .bb-lockup{display:flex;align-items:center;height:21px;line-height:0}
 .brandbar .bb-svg{display:block;height:21px;width:107px;overflow:visible}
 .brandbar .bb-flag{fill:#0F7B4A}
@@ -913,7 +922,7 @@ html[data-theme="black"] .brandfoot .bf-tag{background:#26262C;color:#8B9099}
 .themecard.on{border-color:var(--green);box-shadow:0 0 0 3px rgba(15,123,74,.10)}
 .tprev{position:relative;display:block;height:88px;border-radius:11px;overflow:hidden}
 .tprev.green{background:#F2F2F7;box-shadow:inset 0 0 0 1px #E3E6EB}
-.tprev.black{background:#141416;box-shadow:inset 0 0 0 1px #2C2C33}
+.tprev.black{background:#131316;box-shadow:inset 0 0 0 1px #2C2C33}
 .tprev i{position:absolute;display:block}
 .tprev .tp-h{left:9px;top:11px;width:34%;height:5px;border-radius:3px;background:#0B0F14}
 .tprev .tp-c{left:9px;right:9px;top:23px;height:26px;border-radius:7px;background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.08)}
@@ -1599,8 +1608,9 @@ var ui = { tab:'today', date: todayISO(), memberId: null, search:'', month: toda
 
 /* ---------- 화면 테마 (그린 화이트 · 시크 블랙) ---------- */
 var THEMES = {
-  green: { label:'🌿 그린 화이트', note:'밝은 시그니처', meta:'#F6F7F8' },
-  black: { label:'🖤 시크 블랙',   note:'무광 차콜',   meta:'#141416' }
+  /* meta = 상태 바/브라우저 상단 색. 상단 바 바탕(--bg)과 같은 값으로 맞춰 이음매가 보이지 않게 합니다 */
+  green: { label:'🌿 그린 화이트', note:'밝은 시그니처', meta:'#F2F2F7' },
+  black: { label:'🖤 시크 블랙',   note:'무광 차콜',   meta:'#131316' }
 };
 function themeOf(){ return (state && state.theme === 'black') ? 'black' : 'green'; }
 /* <html data-theme> · 브라우저 상단 색 · 빠른 부팅용 짧은 키를 한 번에 맞춥니다 */
@@ -1609,6 +1619,9 @@ function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
   var mc = document.querySelector('meta[name="theme-color"]');
   if (mc) mc.setAttribute('content', THEMES[t].meta);
+  /* 홈 화면 앱의 상태 바 글자색도 테마를 따라갑니다 (아이폰은 다음 실행 때 반영) */
+  var sb = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+  if (sb) sb.setAttribute('content', t === 'black' ? 'black' : 'default');
   try { localStorage.setItem('golfLessonApp.theme', t); } catch(e){}
   return t;
 }

@@ -4,7 +4,8 @@
 
 - 설정 탭 맨 위에 두 테마 카드가 있고, 누르면 data-act="theme" 로 바뀌는지
 - <head> 부트스트랩이 첫 페인트 전에 localStorage 를 읽어 data-theme 을 맞추는지(흰 화면 깜빡임 없음)
-- applyTheme: <html data-theme>, <meta theme-color>(#F6F7F8 / #141416), 짧은 키 저장
+- applyTheme: <html data-theme>, <meta theme-color>(#F2F2F7 / #131316 — 상단 바 바탕과 같은 값), 짧은 키 저장
+- 홈 화면 앱 상태 바 글자색(apple-mobile-web-app-status-bar-style)도 테마를 따라가는지
 - setTheme: state.theme 저장 · 다시 그리기 · 같은 테마 재선택은 조용히 넘어가는지
 - 시크 블랙 CSS 가 스플래시·카드·시트·탭바까지 덮는지 (그린 화이트 기본값은 그대로)
 """
@@ -19,14 +20,14 @@ def ok(name, cond, detail=''):
     OUT.append((name, bool(cond), detail))
 
 # ── 1. <head> 부트스트랩 ─────────────────────────────────
-ok('1-1 theme-color 메타 기본값 #F6F7F8', '<meta name="theme-color" content="#F6F7F8">' in HEAD)
+ok('1-1 theme-color 메타 기본값 #F2F2F7', '<meta name="theme-color" content="#F2F2F7">' in HEAD)
 boot = re.search(r'<script>(.*?)</script>', HEAD, re.S)
 ok('1-2 <style> 앞에 부트스트랩 스크립트', boot is not None)
 bootjs = boot.group(1) if boot else ''
 ok('1-3 부트스트랩이 저장본(golfLessonApp.v2)을 읽음', "golfLessonApp.v2" in bootjs)
 ok('1-4 부트스트랩이 짧은 키도 확인', "golfLessonApp.theme" in bootjs)
 ok('1-5 부트스트랩이 첫 페인트 전에 data-theme 설정', "setAttribute('data-theme'" in bootjs)
-ok('1-6 부트스트랩이 검정일 때 theme-color #141416', "'#141416'" in bootjs and "'#F6F7F8'" in bootjs)
+ok('1-6 부트스트랩이 검정일 때 theme-color #131316', "'#131316'" in bootjs and "'#F2F2F7'" in bootjs)
 ok('1-7 부트스트랩이 JSON.parse 실패에 안전(try/catch)', 'try {' in bootjs and 'catch' in bootjs)
 
 # ── 2. 설정 탭 테마 카드 ─────────────────────────────────
@@ -63,7 +64,7 @@ end = HTML.index('function save(){')
 CODE = HTML[start:end]
 
 STUBS = r"""
-var __store = {}, __meta = null, __log = [];
+var __store = {}, __meta = null, __sb = null, __log = [];
 var localStorage = {
   getItem:function(k){ return Object.prototype.hasOwnProperty.call(__store, k) ? __store[k] : null; },
   setItem:function(k, v){ __store[k] = String(v); },
@@ -71,7 +72,15 @@ var localStorage = {
 };
 var document = {
   documentElement: { attrs:{}, setAttribute:function(k,v){ this.attrs[k]=v; }, getAttribute:function(k){ return this.attrs[k]; } },
-  querySelector:function(sel){ if (!__meta) { __meta = { attrs:{}, setAttribute:function(k,v){ this.attrs[k]=v; } }; } return __meta; }
+  querySelector:function(sel){
+    /* 테마색 메타와 상태 바 스타일 메타는 서로 다른 태그입니다 */
+    if (sel.indexOf('status-bar-style') >= 0) {
+      if (!__sb) { __sb = { attrs:{}, setAttribute:function(k,v){ this.attrs[k]=v; } }; }
+      return __sb;
+    }
+    if (!__meta) { __meta = { attrs:{}, setAttribute:function(k,v){ this.attrs[k]=v; } }; }
+    return __meta;
+  }
 };
 var state = { theme:'green' };
 function save(){ __log.push('save'); }
@@ -90,12 +99,14 @@ ok('4-3 저장값이 없으면 green', ctx.eval('T.themeOf()') == 'green')
 
 ctx.eval("T.applyTheme('black')")
 ok('4-4 applyTheme(black) → html[data-theme]', ctx.eval('document.documentElement.attrs["data-theme"]') == 'black')
-ok('4-5 applyTheme(black) → theme-color #141416', ctx.eval('__meta.attrs.content') == '#141416')
+ok('4-5 applyTheme(black) → theme-color #131316', ctx.eval('__meta.attrs.content') == '#131316')
+ok('4-5b applyTheme(black) → 상태 바 글자색 black', ctx.eval('__sb.attrs.content') == 'black')
 ok('4-6 applyTheme(black) → 짧은 키 저장', ctx.eval("localStorage.getItem('golfLessonApp.theme')") == 'black')
 
 ctx.eval("T.applyTheme('green')")
 ok('4-7 applyTheme(green) → html[data-theme]', ctx.eval('document.documentElement.attrs["data-theme"]') == 'green')
-ok('4-8 applyTheme(green) → theme-color #F6F7F8', ctx.eval('__meta.attrs.content') == '#F6F7F8')
+ok('4-8 applyTheme(green) → theme-color #F2F2F7', ctx.eval('__meta.attrs.content') == '#F2F2F7')
+ok('4-8b applyTheme(green) → 상태 바 글자색 default', ctx.eval('__sb.attrs.content') == 'default')
 ctx.eval("T.applyTheme('엉뚱한값')")
 ok('4-9 알 수 없는 값은 green 으로', ctx.eval('document.documentElement.attrs["data-theme"]') == 'green')
 
@@ -111,7 +122,7 @@ ok('4-13 같은 테마 다시 누르면 조용함', ctx.eval('__log.length') == 
 ctx.eval("T.setTheme('green')")
 ok('4-14 그린 화이트로 되돌아감', ctx.eval('state.theme') == 'green'
    and ctx.eval('document.documentElement.attrs["data-theme"]') == 'green'
-   and ctx.eval('__meta.attrs.content') == '#F6F7F8')
+   and ctx.eval('__meta.attrs.content') == '#F2F2F7')
 
 ctx.eval("state.theme = 'black'")
 html_on = ctx.eval("T.themeCardHTML('black')")
