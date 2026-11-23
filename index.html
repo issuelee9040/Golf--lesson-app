@@ -801,14 +801,25 @@ html[data-theme="black"] .ob-form{background:rgba(255,255,255,.055);border-color
 html[data-theme="black"] .ob-field .input{background:#26262C;border-color:rgba(255,255,255,.14);color:#F3F4F6}
 html[data-theme="black"] .ob-field .input::placeholder{color:#7E848C}
 html[data-theme="black"] .ob-start{background:#34D399;color:#062B1C}
+/* 화면이 낮은 기기(SE·가로 모드)에서는 로고와 여백을 줄여 한 화면에 들어오게 */
+@media (max-height:700px){
+  .ob-lockup{width:150px;margin-bottom:14px}
+  .ob-wrap h2{font-size:20px}
+  .ob-form{margin-top:16px;padding:13px 12px 12px}
+  .ob-field .input{height:44px}
+  .ob-start{height:46px;margin-top:12px}
+  .ob-foot{margin-top:12px}
+}
 /* 브랜드 · 체험판 안내 (설정 탭 맨 아래) */
-.brandfoot{display:flex;align-items:center;justify-content:center;gap:9px;margin:28px 0 6px}
-.brandfoot img{display:block;width:96px;height:auto}
+.brandfoot{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:28px 0 6px}
+.brandfoot img{display:block;width:104px;height:auto}
 .brandfoot .lk-lightword{display:block}
 .brandfoot .lk-darkword{display:none}
 html[data-theme="black"] .brandfoot .lk-lightword{display:none}
 html[data-theme="black"] .brandfoot .lk-darkword{display:block}
-.brandfoot .bf-tag{font-size:11px;font-weight:800;letter-spacing:.3px;color:var(--muted)}
+.brandfoot .bf-tag{margin-bottom:4px;padding:2px 7px;border-radius:999px;background:var(--gray-soft);
+  font-size:10px;font-weight:800;letter-spacing:.3px;color:var(--muted)}
+html[data-theme="black"] .brandfoot .bf-tag{background:#26262C;color:#8B9099}
 /* ---------- 화면 테마 선택 (설정 탭) ---------- */
 .themegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .themecard{position:relative;display:block;width:100%;padding:9px 9px 10px;border-radius:16px;background:var(--card);
