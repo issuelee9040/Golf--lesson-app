@@ -5009,10 +5009,13 @@ function exportData(){
 }
 
 function resetDemo(){
+  var keepTheme = themeOf();          /* 데모 초기화해도 고른 테마는 그대로 */
   try { localStorage.removeItem(KEY); } catch (e) {}
   state = buildDemo();
+  state.theme = keepTheme;
   if (!state.notes) state.notes = [];
   save();
+  applyTheme(keepTheme);
   ui.tab = 'today';
   ui.date = todayISO();
   ui.month = todayISO().slice(0, 7);
