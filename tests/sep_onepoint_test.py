@@ -146,7 +146,8 @@ eq('4-3 종류가 onepoint 로 남음', r.sepRows[0].kind, 'onepoint');
 eq('4-4 수강권 수입에는 없음', r.passTotal, 0);
 ui = { tab:'stats', date:'2026-12-07', memberId:null, search:'', month:'2026-12', stats:'revenue', revUnit:'month', revOpen:'' };
 var rev = viewRevenue();
-contain('4-5 화면 구성 카드 문구', rev, '필드 · 숏게임 · 원포인트 별도 수입');
+contain('4-5 화면 구성 카드 문구', rev, '필드·별도 수입');
+contain('4-5b 별도 종류 안내', rev, '필드·숏게임·원포인트 1건');
 contain('4-6 원포인트 이름', rev, '💡 김민준');
 
 /* ========== 5. 화면 문구 · 배지 클래스 ========== */

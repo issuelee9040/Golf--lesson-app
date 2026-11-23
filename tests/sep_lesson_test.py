@@ -255,7 +255,8 @@ var rev = viewRevenue();
 var revFlat = String(rev).replace(/,/g, '');      /* quickjs toLocaleString 은 쉼표를 안 넣음 */
 contain('7-17 히어로 총수입', revFlat, '720000');
 contain('7-18 정규 수강권 수입 칸', rev, '정규 수강권 수입');
-contain('7-19 별도 결제 수입 칸', rev, '필드 · 숏게임 · 원포인트 별도 수입');
+contain('7-19 별도 결제 수입 칸', rev, '필드·별도 수입');
+contain('7-19b 별도 종류 안내', rev, '필드·숏게임·원포인트');
 contain('7-20 별도 금액 표시', revFlat, '520000');
 contain('7-21 정규 금액 표시', revFlat, '200000');
 

@@ -452,10 +452,11 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 .rvsplit .si:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#19A76A,#0F7B4A)}
 .rvsplit .si.sep{background:#F2FAFB}
 .rvsplit .si.sep:before{background:linear-gradient(90deg,#22B3C0,#0C8E97)}
-.rvsplit .k{display:block;font-size:11.5px;font-weight:800;color:var(--ink2);letter-spacing:-.2px;line-height:1.3;word-break:keep-all}
+.rvsplit .k{display:block;font-size:11.5px;font-weight:800;color:var(--ink2);letter-spacing:-.2px;line-height:1.3;word-break:keep-all;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rvsplit .v{display:block;font-size:18px;font-weight:800;letter-spacing:-.6px;margin-top:6px;font-variant-numeric:tabular-nums}
 .rvsplit .si.sep .v{color:#0C6068}
-.rvsplit .m{display:block;font-size:10.5px;font-weight:700;color:var(--muted);margin-top:3px;letter-spacing:-.1px}
+.rvsplit .m{display:block;font-size:10.5px;font-weight:700;color:var(--muted);margin-top:auto;padding-top:3px;letter-spacing:-.1px;line-height:1.35}
+.rvsplit .si{display:flex;flex-direction:column;min-width:0}
 .rvline.sep{border-left-color:#BFE0E4}
 /* ---------- 선택 필드 · 피커 ---------- */
 .pickfield{display:flex;align-items:center;justify-content:space-between;gap:8px;line-height:1.2}
@@ -5965,12 +5966,12 @@ function viewRevenue(){
       '<div class="si"><span class="k">정규 수강권 수입</span>' +
         '<span class="v">' + money(cur.passTotal) + '</span>' +
         '<span class="m">' + (cur.missing
-          ? '금액 입력 ' + cur.count + '회 기준 · 미입력 ' + cur.missing + '회는 빠짐'
+          ? '금액 입력 ' + cur.count + '회 기준'
           : '차감 ' + cur.deducted + '회 전부 반영') + '</span></div>' +
-      '<div class="si sep"><span class="k">⛳ 필드 · 숏게임 · 원포인트 별도 수입</span>' +
+      '<div class="si sep"><span class="k">필드·별도 수입</span>' +
         '<span class="v">' + money(cur.sepTotal) + '</span>' +
         '<span class="m">' + (cur.sepCount
-          ? cur.sepCount + '건' + (cur.sepMissing ? ' · 금액 미입력 ' + cur.sepMissing + '건' : '')
+          ? '필드·숏게임·원포인트 ' + cur.sepCount + '건'
           : '이번 달 없음') + '</span></div>' +
     '</div>';
 

@@ -27,7 +27,7 @@ KPGA 투어 프로가 혼자 자기 레슨을 관리하는 아이폰 앱의 아�
 - `manifest.webmanifest` — 홈화면 앱 이름·아이콘(`ProPlan`)
 - `assets/` — ProPlan 로고 락업(테마별) · 홈화면 아이콘(180 · 192 · 512 · 64 · 32, 깃발 위 + ProPlan 아래) · 아이콘 생성기 `_gen.py`
 - `spec.md` — 화면·데이터 모델 설계서
-- `tests/` — 화면·동작 자동 검사 **31종** (수정할 때마다 전부 실행 · P1~P4 UX 회귀 `ux_p1_p4_test.py` 128건 · 복원·설치 `json_import_install_test.py` 184건 · 확대 방지 `zoom_lock_test.py` 34건 포함)
+- `tests/` — 화면·동작 자동 검사 **32종** (수정할 때마다 전부 실행 · P1~P4 UX 회귀 `ux_p1_p4_test.py` 128건 · 복원·설치 `json_import_install_test.py` 184건 · 확대 방지 `zoom_lock_test.py` 34건 포함)
 
 ## 홈화면에 추가
 앱 안에서도 추가할 수 있습니다 — 설정 탭 → **홈 화면에 앱 추가** (아이폰 사파리는 공유 버튼 위치를 그림으로 안내, 안드로이드 크롬은 설치 창을 바로 띄움. 이미 홈 화면 앱으로 열고 있으면 이 카드는 숨김).
