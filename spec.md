@@ -371,6 +371,7 @@ rows:
 - **날짜·시간도 같은 모양**: 날짜 칸을 누르면 미니 달력 시트(월 이동·오늘로)가 열리고, 시작 시간은 30분 단위 시간 칩 시트에서 고릅니다. iOS 기본 날짜·시간 휠 대신 앱 안에서 끝나므로 글꼴·색·간격이 모든 시트에서 같습니다.
 - 글꼴은 시스템 한글 폰트(-apple-system, Pretendard, Apple SD Gothic Neo)만 사용합니다.
 - **입력칸 글자는 항상 16px** (`-webkit-text-size-adjust:100%` 포함): 아이폰 사파리는 입력칸 글자가 16px 미만이면 칸을 탭할 때 화면을 자동으로 확대합니다. 그래서 모든 `<input>`·`<textarea>`(`.input` · 검색창 · 소요시간 칩 입력칸 · 피커 줄 라벨까지)은 16px로 통일하고, 안내 문구(`::placeholder`)만 12.5px로 작게 둡니다. 입력칸 높이(45px)와 여백은 그대로라 두 테마 모두에서 줄맞춤이 바뀌지 않습니다.
+- **화면 확대는 끕니다 (더블탭·핀치)**: 앱처럼 쓰는 화면이라 한 번 톡 치고 다시 치거나 두 손가락으로 벌렸을 때 화면이 확대되면 안 됩니다. `viewport` 메타의 `maximum-scale=1·user-scalable=no` + CSS `touch-action:manipulation` + `<head>` 의 `gesturestart`·`gesturechange` `preventDefault` 세 겹으로 막고, 세로·가로 스크롤과 시트 밀어 닫기는 그대로 둡니다(28장).
 - **시트는 아래로 밀어 닫습니다**: 손잡이(`grab`)·제목줄을 잡고 내리거나 내용이 맨 위일 때 내리면 시트가 손가락을 따라 내려오고, 76px 넘게(또는 짧게 튕겨서) 놓으면 **그 시트 하나만** 닫혀 바로 아래 화면으로 돌아갑니다. 같은 동작이 아이폰 사파리의 '당겨서 새로고침'(페이지 전체 다시 열기)으로 새어 나가지 않게 막아 두었습니다(10.4장).
 - **레슨 상태 시트**: 5개 상태 줄은 배지 30px·줄 간격 6px로 조밀하게 쌓아 화면을 적게 차지합니다. 시트 바닥 버튼은 **위에서부터 `{회원} 정보 · 레슨 차트 열기`(에메랄드 그라데이션 CTA) → `카톡 요약 복사`(반투명 노랑) → `내용 수정` → `내 캘린더에 추가`** 순서입니다. 가장 자주 누르는 '그 회원 보기'가 엄지에 가장 가까운 위쪽에 오고, 덜 쓰는 캘린더 추가가 맨 아래로 내려갑니다. CTA는 오늘 탭 히어로와 같은 그라데이션(높이 50px, 흰색 굵은 글씨, 미세한 광택)입니다.
 
@@ -883,7 +884,7 @@ PNG를 21px로 줄여 쓰던 `.brandbar`를 **인라인 SVG**로 바꿨습니다
 | 항목 | 규칙 |
 | --- | --- |
 | 위쪽 여백 | `.brandbar` 에 `padding:9px 16px 8px`(예전 브라우저용) → `padding-top:calc(9px + env(safe-area-inset-top, 0px))`. 사파리에서는 값이 0 이라 지금과 똑같고, 홈 화면 앱에서는 상태 바 높이(약 47~59px)만큼 **바탕색이 더 채워져** 로고가 상태 바 아래에서 시작합니다. |
-| 바탕 | `.brandbar` 는 두 테마 모두 `background:var(--bg)` — 상태 바 자리까지 앱 바탕과 같은 색이라 재질이 비칠 것이 없습니다. |
+| 바탕 | `.brandbar` 는 두 테마 모두 `background:var(--bg)` — 상태 바 자리까지 앱 바탕과 같은 색이라 재질이 비칠 것이 없습니다. **(2026-11-24 보강: 이 바를 `position:sticky;top:0` 으로 만들어 아이폰 26·27 이 스스로 그리던 상단 흐림까지 없앴습니다 → 29장)** |
 | 상태 바 글자색 | `<meta name="apple-mobile-web-app-status-bar-style">` 를 새로 넣고, **그린 화이트는 `default`**(밝은 바탕 + 어두운 글자), **시크 블랙은 `black`**(어두운 바탕 + 밝은 글자). 첫 페인트 전 부트스트랩과 `applyTheme()` 이 저장된 테마에 맞춰 값을 바꿉니다(아이폰은 다음 실행 때 반영). |
 | 상단 색 이음매 | `theme-color` 를 `--bg` 와 **같은 값**으로 맞췄습니다 — 그린 `#F6F7F8` → **`#F2F2F7`**, 블랙 `#141416` → **`#131316`**. 상태 바 자리와 상단 바 사이에 색 단차가 생기지 않습니다. `manifest.webmanifest` 의 `theme_color` 도 `#F2F2F7` 로 맞췄습니다. |
 | 아래쪽 | 탭바 · 시트 바닥줄 · 토스트 · 빠른추가 FAB · 스플래시 · 온보딩의 `env(safe-area-inset-bottom/top)` 은 그대로 살아 있는지 함께 검사합니다. |
@@ -1033,3 +1034,55 @@ PNG를 21px로 줄여 쓰던 `.brandbar`를 **인라인 SVG**로 바꿨습니다
 **설치가 끝나면 (`appinstalled`)**: 카드가 바로 사라지도록 설정 탭을 다시 그리고 토스트 `홈 화면에 앱을 추가했어요`.
 
 **검증**: `tests/json_import_install_test.py` — standalone 두 조건에서 카드 숨김, 아이폰/그 밖 안내 분기, `beforeinstallprompt` 캡처(`preventDefault` 호출), `prompt()` 1회·수락/취소 토스트, 설치 요청 소진, 설치 완료 뒤 카드 사라짐.
+
+## 28. 더블탭 · 핀치 확대 방지 (2026-11-24 추가)
+
+**요청**: 홈 화면에 추가해 앱처럼 쓰는데 화면을 한 번 톡 치고 다시 치면(더블탭), 또는 두 손가락으로 벌리면(핀치) 화면이 확대돼 웹페이지처럼 느껴진다. 앱이면 확대되지 않아야 한다.
+
+**세 겹으로 막았습니다 — 한 겹은 안드로이드용, 두 겹은 아이폰용입니다.**
+
+| 겹 | 위치 | 하는 일 |
+| --- | --- | --- |
+| ① viewport 메타 | `<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">` | 안드로이드 크롬 등은 이 값으로 확대를 막습니다. **아이폰 사파리는 접근성 때문에 이 두 값을 무시**하므로 ②③이 실제로 막습니다. 기존 `width` · `initial-scale` · `viewport-fit=cover`(상단 안전 여백)는 그대로 유지합니다. |
+| ② CSS touch-action | `html,body{touch-action:manipulation}` + `*{touch-action:manipulation}` | 더블탭 확대만 끄고 **세로·가로 스크롤은 그대로** 허용하는 값입니다(`pan-x pan-y` 허용, 더블탭 확대만 제거). 손가락이 닿는 요소마다 걸리도록 `*` 에도 넣었습니다. |
+| ③ 제스처 이벤트 | `<head>` 스크립트 — `document.addEventListener('gesturestart' / 'gesturechange', noZoom, { passive:false })`, 핸들러는 `e.preventDefault()` | 사파리 고유의 두 손가락 확대(핀치)를 끕니다. **`passive:false` 여야 `preventDefault()` 가 먹습니다.** `e.cancelable === false` 인 이벤트에서는 조용히 넘어가 오류를 만들지 않습니다. |
+
+**스크롤 · 시트 밀어 닫기를 망가뜨리지 않은 방법**
+
+- `touch-action` 은 **선택자가 더 구체적인 규칙이 이깁니다**(`*` = 0점). 그래서 원래 값이 있던 곳은 예전 값이 그대로 우선합니다 — `.sheetwrap` · `.sheet` `touch-action:pan-y`(세로 스크롤 허용), `.quick textarea` `touch-action:pan-y`(여러 줄 입력칸 안 스크롤, 22.2장), `.sheet .grab` `touch-action:none`(손잡이 끌기).
+- 시트의 `touch-action` 에서 **`pinch-zoom` 만 뺐습니다** → 시트 안에서도 두 손가락 확대가 되지 않고, 세로 스크롤은 그대로입니다.
+- 밀어 닫기는 `touchstart` · `touchmove`(passive:false) · `touchend` 이벤트를 씁니다. ③은 **제스처(두 손가락) 이벤트만** 다뤄 한 손가락 이벤트와 겹치지 않고, 시트를 닫거나 화면을 다시 그리지도 않습니다(`closeSheet` · `render(` 호출 없음).
+- 스크롤 영역(`.sb`)·입력칸에 `touch-action:none` 을 걸지 않았는지도 검사합니다.
+
+**검증**: `tests/zoom_lock_test.py`(34건) — ① viewport 5값과 `<style>` 앞 배치, ② `html,body`·`*` 의 `manipulation` 과 당겨서 새로고침 규칙 유지, ③ 시트·입력칸·손잡이 스크롤 규칙 우선(구체적 선택자) 확인, ④⑤ quickjs 로 실제 핸들러를 실행해 `gesturestart`·`gesturechange` 에서 `preventDefault` 가 불리는지·옵션이 `{passive:false}` 인지·`cancelable:false` 에서 조용한지, ⑥ 이 장이 설계서에 남아 있는지.
+
+## 29. 홈 화면 앱 상단 흐림(블러) 다시 잡기 — sticky 불투명 띠 (2026-11-24 추가)
+
+### 29.1 신고
+
+이시훈 님: **"그리고 아직도 홈화면에 추가하면 상단바 블러처리가 되니까 그것도 같이 수정해."**
+
+### 29.2 원인 — 23장에서 고친 것과 다른 문제였습니다
+
+23장은 **로고가 상태 바 뒤로 비치는** 문제를 여백(`env(safe-area-inset-top)`)과 불투명 바탕으로 고쳤습니다. 그건 지금도 정상입니다. 남아 있던 흐림은 **페이지가 그리는 흐림이 아니라 아이폰이 그리는 시스템 흐림**입니다.
+
+- **iOS 26**: 애플이 `theme-color` 메타를 더 이상 지원하지 않고, 홈 화면 앱을 **전체 화면으로 기본 렌더**하기 시작했습니다. 그래서 `viewport-fit=cover` 와 무관하게 화면이 상태 바 밑까지 올라갑니다.
+- **iOS 27**: 설치된 홈 화면 앱의 **화면 맨 위에 시스템 흐림(블러) 띠**를 스스로 그립니다. 이 띠는 상태 바 높이를 넘어 헤더(로고·버튼)까지 덮습니다. 페이지가 그리는 효과가 아니라서 **`backdrop-filter:none` 같은 CSS로는 지워지지 않습니다.**
+- 상태 바 스타일 메타(`apple-mobile-web-app-status-bar-style`)는 이미 **불투명 값**(그린 `default` / 블랙 `black`)이고 테마에 따라 첫 페인트 전에 바뀝니다. `black-translucent` 가 아니라서 iOS 26.1+ 의 어두운 스크림 문제는 해당 없습니다. (iOS 26 부터 이 메타 자체도 사실상 효력이 없습니다 — 그래서 이 메타를 고쳐도 흐림은 사라지지 않습니다.)
+- **WebKit 의 규칙**: 화면 맨 위(약 4px 안)에 붙어 있고, 뷰포트 폭의 약 90% 이상을 차지하며, 10px 넘게 높고, **투명하지 않은** `fixed`/`sticky` 뷰가 있으면 그 색을 상태 바까지 늘려 주고 **시스템 흐림을 그리지 않습니다.** 우리 `.brandbar` 는 `position:relative` 였기 때문에 이 후보가 되지 못했고, 그래서 아이폰이 흐림을 계속 덮었습니다.
+
+### 29.3 고친 방법 (CSS 한 곳 — 재설치 없이 새로고침으로 바로 적용)
+
+| 항목 | 규칙 |
+| --- | --- |
+| 맨 위에 붙은 뷰로 만들기 | `.brandbar` `position:relative` → **`position:sticky;top:0`** (fixed 아님 — 흐름 안에 남아 패딩이 자리를 밀어내는 지금 구조를 그대로 유지, `z-index:3` 유지) |
+| 불투명 바탕 명시 | `background:var(--bg)` 에 더해 **`background-color:var(--bg)`** 를 한 번 더 명시. 이 바에는 `backdrop-filter`·`opacity`·`rgba()`·그라데이션이 전혀 없습니다(검사로 고정). |
+| 크기·위치 조건 | 화면 맨 위 0px(#app 첫 요소, body 여백 0) · 폭 100%(아이폰 390px 에서 뷰포트 100%, `#app` 은 430px 상한) · 높이 38px + `env(safe-area-inset-top)`(상태 바 47~59px) → 90% 폭·10px 높이 조건을 넉넉히 넘습니다. |
+| 메타는 그대로 | `apple-mobile-web-app-status-bar-style` 은 테마별 `default`/`black` 유지(23장). iOS 는 이 메타를 **설치 시점에 읽으므로** 바꾸면 홈 화면에서 지우고 다시 추가해야 하는데, 이번 수정은 CSS 라 **지금 열어도 바로** 적용됩니다. |
+
+### 29.4 검증
+
+- `tests/safe_area_test.py` — 3-7(상단 바가 `fixed` 가 아니라 맨 위에 붙은 `sticky`), 3-9(바탕 100% 불투명 · `backdrop-filter`·`opacity` 없음), 3-10(`rgba`·그라데이션 없음), 3-11(`black-translucent` 금지) 항목을 새로 넣었습니다.
+- `tests/brandbar_today_memo_test.py` 1-3 — 상단 바가 화면 바탕과 이어지는지(경계선·흐림 없음)를 `sticky` 기준으로 갱신.
+- 실브라우저(390×844) 렌더 확인: `.brandbar` 계산값 `position:sticky`, `top:0`, 화면 위 0px, 폭 = 뷰포트 100%, 높이 > 10px, `background-color` 알파 1(불투명).
+- **실기기 확인은 필요합니다**: 아이폰 홈 화면 아이콘으로 열어 상단 띠가 흐리지 않고 바탕색으로 선명하면 정상입니다. iOS 버전에 따라 이 시스템 흐림의 모양·조건은 바뀔 수 있어, 그때는 이 장의 조건(맨 위·폭 90%·10px 이상·불투명)을 다시 확인합니다.

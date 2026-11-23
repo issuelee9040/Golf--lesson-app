@@ -40,7 +40,10 @@ def rule(sel):
 # ══════════════════════════════════════════════════════════
 # 1. <head> — 홈 화면 앱 · 상태 바
 # ══════════════════════════════════════════════════════════
-ok('1-1 viewport-fit=cover 유지', 'content="width=device-width, initial-scale=1, viewport-fit=cover"' in HEAD)
+ok('1-1 viewport-fit=cover 유지',
+   (re.search(r'<meta name="viewport" content="([^"]+)"', HEAD) or [None, ''])[1].find('viewport-fit=cover') >= 0
+   and 'width=device-width' in (re.search(r'<meta name="viewport" content="([^"]+)"', HEAD) or [None, ''])[1]
+   and 'initial-scale=1' in (re.search(r'<meta name="viewport" content="([^"]+)"', HEAD) or [None, ''])[1])
 ok('1-2 홈 화면 앱(apple) · 모바일 웹앱 선언',
    '<meta name="apple-mobile-web-app-capable" content="yes">' in HEAD
    and '<meta name="mobile-web-app-capable" content="yes">' in HEAD)
@@ -78,6 +81,7 @@ ok('2-7 manifest theme_color 도 #F2F2F7', '"theme_color": "#F2F2F7"' in man, ma
 # 3. .brandbar 위쪽 안전 여백
 # ══════════════════════════════════════════════════════════
 bar = rule('.brandbar')
+bar_decl = re.sub(r'/\*.*?\*/', '', bar, flags=re.S)   # 주석은 검사 대상이 아님
 ok('3-1 .brandbar 에 env(safe-area-inset-top) 패딩',
    'padding-top:calc(9px + env(safe-area-inset-top, 0px))' in bar, bar)
 ok('3-2 예전 브라우저용 기본 패딩 9px 이 먼저 선언됨',
@@ -87,8 +91,15 @@ ok('3-4 .brandbar 바탕이 --bg 로 상태 바 자리까지 채운다',
    'background:var(--bg)' in bar and 'border-bottom:0' in bar)
 ok('3-5 시크 블랙도 같은 바탕', 'html[data-theme="black"] .brandbar{background:var(--bg)}' in CSS)
 ok('3-6 로고 높이 21px 은 그대로', '.brandbar .bb-svg{display:block;height:21px;width:107px' in HTML)
-ok('3-7 상단 바는 fixed 가 아니라 흐름 안(relative) — 패딩이 자리를 밀어냄',
-   'position:relative' in bar and 'position:fixed' not in bar)
+ok('3-7 상단 바는 fixed 가 아니라 화면 맨 위에 붙은 sticky — 패딩이 자리를 밀어냄',
+   'position:sticky' in bar and 'top:0' in bar and 'position:fixed' not in bar)
+ok('3-9 상단 바 바탕은 100% 불투명 (뒤가 비치지 않음 — 확대 시 흐림 방지)',
+   'background:var(--bg)' in bar_decl and 'background-color:var(--bg)' in bar_decl
+   and 'backdrop-filter' not in bar_decl and 'opacity' not in bar_decl)
+ok('3-10 상단 바에 투명도 있는 색을 쓰지 않는다(rgba·gradient 없음)',
+   'rgba(' not in bar_decl and 'gradient' not in bar_decl, bar_decl)
+ok('3-11 상태 바 글자색 메타는 불투명 값만 쓴다(black-translucent 금지)',
+   'black-translucent' not in HEAD)
 ok('3-8 #app 에 또 위쪽 안전 여백을 주지 않는다(이중 여백 방지)',
    'safe-area-inset-top' not in rule('#app'))
 

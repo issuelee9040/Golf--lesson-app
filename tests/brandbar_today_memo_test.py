@@ -41,7 +41,7 @@ ok('1-1 브랜드 바가 페이지 헤더보다 먼저',
 ok('1-2 .brandbar 가 프레임 안 첫 요소 줄',
    '<div id="app">\n  <div class="brandbar" id="brandbar">' in HTML)
 ok('1-3 브랜드 바는 화면 바탕과 이어짐 (경계선·흐림 없음)',
-   '.brandbar{flex:none;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between' in HTML
+   '.brandbar{flex:none;position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between' in HTML
    and 'padding:9px 16px 8px;background:var(--bg);border-bottom:0;' in HTML
    and 'padding-top:calc(9px + env(safe-area-inset-top, 0px))' in HTML)
 ok('1-4 락업 높이 21px · SVG 로 그림', '.brandbar .bb-lockup{display:flex;align-items:center;height:21px;line-height:0}' in HTML

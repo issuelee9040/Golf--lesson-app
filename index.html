@@ -2,7 +2,9 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- maximum-scale · user-scalable=no: 한 번 톡 치고 다시 치는 더블탭 확대와 두 손가락 확대를 끕니다.
+     (아이폰 사파리는 이 두 값을 무시하므로, 실제 차단은 아래 touch-action 과 gesturestart 가 맡습니다) -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#F2F2F7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -37,12 +39,29 @@
   var sb = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
   if (sb) sb.setAttribute('content', t === 'black' ? 'black' : 'default');
 })();
+/* 아이폰 사파리 두 손가락(핀치) 확대 차단 — 앱처럼 쓰는데 화면이 확대되면 어긋나 보입니다.
+   더블탭 확대는 CSS touch-action:manipulation 이 막고, 핀치는 사파리가 그 CSS 를 무시하는
+   경우가 있어 iOS 전용 제스처 이벤트를 직접 막습니다. passive:false 여야 preventDefault 가 먹습니다.
+   한 손가락 스크롤·시트 밀어 닫기는 touch 이벤트라 이 제스처 이벤트와 서로 간섭하지 않습니다. */
+(function(){
+  function noZoom(e){ if (e.cancelable !== false && e.preventDefault) e.preventDefault(); }
+  var opt = { passive: false };
+  document.addEventListener('gesturestart', noZoom, opt);
+  document.addEventListener('gesturechange', noZoom, opt);
+})();
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box}
 /* 아이폰 사파리 '당겨서 새로고침' 방지 — 화면을 아래로 당겨도 앱이 다시 열리지 않습니다.
    (시트 안에서 끌어내릴 때는 아래 attachSheetGestures 가 touchmove 를 함께 막습니다) */
 html,body{margin:0;padding:0;height:100%;overscroll-behavior:none;overscroll-behavior-y:none}
+/* 더블탭(두 번 톡) 확대 방지 — 앱처럼 쓰는 화면이라 한 번 더 치면 확대되던 동작을 끕니다.
+   touch-action:manipulation 은 세로·가로 스크롤을 그대로 두고 더블탭 확대만 막습니다.
+   (핀치 확대는 <head> 스크립트의 gesturestart 차단이 맡습니다) */
+html,body{touch-action:manipulation}
+/* 손가락이 닿는 요소마다 확대를 막습니다. 스크롤 규칙을 따로 둔 곳(.sheet · .quick textarea ·
+   .sheet .grab)은 그 규칙이 우선이라 스크롤·밀어 닫기는 예전 그대로입니다. */
+*{touch-action:manipulation}
 :root{
   --bg:#F2F2F7; --card:#FFFFFF; --ink:#0B0F14; --ink2:#3C434D; --muted:#8A9099;
   --line:#E3E6EB; --line2:#EFF1F4;
@@ -81,12 +100,17 @@ h1,h2,h3,p{margin:0}
    사진(PNG)을 21px 로 줄이면 아이폰 고해상도 화면에서 흐리게 번져 보여서,
    같은 로고를 글자 모양 그대로 딴 벡터 경로(인라인 SVG)로 그립니다.
    바탕은 아래 .hd 그라데이션과 같은 --bg 로 이어 붙여 경계선·흐림이 없습니다. */
-.brandbar{flex:none;position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:10px;
+.brandbar{flex:none;position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:9px 16px 8px;background:var(--bg);border-bottom:0;
   /* 홈 화면에 추가한 앱은 viewport-fit=cover 라 화면이 상태 바 밑까지 올라갑니다.
      그대로 두면 시계·배터리 뒤로 로고가 비쳐 흐릿하게 겹치므로, 상태 바 높이만큼 바탕색을 더 채웁니다.
      사파리 브라우저 안에서는 env() 값이 0 이라 지금과 똑같이 보입니다. */
-  padding-top:calc(9px + env(safe-area-inset-top, 0px))}
+  padding-top:calc(9px + env(safe-area-inset-top, 0px));
+  /* 아이폰 26·27 홈 화면 앱의 상단 흐림 방지 — 아이폰은 홈 화면 앱 화면 맨 위에 시스템 흐림(블러)을
+     스스로 그립니다. 화면 맨 위에 붙어 있는(sticky/fixed) 불투명 띠가 있으면 그 띠 색을 상태 바까지
+     그대로 늘려 주고 흐림은 그리지 않습니다. 그래서 이 바를 relative → sticky top:0 으로 두고
+     바탕을 100% 불투명 var(--bg) 로 유지합니다(투명도·backdrop-filter 없음). */
+  background-color:var(--bg)}
 .brandbar .bb-lockup{display:flex;align-items:center;height:21px;line-height:0}
 .brandbar .bb-svg{display:block;height:21px;width:107px;overflow:visible}
 .brandbar .bb-flag{fill:#0F7B4A}
@@ -472,12 +496,12 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 /* ---------- sheet ---------- */
 .sheetwrap{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;
   background:rgba(9,13,18,.4);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
-  overscroll-behavior:none;overscroll-behavior-y:none;touch-action:pan-y pinch-zoom}
+  overscroll-behavior:none;overscroll-behavior-y:none;touch-action:pan-y}
 /* 닫히는 동안에는 뒤 화면을 눌러도 반응하지 않게 (두 번 닫힘·엉뚱한 탭 방지) */
 .sheetwrap.closing{pointer-events:none}
 .sheet{width:100%;max-width:430px;background:var(--bg);border-radius:22px 22px 0 0;display:flex;flex-direction:column;
   max-height:92vh;box-shadow:0 -10px 40px rgba(0,0,0,.24);animation:sheetup .24s cubic-bezier(.2,.9,.2,1);
-  overscroll-behavior:contain;touch-action:pan-y pinch-zoom}
+  overscroll-behavior:contain;touch-action:pan-y}
 @keyframes sheetup{from{transform:translateY(34px);opacity:.5}to{transform:translateY(0);opacity:1}}
 .sheet .grab{flex:none;width:38px;height:5px;border-radius:3px;background:#D3D7DD;margin:8px auto 2px;touch-action:none}
 .sheet .sh{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px 6px}
