@@ -960,9 +960,13 @@ function paintCalSetting(){
 function openCalSheet(sid, justAdded){
   var s = findSession(sid);
   if (!s) return;
-  var m = memberById(s.memberId);
-  var body = '<div class="formnote"><b>' + esc(m ? m.name : '-') + '</b> · ' + fmtShort(s.date) + ' ' + s.startTime +
-      ' · ' + s.durationMinutes + '분' + (s.location ? ' · ' + esc(s.location) : '') + '</div>' +
+  var sep = isSep(s);
+  var body = '<div class="formnote">' +
+      (sep ? '<span class="lkind lk-' + sepKind(s) + '">' + sepBadge(s) + '</span> ' : '') +
+      '<b>' + esc(sessionName(s)) + '</b>' + (s.memberId ? '' : ' <span class="guestpill">비회원</span>') +
+      ' · ' + fmtShort(s.date) + ' ' + s.startTime +
+      ' · ' + s.durationMinutes + '분' + (sep ? ' · 별도 결제 ' + sepFeeLine(s) : '') +
+      (s.location ? ' · ' + esc(s.location) : '') + '</div>' +
     '<button class="calopt" data-act="cal-apple" data-sid="' + s.id + '">' +
       '<span class="co-ic">📱</span>' +
       '<span class="co-b"><span class="co-t">아이폰 캘린더에 추가</span>' +
@@ -1885,7 +1889,7 @@ function openStatusSheet(sid){
     return '<button class="statusrow' + (on ? ' on' : '') + '" data-act="status-set" data-sid="' + s.id + '" data-status="' + k + '">' +
       '<span class="sr-i st st-' + STATUS[k].cls + '" aria-hidden="true">' + statusBadge(STATUS[k].label) + '</span>' +
       '<span class="sr-b"><div class="sr-t">' + STATUS[k].label + '</div><div class="sr-d">' + desc + '</div></span>' +
-      '<span class="sr-k ' + ((sep ? CHARGED[k] : STATUS[k].deducted) ? 'ded' : 'keep') + '">' + right + '</span>' +
+      '<span class="sr-k ' + (sep ? (CHARGED[k] ? 'keep' : '') : (STATUS[k].deducted ? 'ded' : 'keep')) + '">' + right + '</span>' +
     '</button>';
   }).join('');
   var sh = openSheet({
@@ -4515,7 +4519,7 @@ function applyQuickParse(){
   qaCtx.gender = p.gender || '';
   if (p.date) qaCtx.date = p.date;
   if (p.time) qaCtx.time = p.time;
-  if (p.location) qaCtx.location = p.location;
+  qaCtx.location = p.location || '';      /* 한 줄에서 빠지면 장소도 비운다 (조각 인식이 남지 않게) */
 
   if (p.separate) {
     qaCtx.mode = 'sep';
@@ -4523,7 +4527,7 @@ function applyQuickParse(){
     if (p.memberId) { qaCtx.target = 'member'; qaCtx.memberId = p.memberId; }
     else if (p.memberName) { qaCtx.target = 'guest'; qaCtx.guest = p.memberName; qaCtx.memberId = ''; }
     if (p.minutes) qaCtx.sepDur = p.minutes;
-    if (p.fee) qaCtx.fee = String(p.fee);
+    qaCtx.fee = p.fee ? String(p.fee) : '';
   } else {
     if (p.duration) qaCtx.duration = p.duration;
     if (p.memberId) qaCtx.memberId = p.memberId;
