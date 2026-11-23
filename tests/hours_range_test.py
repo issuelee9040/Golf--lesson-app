@@ -129,8 +129,8 @@ var h = day([ sess('a', '21:30', 120), sess('b', '19:00', 55) ]);
 var H = tlHeight(h), ga = geoBlock(h, 'a'), gb = geoBlock(h, 'b');
 ok('5-1 늦은 레슨 날 시간표가 그려짐', H !== null, h.slice(0, 60));
 ok('5-2 21:30 블록이 시간표 안에 (top+height <= 높이)', ga && ga.top + ga.h <= H, ga ? (ga.top + ga.h) + '/' + H : 'no block');
-ok('5-3 18:00 시작 기준 21:30 위치 = 210px', ga && ga.top === 210, ga ? ga.top : 'no block');
-ok('5-4 21:30 블록 실제 길이 117px', ga && ga.h === 117, ga ? ga.h : 'no block');
+ok('5-3 18:00 시작 기준 21:30 위치 = 252px (1시간 72px)', ga && ga.top === 252, ga ? ga.top : 'no block');
+ok('5-4 21:30 블록 실제 길이 141px', ga && ga.h === 141, ga ? ga.h : 'no block');
 ok('5-5 19:00 블록도 정상', gb && gb.top + gb.h <= H, gb ? (gb.top + gb.h) + '/' + H : 'no block');
 ok('5-6 마지막 시간선 24:00 까지 그려짐', h.indexOf('>24:00<') >= 0);
 
@@ -152,7 +152,7 @@ ok('7-3 05:00 시간선부터 그려짐', h.indexOf('>05:00<') >= 0);
 /* 8. 보통 날은 예전처럼 필요한 만큼만 (전체 하루를 늘어놓지 않음) */
 h = day([ sess('e', '09:00', 55) ]);
 H = tlHeight(h);
-ok('8-1 09:00 하루 = 4시간 높이(240px)', H === 240, 'H=' + H);
+ok('8-1 09:00 하루 = 4시간 높이(288px)', H === 288, 'H=' + H);
 ok('8-2 앞뒤 여백 한 시간씩 (08:00 ~ 12:00)', h.indexOf('>08:00<') >= 0 && h.indexOf('>12:00<') >= 0);
 
 /* 9. 예약 없는 날 안내는 그대로 */

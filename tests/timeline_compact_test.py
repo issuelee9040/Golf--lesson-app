@@ -71,16 +71,16 @@ ok('1-3 두 줄 스팬(ev-t) 없음', b.indexOf('class="ev-t"') < 0);
 ok('1-4 시간 표시', b.indexOf('06:30') >= 0);
 ok('1-5 이름 표시', b.indexOf('이하늘') >= 0);
 ok('1-6 분 표시', b.indexOf('25분') >= 0);
-ok('1-7 높이가 실제 길이(25px)를 넘지 않음', g.h <= 25, 'h=' + g.h);
-ok('1-8 높이 24px 이상', g.h >= 20, 'h=' + g.h);
-ok('1-9 위치는 06:30', g.top === 30, 'top=' + g.top);
+ok('1-7 25분 블록은 최소 높이 34px 로 키움 (누르기 쉽게)', g.h === TL_MIN_H, 'h=' + g.h);
+ok('1-8 높이 34px 이상', g.h >= 34, 'h=' + g.h);
+ok('1-9 위치는 06:30 (1시간 72px 기준)', g.top === 36, 'top=' + g.top);
 
 /* 2. 55분 단독 — 기존 두 줄 유지 */
 reset([ sess('b', '15:00', 55) ]);
 h = timelineHTML('2026-11-24'); b = blockOf(h, 'b'); g = geoBlock(h, 'b');
 ok('2-1 55분 블록은 compact 아님', b.indexOf('ev-compact') < 0);
 ok('2-2 55분은 두 줄(시간 · 이름)', b.indexOf('class="ev-t"') >= 0 && b.indexOf('class="ev-n"') >= 0);
-ok('2-3 55분 높이 52px', g.h === 52, 'h=' + g.h);
+ok('2-3 55분 높이 63px (1시간 72px 기준)', g.h === 63, 'h=' + g.h);
 ok('2-4 55분 블록이 25분보다 충분히 큼', true);
 
 /* 3. 백투백 25분 (06:00 · 06:30) — 겹치지 않아야 함 */
@@ -105,9 +105,9 @@ ok('4-5 25분·55분 백투백 겹침 없음', d1.top + d1.h <= d2.top, 'end=' +
 /* 5. 40분(경계) — 한 줄, 45분 — 두 줄 */
 reset([ sess('e1', '10:00', 40), sess('e2', '12:00', 45) ]);
 h = timelineHTML('2026-11-24');
-ok('5-1 40분은 한 줄', blockOf(h, 'e1').indexOf('ev-compact') >= 0);
+ok('5-1 40분은 48px 라 두 줄로 보여 줄 수 있음', blockOf(h, 'e1').indexOf('ev-compact') < 0);
 ok('5-2 45분은 두 줄', blockOf(h, 'e2').indexOf('ev-compact') < 0);
-ok('5-3 45분 두 줄이 42px 안에 들어감', geoBlock(h, 'e2').h === 42, 'h=' + geoBlock(h, 'e2').h);
+ok('5-3 45분 높이 51px', geoBlock(h, 'e2').h === 51, 'h=' + geoBlock(h, 'e2').h);
 
 /* 6. 상태별 색 클래스 유지 */
 reset([ sess('f1', '08:00', 25, { status:'no_show' }) ]);

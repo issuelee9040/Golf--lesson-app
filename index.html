@@ -158,6 +158,7 @@ main::-webkit-scrollbar{width:0}
 .bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#17A466,#0F7B4A)}
 .bar>i.low{background:linear-gradient(90deg,#E8A33C,#D07C12)}
 .chiprow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lesson .nameline .tedit{margin-left:auto;flex:none;height:34px;padding:0 11px;background:var(--field);border:1px solid var(--line);color:var(--ink2)}
 /* ---------- status pill ---------- */
 .st{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:8px;font-size:11.5px;font-weight:800;white-space:nowrap}
 .st-completed{background:var(--green-soft);color:var(--green-d)}
@@ -201,7 +202,7 @@ html[data-theme="black"] .mrow .rem.none{color:#5C6169}
 .btn-ghost{background:var(--gray-soft);color:var(--ink2)}
 .btn-outline{background:var(--field);border-color:var(--line);color:var(--ink2)}
 .btn-danger{background:var(--field);border-color:var(--red-line);color:var(--red)}
-.btn-sm{height:32px;padding:0 11px;font-size:12.5px;border-radius:10px}
+.btn-sm{height:38px;padding:0 12px;font-size:12.5px;border-radius:11px}
 .btn-block{display:flex;width:100%}
 .btn:disabled{opacity:.42;box-shadow:none}
 /* ---------- segmented / chips ---------- */
@@ -239,6 +240,14 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 .sortbtn svg{width:13px;height:13px;flex:none;color:#A8ADB5;margin-top:1px}
 .sortbtn:active{background:var(--gray-soft)}
 .sec h2 .sec-cnt{font-size:12px;font-weight:700;color:var(--muted);margin-left:1px;letter-spacing:-.1px}
+/* 회원목록 도구줄 — 페이지 제목 '회원목록' 아래에 같은 말을 또 쓰지 않고 인원수 + 정렬만 */
+.listbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 8px}
+.listbar .lb-cnt{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:-.1px}
+.listbar .lb-cnt b{font-size:13px;font-weight:800;color:var(--ink2)}
+/* 입력칸 위 작은 이름표 — 숫자를 넣어 placeholder 가 사라져도 무엇인지 보이게 */
+.field.minifield{margin-bottom:0}
+.field.minifield>label{font-size:10.5px;font-weight:800;color:var(--muted);margin:0 0 4px 3px}
+.field.minifield .input{height:43px}
 /* ---------- calendar ---------- */
 .monhdr{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 10px}
 .monhdr .m{font-size:17px;font-weight:800;letter-spacing:-.4px}
@@ -320,7 +329,7 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 /* 별도 레슨 기록 줄 (회원 정보창) */
 .sepline{display:flex;align-items:center;gap:8px;width:100%;padding:10px 2px;border-bottom:1px solid var(--line2);text-align:left}
 .sepline:last-child{border-bottom:0}
-.sp-d{flex:none;width:42px;font-size:11.5px;font-weight:800;color:var(--ink2)}
+.sp-d{flex:none;width:64px;font-size:10.5px;font-weight:800;color:var(--ink2);font-variant-numeric:tabular-nums}
 .sp-k{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;font-size:12.5px;font-weight:800;letter-spacing:-.2px}
 .sp-sub{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:-.1px}
 .sp-f{flex:none;font-size:11.5px;font-weight:800;color:var(--amber)}
@@ -425,7 +434,7 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 .rvsplit .si:before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#19A76A,#0F7B4A)}
 .rvsplit .si.sep{background:#F2FAFB}
 .rvsplit .si.sep:before{background:linear-gradient(90deg,#22B3C0,#0C8E97)}
-.rvsplit .k{display:block;font-size:11.5px;font-weight:800;color:var(--ink2);letter-spacing:-.2px;line-height:1.3}
+.rvsplit .k{display:block;font-size:11.5px;font-weight:800;color:var(--ink2);letter-spacing:-.2px;line-height:1.3;word-break:keep-all}
 .rvsplit .v{display:block;font-size:18px;font-weight:800;letter-spacing:-.6px;margin-top:6px;font-variant-numeric:tabular-nums}
 .rvsplit .si.sep .v{color:#0C6068}
 .rvsplit .m{display:block;font-size:10.5px;font-weight:700;color:var(--muted);margin-top:3px;letter-spacing:-.1px}
@@ -514,7 +523,7 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .sproj b{color:var(--ink);font-weight:800}
 .sproj.dim{color:#B4B9C1}
 .sopts{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:9px}
-.sopt{height:31px;border-radius:8px;background:var(--gray-soft);font-size:10.5px;font-weight:800;color:var(--sopt-ink);
+.sopt{height:38px;border-radius:9px;background:var(--gray-soft);font-size:10.5px;font-weight:800;color:var(--sopt-ink);
   text-align:center;letter-spacing:-.3px;display:flex;align-items:center;justify-content:center}
 /* 고르기 전에도 '1회 차감' 성격이 보이도록 당일취소는 옅은 호박, 노쇼는 옅은 빨강 */
 .sopt.sopt-same_day_cancel:not(.on){background:var(--amber-soft);color:var(--amber-ink);
@@ -523,6 +532,15 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
   box-shadow:inset 0 0 0 1px var(--red-line)}
 .sopt.on{background:#111820;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.18)}
 .sopt.on.opt-ded{background:var(--green-d)}
+/* 정산 줄 — 고른 상태 이름을 잔여 미리보기와 나란히 남겨, 색만으로 상태를 짐작하지 않게 */
+.ssel{flex:none;display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:6px;
+  font-size:10.5px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;
+  background:var(--gray-soft);color:var(--sopt-ink)}
+.ssel.ssel-completed{background:var(--green-soft);color:var(--green-d)}
+.ssel.ssel-same_day_cancel{background:var(--amber-soft);color:var(--amber-ink)}
+.ssel.ssel-no_show{background:var(--red-soft);color:var(--red-ink)}
+.ssel.ssel-excused_cancel{background:var(--gray-soft);color:var(--gray-ink)}
+.ssel.ssel-makeup{background:var(--blue-soft);color:var(--blue-ink)}
 /* 레슨 상태 5가지 — 예전 한 줄씩(5줄) 쌓던 것을 절반 높이 2열 타일로.
    누르는 높이는 46px 그대로라 손가락으로 짚기 편함 */
 .statusgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:2px 0 8px}
@@ -572,10 +590,10 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .drow{display:flex;align-items:center;gap:8px;width:100%;padding:11px 0;border-bottom:1px solid var(--line2);text-align:left}
 .drow-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:left}
 .drow-acts{flex:none;display:flex;align-items:center;gap:5px}
-.editbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 9px;border-radius:8px;
-  background:var(--field);border:1px solid var(--line);font-size:11.5px;font-weight:800;color:var(--ink2);letter-spacing:-.2px}
+.editbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 12px;border-radius:10px;
+  background:var(--field);border:1px solid var(--line);font-size:12px;font-weight:800;color:var(--ink2);letter-spacing:-.2px}
 .editbtn:active{background:var(--gray-soft)}
-.statetap{flex:none;display:inline-flex;align-items:center;border-radius:8px}
+.statetap{flex:none;display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 2px;border-radius:8px}
 .drow:last-child{border-bottom:0}
 .drow-t{flex:none;width:44px;font-size:14px;font-weight:800;letter-spacing:-.3px}
 .drow-b{flex:1;min-width:0}
@@ -589,6 +607,10 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .quick textarea{min-height:78px;max-height:150px;background:var(--field);overflow-y:auto;
   -webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain;resize:none}
 .auto{font-size:9.5px;font-weight:800;color:var(--green-d);background:var(--green-soft);border-radius:5px;padding:1px 5px}
+/* '여러 명 한꺼번에' — 버튼처럼 보이지 않는 안내 배지. 누르면 한 줄 입력칸으로 커서만 보냅니다 */
+.qt .auto.autobtn{border:1px dashed var(--green-mid);background:transparent;color:var(--green-d);cursor:pointer;
+  font-family:inherit;line-height:1.35}
+.qt .auto.autobtn:active{background:var(--green-soft)}
 .parsebar{margin-top:8px;font-size:11.5px;font-weight:700;color:var(--ink2);background:var(--field);border:1px dashed var(--green-mid);border-radius:10px;padding:8px 10px;line-height:1.5}
 .parsebar b{color:var(--green-d)}
 /* 여러 줄 일괄 등록 — 줄마다 한 명씩 미리보기 */
@@ -644,9 +666,9 @@ html[data-theme="black"] .btn.micbtn{background:rgba(70,214,156,.16);border-colo
 @keyframes blink{50%{opacity:.2}}
 .cnote{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--line2)}
 .cnote:last-child{border-bottom:0}
-.cn-d{flex:none;width:42px}
-.cn-d b{display:block;font-size:12px;font-weight:800;letter-spacing:-.2px}
-.cn-d span{display:block;font-size:10px;font-weight:700;color:var(--muted)}
+.cn-d{flex:none;width:64px}
+.cn-d b{display:block;font-size:10.5px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.cn-d span{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-top:1px}
 .cn-b{flex:1;min-width:0}
 .cn-t{font-size:13px;font-weight:600;line-height:1.5;white-space:pre-wrap;word-break:break-word}
 .cn-m{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
@@ -703,6 +725,13 @@ html[data-theme="black"] .stopt.on .so-dot{box-shadow:0 0 0 3px rgba(70,214,156,
 .switch.on i{transform:translateX(20px)}
 .seg.caltargets button{font-size:12.5px;padding:0 4px;white-space:nowrap}
 .seg.caltargets.dim{opacity:.45}
+.seg.caltargets.dim button{pointer-events:none}
+.seg.caltargets button:disabled{opacity:.6}
+/* 연동 상태를 바꾸면 '저장됨'까지 한 줄로 또렷하게 보여 줍니다 */
+.calstat.saved{color:var(--green-d)}
+.calstat.saved .dot{background:var(--green)}
+.calstat .savedchip{display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:5px;margin-right:1px;
+  background:var(--green-soft);color:var(--green-d);font-size:9.5px;font-weight:800;letter-spacing:-.1px}
 .calstat{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;color:var(--muted)}
 .calstat .dot{flex:none;width:6px;height:6px;border-radius:50%;background:#C3C8CF}
 .calstat.on{color:var(--green-d)}
@@ -742,7 +771,7 @@ html[data-theme="black"] .stopt.on .so-dot{box-shadow:0 0 0 3px rgba(70,214,156,
   border:1px solid var(--line);font-size:11px;font-weight:800;color:var(--ink2);letter-spacing:-.2px;box-shadow:var(--shadow)}
 .tagchip.on{border:1px solid var(--green);background:var(--green-soft);color:var(--green-d);box-shadow:inset 0 0 0 1px var(--green-mid)}
 .tagchip:active{transform:scale(.97)}
-/* 오늘 레슨 메모 — 입력칸 아래 날짜 표시와 자동 태그 미리보기 */
+/* 오늘 차트 메모 — 입력칸 아래 날짜 표시와 자동 태그 미리보기 */
 .tm-when{margin-left:auto;font-size:11px;font-weight:800;color:var(--green-d);letter-spacing:-.2px}
 .tm-tags{display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-height:19px;margin-top:9px}
 .tm-taghint{font-size:10.5px;font-weight:700;color:var(--muted)}
@@ -1175,7 +1204,8 @@ var KEY = 'golfLessonApp.v2';
 /* 첫 실행 온보딩(체험판 시작)에서 이름을 받는 동안에는 저장하지 않습니다.
    → 앱을 그냥 닫으면 다음에 또 온보딩부터 시작하고, 기존 사용자의 저장본은 절대 건드리지 않습니다. */
 var obWaiting = false;
-var HOUR_H = 60;          /* 타임라인 1시간 높이(px) */
+var HOUR_H = 72;          /* 타임라인 1시간 높이(px) — 25분 레슨도 누르고 읽기 좋게 */
+var TL_MIN_H = 34;        /* 타임라인 블록 최소 높이(px). 다음 블록을 덮지 않는 선까지만 키움 */
 /* 레슨 시간 범위 — 기본 06:00~23:00, 설정 탭에서 바꿀 수 있습니다 (분 단위) */
 var DEF_FROM = 6 * 60, DEF_TO = 23 * 60;      /* 기본: 가장 이른 06:00 · 가장 늦은 23:00 */
 var FROM_MIN = 5 * 60, FROM_MAX = 12 * 60;    /* 설정에서 고를 수 있는 가장 이른 시작 05:00~12:00 */
@@ -1296,6 +1326,9 @@ function fmtLong(s){ var d = parseISO(s); return d.getFullYear() + '년 ' + (d.g
 function fmtShort(s){ var d = parseISO(s); return (d.getMonth()+1) + '월 ' + d.getDate() + '일 (' + WEEK[d.getDay()] + ')'; }
 function fmtDot(s){ var d = parseISO(s); return (d.getMonth()+1) + '.' + d.getDate(); }
 function fmtNum(s){ var d = parseISO(s); return String(d.getFullYear()).slice(2) + '.' + (d.getMonth()+1) + '.' + d.getDate(); }
+/* 회원 정보 · 수강권 · 차트처럼 한 화면 안에서 날짜를 비교하는 곳은 YYYY.MM.DD 로 통일 */
+function fmtYMD(s){ var d = parseISO(s); return d.getFullYear() + '.' + pad(d.getMonth()+1) + '.' + pad(d.getDate()); }
+function fmtYMDDow(s){ return fmtYMD(s) + ' (' + WEEK[parseISO(s).getDay()] + ')'; }
 function monthLabel(ym){ var p = String(ym).split('-'); return p[0] + '년 ' + (+p[1]) + '월'; }
 function hms(m){ if (!m) return '0분'; var h = Math.floor(m/60), r = m % 60; return (h ? h + '시간 ' : '') + (r ? r + '분' : (h ? '' : '0분')); }
 function money(n){ if (n === '' || n === null || n === undefined) return '-'; return Number(n).toLocaleString('ko-KR') + '원'; }
@@ -1515,10 +1548,19 @@ function addToGoogleCalendar(s){
 }
 
 /* 설정 카드 */
+var calSaved = false;    /* 방금 연동 상태를 바꿔 저장했는지 — 설정 화면에 '저장됨'을 또렷하게 */
+function calStatHTML(cs){
+  return '<span class="dot"></span>' +
+    (calSaved ? '<span class="savedchip">저장됨</span>' : '') +
+    (cs.enabled
+      ? '켜짐 · ' + calTargetLabel(cs.target) + ' · 레슨을 추가하면 등록 창이 떠요'
+      : '꺼짐 · 스위치를 켜면 등록할 때 캘린더로 보낼 수 있어요');
+}
 function calSettingHTML(){
   var cs = calSync();
   var segs = CAL_TARGETS.map(function(t){
-    return '<button class="' + (cs.target === t[0] ? 'on' : '') + '" data-act="cal-target" data-v="' + t[0] + '">' + t[1] + '</button>';
+    return '<button class="' + (cs.target === t[0] ? 'on' : '') + '" data-act="cal-target" data-v="' + t[0] + '"' +
+      (cs.enabled ? '' : ' disabled aria-disabled="true"') + '>' + t[1] + '</button>';
   }).join('');
   return '<div class="calrow"><div class="calrow-t">' +
       '<b>레슨을 등록하면 캘린더에도 넣기</b>' +
@@ -1526,10 +1568,9 @@ function calSettingHTML(){
     '</div>' +
     '<button class="switch' + (cs.enabled ? ' on' : '') + '" id="calSwitch" data-act="cal-toggle" role="switch" aria-checked="' + (cs.enabled ? 'true' : 'false') + '" aria-label="캘린더 연동"><i></i></button>' +
   '</div>' +
-  '<div class="field" style="margin-bottom:6px"><label>연동할 캘린더</label>' +
+  '<div class="field" style="margin-bottom:6px"><label>연동할 캘린더' + (cs.enabled ? '' : ' — 연동을 켜면 고를 수 있어요') + '</label>' +
     '<div class="seg caltargets' + (cs.enabled ? '' : ' dim') + '" id="calTargets">' + segs + '</div></div>' +
-  '<div class="calstat' + (cs.enabled ? ' on' : '') + '" id="calStat"><span class="dot"></span>' +
-    (cs.enabled ? '레슨을 추가하면 바로 캘린더 등록 창이 떠요' : '스위치를 켜면 등록할 때 캘린더로 보낼 수 있어요') + '</div>' +
+  '<div class="calstat' + (cs.enabled ? ' on' : '') + (calSaved ? ' saved' : '') + '" id="calStat">' + calStatHTML(cs) + '</div>' +
   '<div class="hint">사파리 웹은 레슨을 등록할 때 캘린더 추가 창이 한 번 뜨고, 앱스토어 정식 앱에서는 아이폰 캘린더 권한 한 번으로 자동 등록·변경·취소가 이어져요. 구글 캘린더는 사파리에 구글 로그인이 되어 있어야 저장 화면이 열려요.</div>';
 }
 function paintCalSetting(){
@@ -1540,7 +1581,11 @@ function paintCalSetting(){
   if (seg) {
     seg.classList.toggle('dim', !cs.enabled);
     for (var i = 0; i < seg.children.length; i++) {
-      seg.children[i].classList.toggle('on', seg.children[i].getAttribute('data-v') === cs.target);
+      var b = seg.children[i];
+      b.classList.toggle('on', b.getAttribute('data-v') === cs.target);
+      if (cs.enabled) b.removeAttribute('disabled');
+      else b.setAttribute('disabled', 'disabled');
+      b.setAttribute('aria-disabled', cs.enabled ? 'false' : 'true');
     }
   }
   var txt = document.getElementById('calStateTxt');
@@ -1548,8 +1593,8 @@ function paintCalSetting(){
   var stat = document.getElementById('calStat');
   if (stat) {
     stat.classList.toggle('on', cs.enabled);
-    stat.innerHTML = '<span class="dot"></span>' +
-      (cs.enabled ? '레슨을 추가하면 바로 캘린더 등록 창이 떠요' : '스위치를 켜면 등록할 때 캘린더로 보낼 수 있어요');
+    stat.classList.toggle('saved', calSaved);
+    stat.innerHTML = calStatHTML(cs);
   }
 }
 
@@ -1928,7 +1973,7 @@ function buildDemo(){
     }
   });
 
-  /* 오늘 레슨 4건 (아직 미정 → 마감 정산으로 확정하는 흐름을 보여줌) */
+  /* 오늘 레슨 4건 (아직 예정 → 마감 정산으로 확정하는 흐름을 보여줌) */
   var todays = [
     { name:'김도현', time:'07:00', dur:55, loc:'분당 실내연습장' },
     { name:'박서연', time:'10:30', dur:25, loc:'판교 스크린레슨장' },
@@ -2259,7 +2304,7 @@ function render(keepScroll){
   renderTabbar();
   mainEl.scrollTop = sc;
   var fab = document.getElementById('fab');
-  if (fab) fab.style.display = (ui.tab === 'calendar') ? 'flex' : 'none';
+  if (fab) fab.style.display = (ui.tab === 'calendar' || ui.tab === 'today') ? 'flex' : 'none';
 }
 
 function activePkgCount(){
@@ -2280,7 +2325,7 @@ function renderHeader(){
   } else if (ui.tab === 'stats') {
     h = '<div class="hd-left"><div><h1>통계</h1><div class="sub">' + (ui.stats === 'revenue' ? '월 · 주 · 일 수입' : monthLabel(ui.month) + ' 운영 현황') + '</div></div></div>';
   } else {
-    h = '<div class="hd-left"><div><h1>설정</h1><div class="sub">프로 정보 · 외부 캘린더 · 출시 로드맵</div></div></div>';
+    h = '<div class="hd-left"><div><h1>설정</h1><div class="sub">테마 · 레슨 시간 · 캘린더 연동 · 프로 정보</div></div></div>';
   }
   document.getElementById('hd').innerHTML = h;
 }
@@ -2402,7 +2447,8 @@ function closeSheetEl(wrap){
 }
 function closeTopSheet(){
   if (!sheetStack.length) return;
-  closeSheetEl(sheetStack[sheetStack.length - 1]);
+  /* Esc 도 X·바깥 탭과 같이, 적어 둔 글이 있으면 한 번 더 물어봅니다 */
+  requestSheetClose(sheetStack[sheetStack.length - 1]);
 }
 function closeAllSheets(){
   sheetStack.slice().forEach(closeSheetEl);
@@ -2808,19 +2854,29 @@ function viewToday(){
   var h = '<div class="hero">' +
     '<div class="k">' + fmtLong(t) + '</div>' +
     '<div class="big">오늘 레슨 ' + list.length + '건</div>' +
-    '<div class="row"><span class="pillstat">' + hms(mins) + '</span>' +
-      (d55 ? '<span class="pillstat">55분 ' + d55 + '</span>' : '') +
-      (d25 ? '<span class="pillstat">25분 ' + d25 + '</span>' : '') +
-      (dsep ? '<span class="pillstat">⛳ 별도 ' + dsep + '</span>' : '') +
-      '<span class="pillstat">' + (und ? '미정 ' + und + '건' : (list.length ? '전원 확인' : '레슨 없음')) + '</span>' +
+    '<div class="row">' +
+      (list.length
+        ? '<span class="pillstat">' + hms(mins) + '</span>' +
+          (d55 ? '<span class="pillstat">55분 ' + d55 + '</span>' : '') +
+          (d25 ? '<span class="pillstat">25분 ' + d25 + '</span>' : '') +
+          (dsep ? '<span class="pillstat">⛳ 별도 ' + dsep + '</span>' : '') +
+          '<span class="pillstat">' + (und ? '예정 ' + und + '건' : '전원 확인') + '</span>'
+        : '<span class="pillstat">레슨 없음</span>') +
     '</div>' +
-    '<button class="herobtn" data-act="settle-open">' +
-      '<span>' + (settled ? '마감 정산 수정하기' : '오늘 레슨 마감 정산하기') +
-        '<span class="hb-sub">' + (settled
-          ? '차감 ' + settled.deducted + '회 반영 · ' + timeOfISO(settled.settledAt) + ' 정산'
-          : '완료 · 당일취소 · 노쇼를 한 번에 차감 처리') + '</span></span>' +
-      '<span class="hb-go">' + ICON.chev + '</span>' +
-    '</button>' +
+    /* 빈 날에는 정산 대신, 가장 하고 싶은 일(레슨 잡기)을 바로 누를 수 있게 */
+    (list.length
+      ? '<button class="herobtn" data-act="settle-open">' +
+          '<span>' + (settled ? '마감 정산 수정하기' : '오늘 레슨 마감 정산하기') +
+            '<span class="hb-sub">' + (settled
+              ? '차감 ' + settled.deducted + '회 반영 · ' + timeOfISO(settled.settledAt) + ' 정산'
+              : '완료 · 당일취소 · 노쇼를 한 번에 차감 처리') + '</span></span>' +
+          '<span class="hb-go">' + ICON.chev + '</span>' +
+        '</button>'
+      : '<button class="herobtn" data-act="quick-add">' +
+          '<span>+ 오늘 레슨 잡기' +
+            '<span class="hb-sub">한 줄로 적으면 날짜 · 시간 · 회원이 알아서 채워져요</span></span>' +
+          '<span class="hb-go">' + ICON.chev + '</span>' +
+        '</button>') +
   '</div>';
 
   /* 아직 회원이 없는 새 프로 — 1탭으로 첫 회원 추가 */
@@ -2865,7 +2921,8 @@ function viewToday(){
 
   h += '<div class="sec"><h2>오늘 시간표</h2><span class="aside">' + (list.length ? '시간순' : '비어 있음') + '</span></div>';
   if (!list.length) {
-    h += '<div class="empty"><div class="et">오늘은 예약이 없어요</div><div class="ed">캘린더에서 레슨을 잡아 보세요.</div></div>';
+    h += '<div class="empty"><div class="et">오늘은 예약이 없어요</div><div class="ed">한 줄로 적으면 오늘 레슨이 바로 잡혀요.</div>' +
+      '<button class="btn btn-primary btn-block" data-act="quick-add" style="margin-top:12px">+ 오늘 레슨 잡기</button></div>';
   } else {
     h += list.map(lessonCard).join('');
   }
@@ -2886,7 +2943,9 @@ function viewToday(){
     '</div>';
   }
 
-  h += '<div class="sguide">' +
+  /* 정산 기준은 실제로 정산할 레슨이 남아 있을 때만 — 빈 날·정산 끝난 날에는 화면만 길어짐 */
+  if (list.length && !settled) {
+    h += '<div class="sguide">' +
     '<div class="sguide-hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.4"/><circle cx="12" cy="8.1" r=".9" fill="currentColor" stroke="none"/></svg>' +
       '<h2 class="t">정산 기준</h2></div>' +
     '<div class="sguide-row"><span class="sguide-badge ded">1회 차감</span>' +
@@ -2897,6 +2956,7 @@ function viewToday(){
       '<span class="sguide-items">⛳ 필드<span class="sep">·</span>🎯 숏게임<span class="sep">·</span>💡 원포인트 — 수강권 미차감</span></div>' +
     '<div class="sguide-note">하루가 끝나면 마감 정산에서 한 번에 확정해요.</div>' +
   '</div>';
+  }
 
   return h;
 }
@@ -2931,11 +2991,13 @@ function lessonCard(s){
     '<div class="body">' +
       '<div class="nameline">' + nameline +
         '<span class="st st-' + st.cls + '">' + st.label + '</span>' +
+        /* 수정은 상태 시트를 거치지 않고 바로 — 이름줄 오른쪽 끝에서 한 번에 닿습니다 */
+        '<button class="btn btn-sm btn-ghost tedit" data-act="lesson-edit" data-sid="' + s.id + '" aria-label="' + esc(sessionName(s)) + ' 레슨 수정">수정</button>' +
       '</div>' +
       '<div class="meta">' + metaline + '</div>' +
       (sep ? '' : '<div class="bar"><i class="' + (rem <= LOW_LIMIT ? 'low' : '') + '" style="width:' + pct + '%"></i></div>') +
       '<div class="chiprow mt10">' + actions +
-        '<button class="btn btn-sm btn-ghost" data-act="note-open" data-sid="' + s.id + '">메모</button>' +
+        '<button class="btn btn-sm btn-ghost" data-act="note-open" data-sid="' + s.id + '" aria-label="' + esc(sessionName(s)) + ' 수업 메모">수업 메모</button>' +
         (s.memberId ? '<button class="btn btn-sm btn-ghost" data-act="tm-open" data-sid="' + s.id + '">레슨 차트</button>' : '') +
       '</div>' +
     '</div></div></div>';
@@ -2996,7 +3058,7 @@ function openStatusSheet(sid){
         '<span class="kko-ic">' + ICON.chat + '</span>' +
         '<span class="kko-t"><b>카톡 요약 복사</b><span class="kko-s">레슨 내용 · 잔여 횟수 · 오늘 포인트를 한 번에</span></span>' +
         '<span class="kko-go">복사</span></button>' +
-      '<button class="btn btn-outline btn-block" data-act="lesson-edit" data-sid="' + s.id + '" style="margin-bottom:8px">✏️ 내용 수정 (날짜 · 시간 · 장소 · 금액)</button>' +
+      '<button class="btn btn-outline btn-block" data-act="lesson-edit" data-sid="' + s.id + '" style="margin-bottom:8px">✏️ 내용 수정 ' + (sep ? '(날짜 · 시간 · 장소 · 금액)' : '(날짜 · 시간 · 장소)') + '</button>' +
       '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '">📅 내 캘린더에 추가</button>'
   });
   return sh;
@@ -3052,8 +3114,12 @@ function settleBodyHTML(sel, list){
         '" data-act="settle-set" data-sid="' + s.id + '" data-status="' + k + '">' + STATUS[k].label + '</button>';
     }).join('');
     var projText = sep
-      ? (cur ? (CHARGED[cur] ? '별도 수입 포함' : '수입 없음') : '미정')
-      : (cur ? '잔여 ' + rem + ' → <b>' + proj + '</b>' : '미정');
+      ? (cur ? (CHARGED[cur] ? '별도 수입 포함' : '수입 없음') : '상태를 골라 주세요')
+      : (cur ? '잔여 ' + rem + ' → <b>' + proj + '</b>' : '상태를 골라 주세요');
+    /* 고른 상태를 잔여 미리보기 옆에 이름으로 남깁니다 (버튼 색만으로는 보기 어려움) */
+    var selLabel = cur
+      ? '<span class="ssel ssel-' + cur + '">' + STATUS[cur].label + '</span>'
+      : '<span class="ssel">예정</span>';   /* 아직 안 고른 줄도 '예정'으로 — 화면마다 미정/예정으로 갈리지 않게 */
     return '<div class="srow' + (cur ? '' : ' pend') + '">' +
       '<div class="srowh">' +
         (sep ? '<span class="lkind lk-' + sepKind(s) + '">' + sepBadge(s) + '</span>' : '') +
@@ -3061,6 +3127,7 @@ function settleBodyHTML(sel, list){
         (sep ? '<span class="paytag">별도 ' + (sepFee(s) ? money(sepFee(s)) : '미입력') + '</span>'
              : '<span class="dur' + (s.durationMinutes === 55 ? ' d55' : '') + '">' + s.durationMinutes + '분</span>') +
         '<span class="stime">' + s.startTime + '</span>' +
+        selLabel +
         '<span class="sproj' + (cur ? '' : ' dim') + '">' + projText + '</span>' +
       '</div>' +
       '<div class="sopts' + (sep ? ' n4' : '') + '">' + opts + '</div>' +
@@ -3076,9 +3143,9 @@ function settleFooterHTML(sel, list){
   var dis = t.und ? ' disabled' : '';
   var h = '<div class="sumline"><span>차감 <b>' + t.ded + '회</b> · 미차감 <b>' + t.keep + '회</b>' +
     (t.sep ? ' · 별도 <b>' + t.sep + '건</b>' : '') +
-    (t.und ? ' · 미정 <b>' + t.und + '건</b>' : '') + '</span><span>' + t.total + '건</span></div>';
+    (t.und ? ' · 예정 <b>' + t.und + '건</b>' : '') + '</span><span>' + t.total + '건</span></div>';
   if (t.und) {
-    h += '<div class="hintline">미정 ' + t.und + '건을 고르면 정산할 수 있어요.</div>' +
+    h += '<div class="hintline">예정 ' + t.und + '건을 고르면 정산할 수 있어요.</div>' +
       '<button class="btn btn-sm btn-ghost btn-block" data-act="settle-all">남은 레슨 모두 완료로</button>' +
       '<div style="height:8px"></div>';
   }
@@ -3090,7 +3157,7 @@ function settleFooterHTML(sel, list){
 function settleApply(){
   if (!settleCtx) return;
   var t = settleTally(settleCtx.sel, settleCtx.list);
-  if (t.und) { toast('미정 ' + t.und + '건을 먼저 골라주세요'); return; }
+  if (t.und) { toast('예정 ' + t.und + '건을 먼저 골라주세요'); return; }
   var counts = { completed:0, same_day_cancel:0, no_show:0, excused_cancel:0, makeup:0 };
   var deducted = 0, cleared = 0, sepCount = 0;
   settleCtx.list.forEach(function(s){
@@ -3129,18 +3196,18 @@ function openSessionMemoSheet(sid){
   if (!s) return;
   var m = memberById(s.memberId);
   var sh = openSheet({
-    title:'레슨 메모',
+    title:'수업 메모',
     sub: esc(m ? m.name : '-') + ' · ' + fmtShort(s.date) + ' ' + s.startTime,
     body: '<div class="field"><label>이 레슨에서 다룰 내용 / 특이사항</label>' +
       '<textarea class="input" id="smMemo" placeholder="예: 드라이버 티샷 위주, 어깨 회전 체크">' + esc(s.memo || '') + '</textarea></div>' +
-      '<div class="hint">자세한 레슨 내용을 날짜별로 쌓으려면 회원 정보창의 <b>레슨 차트</b>를 쓰면 돼요.</div>',
+      '<div class="hint">예약에 붙는 짧은 메모예요. 자세한 레슨 내용을 날짜별로 쌓으려면 회원 정보창의 <b>레슨 차트</b>를 쓰면 돼요.</div>',
     footer: '<button class="btn btn-primary btn-block" data-act="sm-save" data-sid="' + s.id + '">저장</button>'
   });
   sh.el.setAttribute('data-sheet', 'session-memo');
 }
 
 /* =========================================================
-   오늘 레슨 메모 — 오늘 탭 카드의 [레슨 차트]
+   오늘 차트 메모 — 오늘 탭 카드의 [레슨 차트]
    그 회원의 '그 레슨 날짜' 기록만 빠르게 적는 작은 창입니다.
    여러 날짜 기록 고치기·지우기·태그 필터는 예전처럼 회원 정보창과
    캘린더(레슨 상태 → 정보·레슨 차트 열기)에서 합니다.
@@ -3158,13 +3225,13 @@ function memoNoteFor(memberId, date){
 function openTodayMemoSheet(sid){
   var s = findSession(sid);
   if (!s) return;
-  if (!s.memberId) { toast('비회원 레슨은 레슨 메모를 써 주세요'); return; }
+  if (!s.memberId) { toast('비회원 레슨은 수업 메모를 써 주세요'); return; }
   var m = memberById(s.memberId);
   var date = s.date || todayISO();
   var prev = memoNoteFor(s.memberId, date);
   var when = fmtDot(date) + ' ' + s.startTime + (isSep(s) ? '' : ' · ' + s.durationMinutes + '분');
   var sh = openSheet({
-    title: '오늘 레슨 메모',
+    title: '오늘 차트 메모',
     sub: esc(m ? m.name : '-') + ' · ' + when
   });
   tmCtx = { sh: sh, sid: s.id, memberId: s.memberId, date: date, voiceUsed: false };
@@ -3285,7 +3352,10 @@ function viewCalendar(){
     var wd = cd.getDay();
     var cls = 'day' + (out ? ' out' : '') + (key === todayISO() ? ' today' : '') + (key === sel ? ' sel' : '') +
       (wd === 0 ? ' sun' : (wd === 6 ? ' sat' : ''));
-    cells += '<button class="' + cls + '" data-act="day" data-date="' + key + '">' + cd.getDate() + dotsFor(key) + '</button>';
+    var dayN = (byDate[key] || []).length;
+    var dayLbl = (cd.getMonth() + 1) + '월 ' + cd.getDate() + '일 (' + WEEK[wd] + ') · ' + (dayN ? '레슨 ' + dayN + '건' : '레슨 없음');
+    cells += '<button class="' + cls + '" data-act="day" data-date="' + key + '" aria-label="' + esc(dayLbl) + '">' +
+      cd.getDate() + dotsFor(key) + '</button>';
   }
 
   var list = sessionsByDate(sel);
@@ -3402,9 +3472,17 @@ function timelineHTML(dateStr){
     var s = it.s;
     var span = (it.b - it.a) / 60 * HOUR_H;   /* 실제 길이(px) */
     var top = (it.a - startH * 60) / 60 * HOUR_H;
-    var hgt = Math.max(24, span - 3);
-    /* 짧은 블록의 최소 높이가 길이를 넘어 다음 블록을 덮지 않도록 보정 */
-    if (hgt > span - 1) hgt = Math.max(18, span - 1);
+    /* 25분 레슨도 최소 높이까지 키워 누르기 쉽게 하되,
+       같은 줄(lane)에서 다음 블록과 부딪치지 않는 선에서만 키웁니다 */
+    var nextTop = null;
+    for (var oi = 0; oi < items.length; oi++) {
+      var o = items[oi];
+      if (o === it || o.lane !== it.lane || o.a < it.b) continue;
+      var ot = (o.a - startH * 60) / 60 * HOUR_H;
+      if (nextTop === null || ot < nextTop) nextTop = ot;
+    }
+    var hgt = Math.max(TL_MIN_H, span - 3);
+    if (nextTop !== null) hgt = Math.min(hgt, Math.max(span - 3, nextTop - top - 2));
     var w = 100 / laneCount;
     var st = STATUS[s.status] || STATUS.scheduled;
     var pkg = isSep(s) ? null : pkgById(s.packageId);
@@ -3839,7 +3917,7 @@ function avatarClass(m){
 }
 function expiryLabel(p){
   if (!p.expiryDate || p.expiryDate >= '9000-01-01') return '무기한';
-  return fmtNum(p.expiryDate) + ' 만료';
+  return fmtYMD(p.expiryDate) + ' 만료';
 }
 
 /* ---------- 회원목록 정렬 ---------- */
@@ -3870,7 +3948,7 @@ function viewMembers(){
       '<span class="qa-d">예: <b>김민수 4/10회 80만원</b> · 여러 줄 붙여넣기 가능</span>' +
     '</span>' +
     '<span class="qa-go">입력하기' + ICON.chev + '</span></button>';
-  h += '<div class="sec" style="margin-top:4px"><h2>회원 목록 <span class="sec-cnt">' + list.length + '명</span></h2>' +
+  h += '<div class="listbar"><span class="lb-cnt">전체 <b>' + list.length + '</b>명</span>' +
     '<button class="sortbtn" data-act="pick" data-field="mSort" type="button" aria-label="정렬 방식 고르기">' +
       '<span>' + memberSortLabel(mode) + '</span>' + ICON.chevD + '</button></div>';
   h += '<div id="memberList">' + memberRowsHTML(list) + '</div>';
@@ -3900,7 +3978,11 @@ function filteredMembers(){
 }
 
 function memberRowsHTML(list){
-  if (!list.length) return '<div class="empty"><div class="et">찾는 회원이 없어요</div><div class="ed">검색어를 지우거나 새 회원을 추가해 보세요.</div></div>';
+  if (!list.length) {
+    return state.members.length
+      ? '<div class="empty"><div class="et">찾는 회원이 없어요</div><div class="ed">검색어를 지우면 전체 ' + state.members.length + '명이 다시 보여요.</div></div>'
+      : '<div class="empty"><div class="et">아직 등록된 회원이 없어요</div><div class="ed">위 <b>한 줄로 회원 추가</b>에서 이름과 수강권을 한 번에 등록해 보세요.</div></div>';
+  }
   return list.map(function(m){
     var act = activePkgs(m.id);
     var rem = totalRemaining(m.id);
@@ -4015,7 +4097,7 @@ function kakaoMD(date){
   return (d.getMonth() + 1) + '/' + d.getDate() + '(' + WEEK[d.getDay()] + ')';
 }
 
-/* 그 날짜의 최신 차트 기록 → 없으면 레슨 메모 → 없으면 회원의 최근 기록 */
+/* 그 날짜의 최신 차트 기록 → 없으면 수업 메모 → 없으면 회원의 최근 기록 */
 function kakaoPointText(s, m){
   var mid = s ? s.memberId : (m ? m.id : '');
   var text = '';
@@ -4195,7 +4277,7 @@ function memberBodyHTML(m){
     '<div class="kv"><span class="k">연락처</span><span class="v">' +
       (m.phone ? '<a href="tel:' + esc(String(m.phone).replace(/[^0-9+]/g, '')) + '">' + esc(m.phone) + '</a>' : '-') + '</span></div>' +
     '<div class="kv"><span class="k">레벨</span><span class="v">' + (esc(m.level) || '-') + '</span></div>' +
-    '<div class="kv"><span class="k">등록일</span><span class="v">' + fmtLong(m.since || todayISO()) + '</span></div>' +
+    '<div class="kv"><span class="k">등록일</span><span class="v">' + fmtYMDDow(m.since || todayISO()) + '</span></div>' +
   '</div>';
 
   h += '<div class="sec"><h2>수강권</h2><span class="aside">' + pkgs.length + '개' +
@@ -4224,7 +4306,7 @@ function memberBodyHTML(m){
       '<div class="card" style="padding:2px 14px 4px">' + sepList.map(function(s){
         var sst = STATUS[s.status];
         return '<button class="sepline" data-act="status-sheet" data-sid="' + s.id + '">' +
-          '<span class="sp-d">' + fmtDot(s.date) + '</span>' +
+          '<span class="sp-d">' + fmtYMD(s.date) + '</span>' +
           '<span class="sp-k">' + SEP_KINDS[sepKind(s)].icon + ' ' + esc(sepKindShort(s.lessonKind)) +
             '<span class="sp-sub">' + s.durationMinutes + '분' + (sst ? ' · ' + sst.label : '') + '</span></span>' +
           '<span class="sp-f">' + (sepFee(s) ? money(sepFee(s)) : '미입력') + '</span>' +
@@ -4233,12 +4315,7 @@ function memberBodyHTML(m){
       '<div class="hint" style="margin-top:7px">' + esc(kindsTxt) + ' · 수강권은 차감되지 않았어요. 수강권을 추가해도 이 기록은 그대로 남습니다.</div>';
   }
 
-  h += '<div class="sec"><h2>스윙 메모</h2><span class="aside">매 레슨 공통</span></div>' +
-    '<div class="card">' +
-      '<textarea class="input" id="swingMemo" placeholder="스윙 특징, 목표, 주의점">' + esc(m.memo || '') + '</textarea>' +
-      '<div class="chiprow mt10"><button class="btn btn-sm btn-outline" data-act="memo-save">메모 저장</button></div>' +
-    '</div>';
-
+  /* 레슨 직후에 가장 먼저 쓰는 화면이라 수강권 바로 아래에 둡니다 */
   h += '<div class="sec"><h2>레슨 차트</h2>' +
     '<button class="kakaochip" data-act="kakao-copy" data-mid="' + m.id + '">' + ICON.chat + '카톡 요약</button></div>';
   h += tagBarHTML(notes);
@@ -4248,6 +4325,12 @@ function memberBodyHTML(m){
       (notes.length
         ? '<div class="empty" style="border:0;padding:18px 4px"><div class="et">#' + esc(tf) + ' 기록이 없어요</div><div class="ed">전체를 누르면 모든 기록을 볼 수 있어요.</div></div>'
         : '<div class="empty" style="border:0;padding:18px 4px"><div class="et">아직 기록이 없어요</div><div class="ed">레슨 내용을 적으면 날짜순으로 차트가 쌓여요.</div></div>')) +
+    '</div>';
+
+  h += '<div class="sec"><h2>회원 메모</h2><span class="aside">매 레슨 공통 · 정보 수정에서도 고칠 수 있어요</span></div>' +
+    '<div class="card">' +
+      '<textarea class="input" id="swingMemo" placeholder="스윙 특징, 목표, 주의점">' + esc(m.memo || '') + '</textarea>' +
+      '<div class="chiprow mt10"><button class="btn btn-sm btn-outline" data-act="memo-save">회원 메모 저장</button></div>' +
     '</div>';
   return h;
 }
@@ -4272,11 +4355,11 @@ function pkgCardHTML(p){
   return '<div class="pcard' + (dead ? ' dead' : '') + '">' +
     '<div class="phead">' +
       '<span class="dur' + (p.durationMinutes === 55 ? ' d55' : '') + '">' + p.durationMinutes + '분</span>' +
-      '<span class="pnum">' + p.remainingSessions + '<small>/ ' + p.totalSessions + '회</small></span>' +
+      '<span class="pnum">' + p.remainingSessions + '<small>/' + p.totalSessions + '회</small></span>' +
     '</div>' +
     '<div class="bar mt10"><i class="' + (p.remainingSessions <= LOW_LIMIT ? 'low' : '') + '" style="width:' + pct + '%"></i></div>' +
     '<div class="pmeta">' +
-      '<span>' + fmtNum(p.startDate) + ' ~ ' + expiryLabel(p) + '</span>' +
+      '<span>' + fmtYMD(p.startDate) + ' ~ ' + expiryLabel(p) + '</span>' +
       (p.price ? '<span>' + money(p.price) + '</span>' : '') +
       (unit ? '<span>회당 약 ' + money(unit) + '</span>' : '') +
       '<button class="link" data-act="pkg-price" data-mid="' + p.memberId + '" style="font-size:11.5px">' + (p.price ? '금액 수정' : '금액 입력') + '</button>' +
@@ -4292,12 +4375,12 @@ function composerHTML(){
   var d = memberCtx ? memberCtx.noteDate : todayISO();
   var draft = (memberCtx && memberCtx.draft) ? memberCtx.draft : '';
   return '<div class="composer">' +
-    '<div class="ctitle"><span>레슨 내용 기록</span></div>' +
+    '<div class="ctitle"><span>레슨 차트 기록</span></div>' +
     '<textarea class="input" id="noteText" placeholder="예: 11월 20일 드라이버 백스윙 교정. 오른팔 펴기 유지.">' + esc(draft) + '</textarea>' +
     '<div class="crow">' +
       '<button class="btn btn-sm micbtn" id="voiceBtn" data-act="voice">🎤 음성 입력</button>' +
       dateFieldHTML('noteDate', d, true, 'dateinput') +
-      '<button class="btn btn-sm btn-primary" data-act="note-save">저장</button>' +
+      '<button class="btn btn-sm btn-primary" data-act="note-save">차트에 저장</button>' +
     '</div>' +
     noteTagChipsHTML() +
     '<div class="hint" id="noteHint">' + NOTE_HINT_IDLE + '</div>' +
@@ -4319,7 +4402,7 @@ function noteRowHTML(n){
   if (n.source === 'voice') chips += '<span class="st st-makeup">음성</span>';
   var tags = noteTags(n).map(noteTagHTML).join('');
   return '<div class="cnote">' +
-    '<div class="cn-d"><b>' + fmtDot(n.date) + '</b><span>' + WEEK[d.getDay()] + '</span></div>' +
+    '<div class="cn-d"><b>' + fmtYMD(n.date) + '</b><span>' + WEEK[d.getDay()] + '</span></div>' +
     '<div class="cn-b"><div class="cn-t">' + esc(n.text) + '</div>' +
       '<div class="cn-m">' + tags + chips + '</div></div>' +
     '<button class="cn-x" data-act="note-del" data-nid="' + n.id + '" aria-label="기록 삭제">' + ICON.x + '</button>' +
@@ -4429,7 +4512,9 @@ function refreshNoteDate(){
   var hint = document.getElementById('noteHint');
   if (!ta || !dEl) return;
   var p = parseDateFromText(ta.value);
-  if (p.date) { dEl.value = p.date; memberCtx.noteDate = p.date; }
+  /* 날짜를 자동으로 알아냈으면 옆 날짜 버튼도 같은 날짜로 맞춥니다 —
+     화면과 저장될 날짜가 서로 다른 말을 하지 않도록 */
+  if (p.date) { dEl.value = p.date; memberCtx.noteDate = p.date; syncDateLabel('noteDate'); }
   var eff = dEl.value || todayISO();
   if (hint) {
     if (!ta.value.trim()) hint.innerHTML = NOTE_HINT_IDLE;
@@ -4784,7 +4869,7 @@ function openAddMemberSheet(member, tpl){
     title: editing ? '회원 정보 수정' : '회원 추가',
     sub: editing ? '이름 · 성별 · 지역 · 연락처를 고칠 수 있어요.' : '한 줄로 적으면 아래 항목이 알아서 채워져요.'
   });
-  addCtx = { sh: sh, editing: editing, memberId: member ? member.id : null, duration: 55, gender: member ? (member.gender || '') : '', rows: [], bulk: false };
+  addCtx = { sh: sh, editing: editing, memberId: member ? member.id : null, duration: 55, gender: member ? (member.gender || '') : '', rows: [], bulk: false, auto: {} };
   sh.body.innerHTML = addMemberBodyHTML(member, tpl);
   /* 한 줄 간편 입력에 적어 둔 채로 바깥을 잘못 눌러도 글이 사라지지 않게 */
   sh.el.__guardClose = function(){
@@ -4816,7 +4901,7 @@ function addMemberBodyHTML(m, tpl){
   var h = '';
   if (!m) {
     h += '<div class="quick">' +
-      '<div class="qt">' + ICON.spark + '한 줄 간편 입력 <span class="auto">여러 명 한꺼번에</span></div>' +
+      '<div class="qt">' + ICON.spark + '한 줄 간편 입력 <button class="auto autobtn" type="button" data-act="quick-focus" aria-label="여러 명을 한꺼번에 등록하는 방법 — 입력칸으로 이동">여러 명 한꺼번에</button></div>' +
       '<textarea class="input" id="quickLine" rows="3" placeholder="김민수 4/10회 80만원&#10;박영희 잔여 4회&#10;이서연 55분 8회 여 판교"></textarea>' +
       '<div class="crow"><button class="btn btn-sm btn-outline" id="amVoiceBtn" data-act="am-voice">🎤 음성 입력</button></div>' +
       '<div class="chips mt10" style="gap:5px">' + QUICK_EXAMPLES.map(function(x){
@@ -4841,7 +4926,7 @@ function addMemberBodyHTML(m, tpl){
     '<div class="field"><label>연락처</label><input class="input" id="mfPhone" type="tel" value="' + esc(m ? (m.phone || '') : '') + '" placeholder="010-0000-0000"></div>' +
     '<div class="field"><label>레벨</label>' + pickFieldHTML('mfLevel', levelPickOptions(), m ? (m.level || '') : '') + '</div>' +
   '</div>';
-  h += '<div class="field"><label>메모</label><textarea class="input" id="mfMemo" placeholder="스윙 특징 · 목표 · 주의점">' + esc(m ? (m.memo || '') : '') + '</textarea></div>';
+  h += '<div class="field"><label>회원 메모</label><textarea class="input" id="mfMemo" placeholder="스윙 특징 · 목표 · 주의점">' + esc(m ? (m.memo || '') : '') + '</textarea></div>';
 
   if (!m) {
     h += '<div class="divider"></div>' +
@@ -4852,8 +4937,8 @@ function addMemberBodyHTML(m, tpl){
       '</div></div>' +
       '<div class="field"><label>횟수 (선택)</label>' +
         '<div class="row2">' +
-          '<input class="input" id="mfSessions" type="number" inputmode="numeric" min="1" step="1" placeholder="횟수 입력">' +
-          '<input class="input" id="mfRemain" type="number" inputmode="numeric" min="0" step="1" placeholder="남은 횟수(선택)">' +
+          '<div class="field minifield"><label for="mfSessions">총 횟수</label><input class="input" id="mfSessions" type="number" inputmode="numeric" min="1" step="1" placeholder="횟수 입력"></div>' +
+          '<div class="field minifield"><label for="mfRemain">남은 횟수 (선택)</label><input class="input" id="mfRemain" type="number" inputmode="numeric" min="0" step="1" placeholder="남은 횟수(선택)"></div>' +
         '</div>' +
         '<div class="chips countrow mt10" id="mfCountChips">' + [1,5,8,10,20].map(function(n){
           return '<button class="chip" data-act="mf-count" data-v="' + n + '">' + n + '회</button>';
@@ -4978,18 +5063,34 @@ function applyQuickLine(){
       : '회원 추가';
   }
 
-  if (!bulk && text.trim() && p) {
+  /* 자동으로 채운 칸을 기억합니다 (addCtx.auto).
+     · 사용자가 직접 고친 칸은 건드리지 않고
+     · 인식 결과에서 사라진 값은 다시 비웁니다.
+     예) '정'만 있을 때 이름 대신 메모로 잡혔다가 '정하윤'이 완성되면, 메모의 '정'을 지웁니다. */
+  var auto = addCtx.auto || (addCtx.auto = {});
+  function autoFill(id, val){
+    var el = document.getElementById(id);
+    if (!el) return;
+    var v = String(val === undefined || val === null ? '' : val);
+    if (el.value !== '' && el.value !== auto[id]) return;   /* 사용자가 적은 값은 그대로 */
+    if (el.value !== v) el.value = v;
+    auto[id] = v;
+  }
+  if (!bulk) {
+    var p2 = (text.trim() && p) ? p : null;
     var el;
-    if (p.found.name && (el = document.getElementById('mfName'))) el.value = p.name;
-    if (p.found.region && (el = document.getElementById('mfRegion'))) el.value = p.region;
-    if (p.found.phone && (el = document.getElementById('mfPhone'))) el.value = p.phone;
-    if (p.found.gender) setGenderUI(p.gender);
-    if (p.found.level && (el = document.getElementById('mfLevel'))) { el.value = p.level; syncPickLabel('mfLevel'); }
-    if (p.found.duration) { addCtx.duration = p.duration; setDurUI(p.duration); }
-    if (p.total > 0 && (el = document.getElementById('mfSessions'))) el.value = p.total;
-    if (p.total > 0 && (el = document.getElementById('mfRemain'))) el.value = (p.rem > 0 && p.rem < p.total) ? p.rem : '';
-    if (p.price > 0 && (el = document.getElementById('mfPrice'))) el.value = p.price;
-    if (p.extra && (el = document.getElementById('mfMemo')) && !el.value) el.value = p.extra;
+    autoFill('mfName', p2 && p2.found.name ? p2.name : '');
+    autoFill('mfRegion', p2 && p2.found.region ? p2.region : '');
+    autoFill('mfPhone', p2 && p2.found.phone ? p2.phone : '');
+    autoFill('mfSessions', p2 && p2.total > 0 ? p2.total : '');
+    autoFill('mfRemain', p2 && p2.total > 0 && p2.rem > 0 && p2.rem < p2.total ? p2.rem : '');
+    autoFill('mfPrice', p2 && p2.price > 0 ? p2.price : '');
+    autoFill('mfMemo', p2 && p2.extra ? p2.extra : '');
+    if (p2) {
+      if (p2.found.gender) setGenderUI(p2.gender);
+      if (p2.found.level && (el = document.getElementById('mfLevel'))) { el.value = p2.level; syncPickLabel('mfLevel'); }
+      if (p2.found.duration) { addCtx.duration = p2.duration; setDurUI(p2.duration); }
+    }
     updateUnit();
   }
   if (bar) bar.innerHTML = !text.trim()
@@ -5160,7 +5261,7 @@ function openPriceSheet(memberId){
   sh.body.innerHTML = pkgs.length ? pkgs.map(function(p){
     var unit = perSessionPrice(p);
     return '<div class="field"><label>' + p.durationMinutes + '분 · ' + p.totalSessions + '회' +
-      (p.startDate ? ' · ' + fmtNum(p.startDate) + ' 시작' : '') + '</label>' +
+      (p.startDate ? ' · ' + fmtYMD(p.startDate) + ' 시작' : '') + '</label>' +
       '<input class="input" type="number" inputmode="numeric" data-pid="' + p.id + '" value="' + (p.price || '') + '" placeholder="예) 640000">' +
       '<div class="hint" id="pv_' + p.id + '">' + (unit ? '지금 회당 ' + money(unit) : '금액을 넣으면 회당 금액을 계산해 드려요.') + '</div></div>';
   }).join('') : '<div class="empty"><div class="et">수강권이 없어요</div><div class="ed">회원 정보창에서 수강권을 먼저 추가해 주세요.</div></div>';
@@ -5457,7 +5558,7 @@ function viewLessonStats(){
   return h;
 }
 
-/* 설정 탭 = 화면 테마 · 레슨 시간 범위 · 프로 정보 · 외부 캘린더 연동 · 앱스토어 출시 로드맵 */
+/* 설정 탭 = 화면 테마 · 레슨 시간 범위 · 외부 캘린더 연동 · 프로 정보(데이터) · 앱스토어 출시 로드맵(맨 아래) */
 function hourHintText(){
   return '레슨 예약·수정의 <b>시작 시간</b> 칩과 캘린더 시간표가 이 범위를 따라요. 기본은 06:00~23:00이에요.';
 }
@@ -5474,6 +5575,7 @@ function syncHourRows(){
 
 function viewSettings(){
   var h = '';
+  calSaved = false;   /* 설정 화면을 새로 열면 '저장됨' 표시는 한 번만 */
 
   h += '<div class="sec"><h2>화면 테마</h2><span class="aside">앱 전체에 바로 적용</span></div><div class="card">' +
     '<div class="themegrid">' + themeCardHTML('green') + themeCardHTML('black') + '</div>' +
@@ -5488,15 +5590,12 @@ function viewSettings(){
     '<div class="hint" id="hourHint">' + hourHintText() + '</div>' +
   '</div>';
 
-  h += '<div class="sec"><h2>앱스토어 출시 로드맵</h2><span class="aside">현재 1단계</span></div><div class="card"><div class="rm">' +
-    roadmapStep('cur', '1단계 · MVP 프로토타입', '지금 보고 있는 화면. 운동장에서 한 손으로 쓰는 흐름과 데이터 구조를 먼저 검증해요.') +
-    roadmapStep('', '2단계 · React Native + Expo', '같은 화면을 실제 앱 코드로 옮기고 기기 저장(SQLite)과 알림을 붙여요. iOS 음성 인식으로 레슨 내용을 말로 기록해요.') +
-    roadmapStep('', '3단계 · TestFlight 베타', '지인 프로 3~5명이 2~4주 써보게 하고, 백업·복원과 수강권 만료 알림을 다듬어요.') +
-    roadmapStep('', '4단계 · App Store 심사', '스크린샷·개인정보처리방침·심사 답변을 준비해 제출해요. 업데이트는 Expo EAS로 빌드해 올려요.') +
-    roadmapStep('', '5단계 · 운영 고도화', '카카오 알림톡, 수강료 결제, 여러 강사(지점) 관리, 회원 셀프 예약 링크 순서로 넓혀요.') +
-  '</div></div>';
+  /* 실제 설정(테마 → 시간 범위 → 캘린더 → 프로 정보)을 먼저, 개발용 로드맵은 맨 아래로 */
+  h += '<div class="sec"><h2>외부 캘린더 연동</h2><span class="aside">아이폰 · 구글</span></div><div class="card">' +
+    calSettingHTML() +
+  '</div>';
 
-  h += '<div class="sec"><h2>설정</h2><span class="aside">프로 정보</span></div><div class="card">' +
+  h += '<div class="sec"><h2>프로 정보 · 데이터</h2><span class="aside">이 기기에만</span></div><div class="card">' +
     '<div class="field"><label>프로 이름</label><input class="input" id="setPro" value="' + esc(state.pro.name) + '"></div>' +
     '<div class="field"><label>소속 / 레슨장</label><input class="input" id="setAcademy" value="' + esc(state.pro.academy) + '"></div>' +
     '<button class="btn btn-outline btn-block" data-act="pro-save">저장</button>' +
@@ -5509,9 +5608,13 @@ function viewSettings(){
     '<div class="hint">샘플 데이터를 지우고 내 회원만 관리하려면 <b>내 데이터로 새로 시작</b>을 누르세요. 데이터는 이 브라우저(localStorage)에만 저장되고, 정식 앱에서는 기기 DB + iCloud 백업으로 옮겨가요.</div>' +
   '</div>';
 
-  h += '<div class="sec"><h2>외부 캘린더 연동</h2><span class="aside">아이폰 · 구글</span></div><div class="card">' +
-    calSettingHTML() +
-  '</div>';
+  h += '<div class="sec"><h2>앱스토어 출시 로드맵</h2><span class="aside">현재 1단계</span></div><div class="card"><div class="rm">' +
+    roadmapStep('cur', '1단계 · MVP 프로토타입', '지금 보고 있는 화면. 운동장에서 한 손으로 쓰는 흐름과 데이터 구조를 먼저 검증해요.') +
+    roadmapStep('', '2단계 · React Native + Expo', '같은 화면을 실제 앱 코드로 옮기고 기기 저장(SQLite)과 알림을 붙여요. iOS 음성 인식으로 레슨 내용을 말로 기록해요.') +
+    roadmapStep('', '3단계 · TestFlight 베타', '지인 프로 3~5명이 2~4주 써보게 하고, 백업·복원과 수강권 만료 알림을 다듬어요.') +
+    roadmapStep('', '4단계 · App Store 심사', '스크린샷·개인정보처리방침·심사 답변을 준비해 제출해요. 업데이트는 Expo EAS로 빌드해 올려요.') +
+    roadmapStep('', '5단계 · 운영 고도화', '카카오 알림톡, 수강료 결제, 여러 강사(지점) 관리, 회원 셀프 예약 링크 순서로 넓혀요.') +
+  '</div></div>';
 
   h += '<div class="brandfoot">' +
     '<img class="lk-lightword" src="assets/proplan-lockup-light.png" alt="ProPlan" width="864" height="491">' +
@@ -5786,7 +5889,7 @@ function viewRevenue(){
       '<div class="row">' +
         '<span class="pillstat">수강권 ' + cur.deducted + '회</span>' +
         (cur.sepCount ? '<span class="pillstat">⛳ 별도 ' + cur.sepCount + '건</span>' : '') +
-        (avg ? '<span class="pillstat">수강권 회당 ' + money(avg) + '</span>' : '') +
+        (avg ? '<span class="pillstat">금액 입력 ' + cur.count + '회 기준 · 회당 ' + money(avg) + '</span>' : '') +
         (cur.missing ? '<span class="pillstat">미입력 ' + cur.missing + '건</span>' : '') +
         (prev.total ? '<span class="pillstat">' + (diff >= 0 ? '▲ ' : '▼ ') + money(Math.abs(diff)) + ' 전월 대비</span>' : '') +
       '</div>' +
@@ -5796,7 +5899,9 @@ function viewRevenue(){
   h += '<div class="rvsplit">' +
       '<div class="si"><span class="k">정규 수강권 수입</span>' +
         '<span class="v">' + money(cur.passTotal) + '</span>' +
-        '<span class="m">차감 ' + cur.deducted + '회</span></div>' +
+        '<span class="m">' + (cur.missing
+          ? '금액 입력 ' + cur.count + '회 기준 · 미입력 ' + cur.missing + '회는 빠짐'
+          : '차감 ' + cur.deducted + '회 전부 반영') + '</span></div>' +
       '<div class="si sep"><span class="k">⛳ 필드 · 숏게임 · 원포인트 별도 수입</span>' +
         '<span class="v">' + money(cur.sepTotal) + '</span>' +
         '<span class="m">' + (cur.sepCount
@@ -5943,14 +6048,14 @@ function parseQuickLesson(text){
   return res;
 }
 
-function openQuickAddSheet(){
+function openQuickAddSheet(preDate){
   var sh = openSheet({
     title:'레슨 빠른 추가',
     sub:'한 줄로 말하거나 적으면 날짜 · 시간 · 회원 · 장소를 알아서 채워요. "필드" · "숏게임" · "원포인트"가 들어가면 별도 결제 레슨으로 잡아요.'
   });
   qaCtx = { sh: sh, mode: state.members.length ? 'pass' : 'sep',
     kind:'field', target: state.members.length ? 'member' : 'guest', duration: 55, sepDur: 120,
-    date: ui.date, time: defaultTime(), memberId:'', location:'',
+    date: preDate || ui.date, time: defaultTime(), memberId:'', location:'',
     parsedName:'', parsed:null, gender:'', fee:'', guest:'' };
   sh.body.innerHTML = qaQuickHTML() + '<div id="qaForm"></div>';
   /* 한 줄 입력에 적어 둔 레슨 내용도 실수로 닫히면 사라지지 않게 */
@@ -6485,7 +6590,8 @@ function onClick(e){
       break;
 
     case 'sheet-close':
-      closeSheetEl(el.closest('.sheetwrap'));
+      /* X · 취소도 바깥 탭과 같은 길로 — 적어 둔 글이 있으면 확인 시트를 먼저 띄웁니다 */
+      requestSheetClose(el.closest('.sheetwrap'));
       break;
 
     case 'confirm-yes': {
@@ -6569,6 +6675,7 @@ function onClick(e){
       var cst = calSync();
       cst.enabled = !cst.enabled;
       save();
+      calSaved = true;
       paintCalSetting();
       toast(cst.enabled ? '캘린더 연동 켜짐 · ' + calTargetLabel(cst.target) : '캘린더 연동 꺼짐');
       break;
@@ -6581,8 +6688,9 @@ function onClick(e){
       if (csg.target === cv) break;
       csg.target = cv;
       save();
+      calSaved = true;
       paintCalSetting();
-      toast('연동 캘린더 · ' + calTargetLabel(cv));
+      toast('연동 캘린더 · ' + calTargetLabel(cv) + ' 저장됨');
       break;
     }
 
@@ -6644,12 +6752,12 @@ function onClick(e){
       settleApply();
       break;
 
-    /* ---------- 레슨 메모 ---------- */
+    /* ---------- 수업 메모 ---------- */
     case 'note-open':
       openSessionMemoSheet(el.getAttribute('data-sid'));
       break;
 
-    /* ---------- 오늘 레슨 메모 (오늘 탭 카드의 [레슨 차트]) ---------- */
+    /* ---------- 오늘 차트 메모 (오늘 탭 카드의 [레슨 차트]) ---------- */
     case 'tm-open':
       openTodayMemoSheet(el.getAttribute('data-sid'));
       break;
@@ -6745,7 +6853,7 @@ function onClick(e){
       if (ss && ta) { ss.memo = ta.value.trim(); save(); }
       closeSheetEl(el.closest('.sheetwrap'));
       render(true);
-      toast('레슨 메모를 저장했어요');
+      toast('수업 메모를 저장했어요');
       break;
     }
 
@@ -6770,7 +6878,7 @@ function onClick(e){
       if (!memberCtx) break;
       var mm = memberById(memberCtx.memberId);
       var mt = document.getElementById('swingMemo');
-      if (mm && mt) { mm.memo = mt.value.trim(); save(); toast('스윙 메모를 저장했어요'); }
+      if (mm && mt) { mm.memo = mt.value.trim(); save(); toast('회원 메모를 저장했어요'); }
       break;
     }
 
@@ -6825,6 +6933,14 @@ function onClick(e){
     case 'quick-example': {
       var q = document.getElementById('quickLine');
       if (q) { q.value = el.getAttribute('data-v'); applyQuickLine(); }
+      break;
+    }
+
+    case 'quick-focus': {
+      /* 안내 배지를 누르면 새 창을 열지 않고, 여러 줄을 붙여넣을 입력칸으로 커서만 보냅니다 */
+      var qf = document.getElementById('quickLine');
+      if (qf) { qf.focus(); }
+      toast('한 줄에 한 명씩 여러 줄을 붙여넣으면 한꺼번에 등록돼요', { ms: 2600 });
       break;
     }
 
@@ -6921,7 +7037,8 @@ function onClick(e){
 
     /* ---------- 캘린더 + 한 줄 추가 ---------- */
     case 'quick-add':
-      openQuickAddSheet();
+      /* 오늘 탭에서는 '오늘'로, 캘린더 탭에서는 고른 날짜로 레슨을 잡습니다 */
+      openQuickAddSheet(ui.tab === 'today' ? todayISO() : ui.date);
       break;
 
     case 'qa-voice':
