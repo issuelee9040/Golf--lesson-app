@@ -405,7 +405,7 @@ rows:
 - **닫힘 기준**: **76px 이상** 내렸거나, **28px 이상 + 0.5px/ms 이상**으로 짧게 튕기면 닫힙니다. 모자라면 `0.26s` 로 제자리에 부드럽게 돌아갑니다(어둠도 원래대로).
 - **닫히는 방식**: 시트가 `0.2s` 동안 아래로 흘러가며 사라지고(`closing` 클래스로 그동안 뒤 화면 탭 차단), `200ms` 뒤 그 시트만 스택에서 빠집니다. 그래서 화면이 다시 그려지지 않고 **바로 아래 시트(예: `레슨 예약` 위의 `시작 시간` → `레슨 예약`)나 원래 탭이 그대로** 드러납니다.
 - **엉뚱한 동작 방지**: ㆍ**가장 위 시트만** 반응합니다(아래 시트는 끌려도 움직이지 않음). ㆍ**본문(스크롤 영역)이 중간(`scrollTop > 0`)일 때 그 본문을 끌면** 손대지 않아 스크롤이 100% 그대로 부드럽고, 손잡이·제목줄·바닥 버튼 줄은 그때도 끌 수 있습니다(그 자리에서 새로고침으로 새지 않게). ㆍ위로 끄는 동작·가로 제스처는 무시합니다. ㆍ입력칸(`input`·`textarea`·`select`)에서 시작한 끌기는 시트를 움직이지 않습니다. 이때 **내용이 넘치는 textarea(여러 줄 간편 입력)는 손가락 방향으로 스크롤할 여지가 있으면 `preventDefault` 를 하지 않아 입력칸 스크롤이 그대로 살아 있고**, 위쪽 끝에서 더 내리는 동작만 새로고침으로 새지 않게 막습니다(22.2장). 한 줄 input·넘치지 않는 칸·바깥 어둠은 예전처럼 새로고침만 막습니다. ㆍ전화 수신 등으로 `touchcancel` 되면 제자리로 돌아갑니다. ㆍ5px 미만의 손떨림은 드래그로 보지 않아 탭·버튼이 그대로 눌립니다.
-- **검증**: `tests/sheet_swipe_test.py`(60건) · `tests/quick_line_scroll_test.py`(27건) — 76px 닫힘 · 모자란 드래그의 스냅백 · 빠른 튕김 · 맨 위 본문 드래그 · 내용 중간 스크롤 무간섭 · 위로 끌기 무시 · 입력칸/바깥 여백 · 중첩 시트에서 위 시트만 닫히고 아래 시트 유지 · touchcancel 복귀 · `preventDefault` 발생 · `passive:false` 리스너 · CSS 계약(overscroll-behavior 등)을 실제 코드로 검사합니다.
+- **검증**: `tests/sheet_swipe_test.py`(60건) · `tests/quick_line_scroll_test.py`(30건) — 76px 닫힘 · 모자란 드래그의 스냅백 · 빠른 튕김 · 맨 위 본문 드래그 · 내용 중간 스크롤 무간섭 · 위로 끌기 무시 · 입력칸/바깥 여백 · 중첩 시트에서 위 시트만 닫히고 아래 시트 유지 · touchcancel 복귀 · `preventDefault` 발생 · `passive:false` 리스너 · CSS 계약(overscroll-behavior 등)을 실제 코드로 검사합니다.
 - **정식 앱(Expo)**: 네이티브에는 당겨서 새로고침이 없으므로 CSS·터치 차단은 필요 없고, `react-native-gesture-handler` 의 `Gesture.Pan()`(translationY 추적 → 76pt/속도 기준으로 `onEnd`)로 같은 감각을 옮깁니다. 중첩 시트는 각 시트가 자기 제스처만 받게 두면 웹과 동작이 같습니다.
 
 ### 10.5 시인성 — 앱이 미는 기능을 화면에서도 먼저 (2026-11-23 추가)
@@ -817,7 +817,7 @@ PNG를 21px로 줄여 쓰던 `.brandbar`를 **인라인 SVG**로 바꿨습니다
 - **칸 안 스크롤**: `.quick textarea` 에 `min-height:78px · max-height:150px · overflow-y:auto · -webkit-overflow-scrolling:touch · touch-action:pan-y · overscroll-behavior:contain · resize:none`. 세 줄을 넘게 적으면 칸 안에서 위아래로 부드럽게 스크롤됩니다.
 - **시트 제스처와 분리**: `attachSheetGestures()` 가 입력칸에서 시작한 끌기를 만나면 시트를 움직이지 않되, **칸에 스크롤할 여지가 있는 방향이면 `touchmove` 를 막지 않습니다**(`fieldCanScroll`). 그래서 칸 스크롤이 살아 있고, 맨 위에서 더 내리는 동작만 사파리 ' 당겨서 새로고침'으로 새지 않게 `preventDefault` 합니다. 한 줄 `input`·넘치지 않는 칸·바깥 어둠은 예전처럼 새로고침만 막습니다.
 - **글 보호**: 시트마다 `wrap.__guardClose` 를 둘 수 있고, 있다면 **바깥(어둠)을 눌러 닫기 / 아래로 밀어 닫기** 모두 바로 닫지 않습니다. 대신 `작성 중인 내용이 있어요` 시트가 떠서 `계속 작성` / `그래도 닫기` 를 고릅니다. 회원 추가(`#quickLine`)와 레슨 빠른 추가(`#qaLine`) 두 곳에 붙어 있고, 저장 성공·빈 칸일 때는 그대로 닫힙니다.
-- **검증**: `tests/quick_line_scroll_test.py`(27건) — 넘치는 칸에서 위/아래로 끌 때 `preventDefault` 0회 · 맨 위에서 더 내릴 때만 막음 · 시트가 안 움직임 · 바깥 탭/밀기에서 확인 시트 · `계속 작성`/`그래도 닫기` · 빈 칸은 바로 닫힘 · CSS 계약.
+- **검증**: `tests/quick_line_scroll_test.py`(30건) — 넘치는 칸에서 위/아래로 끌 때 `preventDefault` 0회 · 맨 위에서 더 내릴 때만 막음 · 시트가 안 움직임 · 바깥 탭/밀기에서 확인 시트 · `계속 작성`/`그래도 닫기` · 빈 칸은 바로 닫힘 · CSS 계약.
 
 ### 22.3 홈화면 아이콘 — 깃발 위, ProPlan 아래 정중앙
 
@@ -848,11 +848,11 @@ PNG를 21px로 줄여 쓰던 `.brandbar`를 **인라인 SVG**로 바꿨습니다
 | 파일 | 건수 | 무엇을 |
 | --- | --- | --- |
 | `tests/brandbar_svg_test.py` | 24 | 인라인 SVG 경로 · 원본 모양 IoU · 비율 · 밑선 · 두 테마 색 · 바탕 이어짐 |
-| `tests/quick_line_scroll_test.py` | 27 | 입력칸 안 스크롤 · 새로고침 차단 · 글 보호 확인 시트 |
+| `tests/quick_line_scroll_test.py` | 30 | 입력칸 안 스크롤 · 새로고침 차단 · 글 보호 확인 시트 |
 | `tests/logo_center_test.py` | 66 | 깃발 위·워드마크 아래 정중앙 · 안전 여백 · 축소본 일치 |
 | `tests/dark_tab_status_compact_test.py` | 27 | 다크 탭 대비 · 활성 표시 · 상태 타일 높이/구조 |
 | `tests/sep_onepoint_test.py` | 47 | 원포인트 모델·저장·배지·수입·한 줄 인식 |
 | `tests/sep_visitor_member_test.py` | 56 | 방문 회원 생성·중복 방지·목록 표시·전환 |
 | `tests/splash_test.py` | 33 | 3.5초 · 탭 건너뛰기 · 페이드 |
-| 기존 21개 스위트 | — | 전부 통과 (`brandbar_today_memo_test` · `sep_lesson_test` 는 바뀐 디자인에 맞춰 문구 갱신) |
+| 기존 22개 스위트 | — | 전부 통과 (`brandbar_today_memo_test` · `sep_lesson_test` · `splash_test` 는 바뀐 디자인·시간에 맞춰 갱신) |
 
