@@ -292,7 +292,9 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
 .ev-line .ev-lt{flex:none;font-size:10px;font-weight:800;opacity:.75;letter-spacing:-.2px;font-variant-numeric:tabular-nums}
 .ev-line .ev-ln{flex:0 1 auto;min-width:0;font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis}
 .ev-line .ev-ld{flex:none;font-size:10px;font-weight:800;opacity:.7}
-.ev-line .ev-ln::before,.ev-line .ev-ld::before{content:"·";margin:0 5px;opacity:.5;font-weight:700}
+/* 잔여 횟수는 폭이 좁아도 끝까지 남기고, 이름이 먼저 줄임표로 줄어듭니다 */
+.ev-line .ev-lr{flex:none;font-size:10px;font-weight:800;opacity:.7;letter-spacing:-.2px}
+.ev-line .ev-ln::before,.ev-line .ev-ld::before,.ev-line .ev-lr::before{content:"·";margin:0 5px;opacity:.5;font-weight:700}
 .empty{border:1.5px dashed var(--line);border-radius:16px;padding:26px 16px;text-align:center;color:var(--muted)}
 .empty .et{font-size:14px;font-weight:800;color:var(--ink2)}
 .empty .ed{font-size:12px;font-weight:600;margin-top:4px}
@@ -3470,6 +3472,9 @@ function timelineHTML(dateStr){
   });
   var laneCount = 1;
   items.forEach(function(it){ laneCount = Math.max(laneCount, it.lane + 1); });
+  /* 옆 레슨과 나란히 서면 블록 폭이 1/laneCount 로 좁아지므로, 한 줄 블록에서는 분 표시를 빼
+     시간 · 이름 · 잔여 횟수가 들어가게 합니다 */
+  var narrow = laneCount > 1;
 
   var blocks = items.map(function(it){
     var s = it.s;
@@ -3493,14 +3498,19 @@ function timelineHTML(dateStr){
     var geo = 'top:' + top + 'px;height:' + hgt + 'px;left:' + (it.lane * w).toFixed(3) +
       '%;width:calc(' + w.toFixed(3) + '% - 5px)';
     var who = (sep ? sepIcon(s) + ' ' : '') + esc(sessionName(s));
-    var durTxt = sep ? '별도' : (s.durationMinutes + '분');
-    /* 두 줄이 들어가지 않는 낮은 블록: 시간 · 이름 · 시간(분)을 한 줄로, 세로 가운데 정렬 */
+    var durTxt = s.durationMinutes + '분';
+    /* 남은 횟수: 수강권 레슨은 '잔여 N회', 별도 결제 레슨은 '별도', 수강권 없는 레슨은 표시 없음 */
+    var remTxt = sep ? '별도' : (pkg ? '잔여 ' + pkg.remainingSessions + '회' : '');
+    /* 두 줄이 들어가지 않는 낮은 블록: 시간 · 이름 · 분 · 잔여를 한 줄로, 세로 가운데 정렬.
+       옆 레슨과 나란히 서 폭이 모자라면 이름이 먼저 줄임표로 줄고 잔여 횟수는 남깁니다. */
     if (hgt < 40) {
       return '<button class="ev ev-compact ev-' + st.cls + '" style="' + geo + '" data-act="status-sheet" data-sid="' + s.id +
-        '" aria-label="' + esc(s.startTime + ' ' + sessionName(s) + ' ' + durTxt) + '">' +
+        '" aria-label="' + esc(s.startTime + ' ' + sessionName(s) + ' ' + durTxt + (remTxt ? ' ' + remTxt : '')) + '">' +
         '<span class="ev-line"><span class="ev-lt">' + s.startTime + '</span>' +
         '<span class="ev-ln">' + who + '</span>' +
-        '<span class="ev-ld">' + durTxt + '</span></span></button>';
+        (narrow ? '' : '<span class="ev-ld">' + durTxt + '</span>') +
+        (remTxt ? '<span class="ev-lr">' + remTxt + '</span>' : '') +
+        '</span></button>';
     }
     return '<button class="ev ev-' + st.cls + '" style="' + geo + '" data-act="status-sheet" data-sid="' + s.id + '">' +
       '<span class="ev-t">' + s.startTime + ' · ' + s.durationMinutes + '분' + (sep ? ' · 별도' : '') + '</span>' +

@@ -39,7 +39,7 @@ function ok(name, cond, detail){ OUT.push({ name:name, pass:!!cond, detail:detai
 
 function sess(id, t, dur, opt){
   opt = opt || {};
-  return { id:id, memberId:'m1', packageId: opt.pkg || 'p1', date:'2026-11-24', startTime:t,
+  return { id:id, memberId:'m1', packageId: opt.pkg === undefined ? 'p1' : opt.pkg, date:'2026-11-24', startTime:t,
            durationMinutes:dur, location: opt.loc === undefined ? '분당 실내연습장' : opt.loc,
            memo:'', status: opt.status || 'scheduled', lessonKind: opt.kind };
 }
@@ -74,6 +74,12 @@ ok('1-6 분 표시', b.indexOf('25분') >= 0);
 ok('1-7 25분 블록은 최소 높이 34px 로 키움 (누르기 쉽게)', g.h === TL_MIN_H, 'h=' + g.h);
 ok('1-8 높이 34px 이상', g.h >= 34, 'h=' + g.h);
 ok('1-9 위치는 06:30 (1시간 72px 기준)', g.top === 36, 'top=' + g.top);
+ok('1-10 한 줄에 잔여 횟수(잔여 5회) 표시', b.indexOf('잔여 5회') >= 0, b.slice(-140));
+ok('1-11 잔여는 별도 스팬(ev-lr)으로 그려 줄임표/숨김 제어 가능', b.indexOf('class="ev-lr"') >= 0);
+ok('1-12 순서는 시간 · 이름 · 분 · 잔여',
+   b.indexOf('06:30') < b.indexOf('이하늘') && b.indexOf('이하늘') < b.indexOf('25분') &&
+   b.indexOf('25분') < b.indexOf('잔여 5회'), b.slice(-160));
+ok('1-13 aria-label 에도 잔여 횟수 포함', /aria-label="[^"]*잔여 5회"/.test(b), b.slice(0, 200));
 
 /* 2. 55분 단독 — 기존 두 줄 유지 */
 reset([ sess('b', '15:00', 55) ]);
@@ -119,6 +125,44 @@ ok('6-2 상태 변경 액션 유지', blockOf(h, 'f1').indexOf('data-act="status
 reset([]);
 ok('7-1 예약 없음 안내', timelineHTML('2026-11-24').indexOf('예약이 없어요') >= 0);
 
+/* 8. 별도 결제(원포인트) 25분 — 잔여 대신 '별도' */
+reset([ sess('g1', '11:00', 25, { kind:'onepoint', pkg:'' }) ]);
+h = timelineHTML('2026-11-24'); b = blockOf(h, 'g1');
+ok('8-1 원포인트 25분도 한 줄 compact', b.indexOf('ev-compact') >= 0);
+ok('8-2 별도 결제는 잔여 대신 별도 표시', b.indexOf('별도') >= 0 && b.indexOf('잔여') < 0, b.slice(-160));
+ok('8-3 별도 결제도 소요 시간(25분)은 보임', b.indexOf('25분') >= 0, b.slice(-160));
+ok('8-4 별도 결제도 상태 변경 액션 유지', b.indexOf('data-act="status-sheet"') >= 0);
+
+/* 9. 수강권 없는 레슨(비회원·수강권 미지정) — 잔여/별도 없음 */
+reset([ sess('j1', '12:00', 25, { pkg:'' }) ]);
+h = timelineHTML('2026-11-24'); b = blockOf(h, 'j1');
+ok('9-1 수강권 없으면 한 줄은 시간 · 이름 · 분만', b.indexOf('ev-compact') >= 0 && b.indexOf('class="ev-lr"') < 0, b.slice(-160));
+ok('9-2 수강권 없을 때 잔여 문구 없음', b.indexOf('잔여') < 0);
+
+/* 10. 잔여 0회 / 잔여 1회도 그대로 표시 */
+reset([ sess('k1', '13:00', 25) ]);
+state.packages = [{ id:'p1', memberId:'m1', durationMinutes:55, totalSessions:8, remainingSessions:0 }];
+h = timelineHTML('2026-11-24'); b = blockOf(h, 'k1');
+ok('10-1 잔여 0회도 표시', b.indexOf('잔여 0회') >= 0, b.slice(-160));
+state.packages = [{ id:'p1', memberId:'m1', durationMinutes:55, totalSessions:12, remainingSessions:12 }];
+h = timelineHTML('2026-11-24'); b = blockOf(h, 'k1');
+ok('10-2 두 자리 잔여(잔여 12회)도 그대로', b.indexOf('잔여 12회') >= 0, b.slice(-160));
+
+/* 11. 같은 시간에 두 레슨(옆 칸) — 폭 절반, 둘 다 잔여 표시 */
+reset([ sess('h1', '09:00', 25), sess('h2', '09:00', 55) ]);
+h = timelineHTML('2026-11-24');
+var hb1 = blockOf(h, 'h1'), hb2 = blockOf(h, 'h2');
+ok('11-1 겹치면 두 칸으로 나눠 배치', /width:calc\(50\.000% - 5px\)/.test(hb1) && /width:calc\(50\.000% - 5px\)/.test(hb2), hb1.slice(0, 80));
+ok('11-2 좁은 칸에서도 잔여 표시', hb1.indexOf('잔여 5회') >= 0 && hb2.indexOf('잔여 5회') >= 0);
+ok('11-3 좁은 칸에서도 한 줄 유지', hb1.indexOf('ev-line') >= 0);
+ok('11-4 좁은 칸에서는 분 표시를 빼 이름·잔여 자리를 남김', hb1.indexOf('class="ev-ld"') < 0 && hb1.indexOf('잔여 5회') >= 0, hb1.slice(-170));
+
+/* 12. 단독 25분 블록에는 분 표시가 남아 있는지 */
+reset([ sess('n1', '07:00', 25) ]);
+h = timelineHTML('2026-11-24'); b = blockOf(h, 'n1');
+ok('12-1 단독일 때 시간 · 이름 · 25분 · 잔여 네 조각',
+   b.indexOf('07:00') >= 0 && b.indexOf('이하늘') >= 0 && b.indexOf('25분') >= 0 && b.indexOf('잔여 5회') >= 0, b.slice(-180));
+
 JSON.stringify(OUT);
 """
 
@@ -132,6 +176,20 @@ except Exception as e:
 
 import json
 results = json.loads(raw)
+
+# ── CSS: 좁은 칸에서 이름이 줄임표로 줄고 잔여는 남는지 ──────────────────
+def rule(sel):
+    m = re.search(re.escape(sel) + r'\{([^}]*)\}', HTML)
+    return m.group(1) if m else ''
+
+lr = rule('.ev-line .ev-lr')
+ln = rule('.ev-line .ev-ln')
+line = rule('.ev-line')
+results.append({'name': '13-1 잔여 스팬은 줄어들지 않음(flex:none)', 'pass': 'flex:none' in lr, 'detail': lr})
+results.append({'name': '13-2 분(분) 스팬도 줄어들지 않음(flex:none)', 'pass': 'flex:none' in rule('.ev-line .ev-ld'), 'detail': rule('.ev-line .ev-ld')})
+results.append({'name': '13-3 이름 스팬은 min-width:0 + 줄임표', 'pass': 'min-width:0' in ln and 'text-overflow:ellipsis' in ln, 'detail': ln})
+results.append({'name': '13-4 한 줄 컨테이너는 nowrap', 'pass': 'nowrap' in line, 'detail': line})
+results.append({'name': '13-5 잔여 앞 구분점(·) 규칙에 ev-lr 포함', 'pass': '.ev-line .ev-lr::before' in HTML})
 passed = sum(1 for r in results if r['pass'])
 for r in results:
     print(('PASS ' if r['pass'] else 'FAIL ') + r['name'] + ('' if r['pass'] else '  <- ' + r['detail']))
