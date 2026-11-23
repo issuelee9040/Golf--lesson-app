@@ -374,6 +374,9 @@ clickAct('cal-toggle');
 eq(A.state().calendarSync.enabled, true, 'H-19 스위치로 다시 켜기');
 has(A.htmlOf('calStat'), '저장됨', 'H-20 바꾸면 저장됨 표시');
 has(A.htmlOf('calStateTxt'), '켜짐', 'H-21 현재 상태 줄');
+eq(A.htmlOf('calTargetsLbl'), '연동할 캘린더', 'H-22 켜면 라벨 안내도 사라짐');
+clickAct('cal-toggle');
+has(A.htmlOf('calTargetsLbl'), '연동을 켜면 고를 수 있어요', 'H-23 끄면 라벨에 이유 표시');
 
 JSON.stringify({ pass: log, fail: fails });
 """
