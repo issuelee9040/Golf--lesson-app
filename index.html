@@ -480,7 +480,13 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
   box-shadow:0 12px 24px rgba(8,73,44,.34);z-index:25;font-size:28px;font-weight:400;line-height:1}
 .fab span{display:block;margin-top:-4px}
 .fab:active{transform:scale(.95)}
-.drow{display:flex;align-items:center;gap:10px;width:100%;padding:11px 0;border-bottom:1px solid var(--line2);text-align:left}
+.drow{display:flex;align-items:center;gap:8px;width:100%;padding:11px 0;border-bottom:1px solid var(--line2);text-align:left}
+.drow-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;text-align:left}
+.drow-acts{flex:none;display:flex;align-items:center;gap:5px}
+.editbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 9px;border-radius:8px;
+  background:var(--field);border:1px solid var(--line);font-size:11.5px;font-weight:800;color:var(--ink2);letter-spacing:-.2px}
+.editbtn:active{background:var(--gray-soft)}
+.statetap{flex:none;display:inline-flex;align-items:center;border-radius:8px}
 .drow:last-child{border-bottom:0}
 .drow-t{flex:none;width:44px;font-size:14px;font-weight:800;letter-spacing:-.3px}
 .drow-b{flex:1;min-width:0}
@@ -2152,7 +2158,8 @@ function openStatusSheet(sid){
     sub: sep ? '필드 · 숏게임 레슨은 수강권 횟수를 건드리지 않고, 별도 결제 수입만 정산해요.'
              : '잔여 횟수는 상태 변경에 맞춰 자동으로 조정되고, 일반취소는 일정에서 지워져요.',
     body: body,
-    footer: '<button class="btn btn-kakao btn-block" data-act="kakao-copy" data-sid="' + s.id + '" style="margin-bottom:8px">💬 카톡 요약 복사</button>' +
+    footer: '<button class="btn btn-outline btn-block" data-act="lesson-edit" data-sid="' + s.id + '" style="margin-bottom:8px">✏️ 내용 수정 (날짜 · 시간 · 장소 · 금액)</button>' +
+      '<button class="btn btn-kakao btn-block" data-act="kakao-copy" data-sid="' + s.id + '" style="margin-bottom:8px">💬 카톡 요약 복사</button>' +
       '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '" style="margin-bottom:8px">📅 내 캘린더에 추가</button>' +
       (s.memberId ? '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
         '<span class="cta-go">' + ICON.chev + '</span></button>' : '')
@@ -2380,17 +2387,23 @@ function dayListHTML(dateStr){
   return '<div class="card" style="padding:2px 14px;margin-top:10px">' + list.map(function(s){
     var st = STATUS[s.status] || STATUS.scheduled;
     var sep = isSep(s);
-    return '<button class="drow" data-act="status-sheet" data-sid="' + s.id + '">' +
-      '<span class="drow-t">' + s.startTime + '</span>' +
-      '<span class="drow-b">' +
-        '<span class="drow-n">' + (sep ? '<span class="lkind lk-' + sepKind(s) + '">' + sepBadge(s) + '</span>' : '') +
-          esc(sessionName(s)) +
-          (sep ? '' : '<span class="dur' + (s.durationMinutes === 55 ? ' d55' : '') + '">' + s.durationMinutes + '분</span>') + '</span>' +
-        '<span class="drow-m">' + esc(sep
-          ? '별도 결제 ' + sepFeeLine(s) + (s.location ? ' · ' + s.location : '')
-          : (s.location || '장소 미입력')) + '</span>' +
-      '</span>' +
-      '<span class="st st-' + st.cls + '">' + st.label + '</span></button>';
+    return '<div class="drow">' +
+      '<button class="drow-main" data-act="status-sheet" data-sid="' + s.id + '" aria-label="' + esc(sessionName(s)) + ' 상태 변경">' +
+        '<span class="drow-t">' + s.startTime + '</span>' +
+        '<span class="drow-b">' +
+          '<span class="drow-n">' + (sep ? '<span class="lkind lk-' + sepKind(s) + '">' + sepBadge(s) + '</span>' : '') +
+            esc(sessionName(s)) +
+            (sep ? '' : '<span class="dur' + (s.durationMinutes === 55 ? ' d55' : '') + '">' + s.durationMinutes + '분</span>') + '</span>' +
+          '<span class="drow-m">' + esc(sep
+            ? '별도 결제 ' + sepFeeLine(s) + (s.location ? ' · ' + s.location : '')
+            : (s.location || '장소 미입력')) + '</span>' +
+        '</span>' +
+      '</button>' +
+      '<span class="drow-acts">' +
+        /* 수정 = 상태는 그대로 두고 내용만 고치는 버튼 */
+        '<button class="editbtn" data-act="lesson-edit" data-sid="' + s.id + '" aria-label="' + esc(sessionName(s)) + ' 레슨 수정">수정</button>' +
+        '<button class="statetap" data-act="status-sheet" data-sid="' + s.id + '" aria-label="' + esc(sessionName(s)) + ' 상태 변경"><span class="st st-' + st.cls + '">' + st.label + '</span></button>' +
+      '</span></div>';
   }).join('') + '</div>';
 }
 
@@ -2490,22 +2503,32 @@ function defaultTime(){
 
 function openBookSheet(pre){
   pre = pre || {};
-  var date = pre.date || ui.date || todayISO();
-  var memberId = pre.memberId || (state.members[0] ? state.members[0].id : '');
-  var mode = (!state.members.length || pre.mode === 'sep') ? 'sep' : 'pass';
-  var dur = pre.durationMinutes || 0;
+  var cur = pre.edit ? findSession(pre.edit) : null;
+  if (pre.edit && !cur) { toast('수정할 레슨을 찾지 못했어요'); return; }
+  var curSep = cur ? isSep(cur) : false;
+  var date = cur ? cur.date : (pre.date || ui.date || todayISO());
+  var memberId = cur ? (cur.memberId || '') : (pre.memberId || (state.members[0] ? state.members[0].id : ''));
+  var mode = cur ? (curSep ? 'sep' : 'pass')
+                 : ((!state.members.length || pre.mode === 'sep') ? 'sep' : 'pass');
+  var dur = cur && !curSep ? cur.durationMinutes : (pre.durationMinutes || 0);
   if (!dur) {
     var aps = memberId ? activePkgs(memberId) : [];
     dur = aps.length ? aps[0].durationMinutes : 55;
   }
-  var time = pre.startTime || defaultTime();
+  var time = cur ? cur.startTime : (pre.startTime || defaultTime());
   var sh = openSheet({
-    title:'레슨 예약',
-    sub:'수강권으로 하는 레슨과, 필드 · 숏게임처럼 따로 결제받는 레슨을 한 곳에서 잡아요.'
+    title: cur ? '레슨 수정' : '레슨 예약',
+    sub: cur ? '날짜 · 시작 시간 · 소요시간 · 장소 · 메모를 고칩니다. 상태와 수강권 차감은 그대로 남아요.'
+             : '수강권으로 하는 레슨과, 필드 · 숏게임처럼 따로 결제받는 레슨을 한 곳에서 잡아요.'
   });
-  bookCtx = { sh: sh, mode: mode, kind:'field', target: state.members.length ? 'member' : 'guest', dur: dur,
-    sepDur: 120, date: date, time: time, memberId: memberId,
-    guest:'', fee:'', location:'', memo:'' };
+  bookCtx = { sh: sh, mode: mode, kind: cur ? (cur.lessonKind === 'shortgame' ? 'shortgame' : 'field') : 'field',
+    target: cur ? (cur.memberId ? 'member' : 'guest') : (state.members.length ? 'member' : 'guest'),
+    dur: dur, sepDur: cur && curSep ? cur.durationMinutes : 120,
+    editing: cur ? cur.id : null,
+    date: date, time: time, memberId: memberId, pkgId: cur ? (cur.packageId || '') : '',
+    guest: cur ? (cur.guestName || '') : '',
+    fee: cur && cur.fee ? String(cur.fee) : '',
+    location: cur ? (cur.location || '') : '', memo: cur ? (cur.memo || '') : '' };
   paintBook();
 }
 
@@ -2532,7 +2555,7 @@ function paintBook(){
   sh.body.innerHTML = bookBodyHTML();
   sh.footer.style.display = '';
   sh.footer.innerHTML = '<button class="btn btn-primary btn-block" data-act="book-save">' +
-    (bookCtx.mode === 'sep' ? '별도 결제 레슨 추가' : '예약 추가') + '</button>';
+    (bookCtx.editing ? '수정 저장' : (bookCtx.mode === 'sep' ? '별도 결제 레슨 추가' : '예약 추가')) + '</button>';
   if (bookCtx.mode === 'pass') refreshBkPkgs();
   validateBook();
 }
@@ -2564,7 +2587,7 @@ function bookPassBodyHTML(){
       '<button class="' + (bookCtx.dur === 25 ? 'on' : '') + '" data-act="bk-dur" data-v="25">25분</button>' +
       '<button class="' + (bookCtx.dur === 55 ? 'on' : '') + '" data-act="bk-dur" data-v="55">55분</button>' +
     '</div><div class="hint">25분은 짧은 스윙 체크, 55분은 정규 레슨이에요.</div></div>' +
-    '<div class="field"><label>차감할 수강권</label>'+ pickFieldHTML('bkPkg', [], '') + '<div class="hint" id="bkPkgHint"></div></div>' +
+    '<div class="field"><label>차감할 수강권</label>'+ pickFieldHTML('bkPkg', [], bookCtx.pkgId || '') + '<div class="hint" id="bkPkgHint"></div></div>' +
     '<div class="field"><label>메모 (선택)</label><input class="input" id="bkMemo" value="' + esc(bookCtx.memo) + '" placeholder="예: 드라이버 위주"></div>' +
     '<div class="field"><label>장소 (선택)</label><input class="input" id="bkLocation" value="' + esc(bookCtx.location) + '" placeholder="예: 분당 실내연습장"></div>' +
     '<div id="bkWarn"></div>';
@@ -2735,11 +2758,14 @@ function saveBooking(){
   var dEl = document.getElementById('bkDate'), tEl = document.getElementById('bkTime');
   if (!dEl || !tEl || !dEl.value || !tEl.value) { toast('날짜와 시간을 골라주세요'); return; }
   var date = dEl.value, time = tEl.value, s = null, label = '';
+  var cur = bookCtx.editing ? findSession(bookCtx.editing) : null;
+  if (bookCtx.editing && !cur) { toast('수정할 레슨을 찾지 못했어요'); return; }
+  var sep = bookCtx.mode === 'sep';
+  var mid = null, guest = '', fee = 0, kind = 'field', loc = '', memo = '', pkgId = '', dur = 0;
 
-  if (bookCtx.mode === 'sep') {
-    var dur = bookSepDurNow();
+  if (sep) {
+    dur = bookSepDurNow();
     if (!dur || dur < 15) { toast('소요시간을 넣어주세요'); return; }
-    var mid = null, guest = '';
     if (bookCtx.target === 'guest') {
       var gEl = document.getElementById('bkGuest');
       guest = gEl ? gEl.value.trim() : '';
@@ -2750,33 +2776,80 @@ function saveBooking(){
       if (!mid) { toast('회원을 골라주세요'); return; }
     }
     var feeEl = document.getElementById('bkFee'), locEl = document.getElementById('bkLocation'), memoEl = document.getElementById('bkMemo');
-    var fee = feeNum(feeEl ? feeEl.value : bookCtx.fee);
-    s = {
-      id: uid('lsn'), memberId: mid || null, packageId: '',
-      guestName: guest, lessonKind: bookCtx.kind === 'shortgame' ? 'shortgame' : 'field',
-      separatePay: true, fee: fee,
-      date: date, startTime: time, durationMinutes: dur,
-      location: locEl ? locEl.value.trim() : '',
-      status: 'scheduled', deducted: false, charged: false,
-      memo: memoEl ? memoEl.value.trim() : '', settledAt: '', source: 'manual'
-    };
-    label = sepIcon({ lessonKind: s.lessonKind }) + ' ' + sepKindName(s.lessonKind) + ' · ' + (guest || memberName(mid));
+    fee = feeNum(feeEl ? feeEl.value : bookCtx.fee);
+    kind = bookCtx.kind === 'shortgame' ? 'shortgame' : 'field';
+    loc = locEl ? locEl.value.trim() : '';
+    memo = memoEl ? memoEl.value.trim() : '';
   } else {
     var mEl2 = document.getElementById('bkMember'), pEl = document.getElementById('bkPkg');
     var memoEl2 = document.getElementById('bkMemo'), locEl2 = document.getElementById('bkLocation');
     if (!mEl2 || !pEl || !mEl2.value || !pEl.value) { toast('회원과 수강권을 골라주세요'); return; }
     var pkg = pkgById(pEl.value);
-    s = {
-      id: uid('lsn'), memberId: mEl2.value, packageId: pkg ? pkg.id : '',
-      date: date, startTime: time, durationMinutes: bookCtx.dur,
-      location: locEl2 ? locEl2.value.trim() : '',
-      status: 'scheduled', deducted: false, memo: memoEl2 ? memoEl2.value.trim() : '', settledAt: '',
-      source: 'manual'
-    };
-    label = sessionName(s);
+    mid = mEl2.value; pkgId = pkg ? pkg.id : ''; dur = bookCtx.dur;
+    loc = locEl2 ? locEl2.value.trim() : '';
+    memo = memoEl2 ? memoEl2.value.trim() : '';
   }
 
-  state.sessions.push(s);
+  /* 수정: 이미 정산(차감·수입)된 레슨은 모드·회원·수강권을 바꾸면 횟수가 어긋나므로 막는다 */
+  if (cur && (cur.deducted || cur.charged)) {
+    var lockMsg = '';
+    if (isSep(cur) !== sep) lockMsg = '이미 정산된 레슨이라 수강권/별도 결제 모드는 바꿀 수 없어요.';
+    else if (String(cur.memberId || '') !== String(mid || '')) lockMsg = '이미 정산된 레슨이라 회원은 바꿀 수 없어요.';
+    else if (!sep && String(cur.packageId || '') !== String(pkgId || '')) lockMsg = '이미 차감된 레슨이라 수강권은 바꿀 수 없어요.';
+    if (lockMsg) {
+      toast(lockMsg + ' 상태를 [예정]으로 되돌린 뒤 수정해 주세요');
+      return;
+    }
+  }
+
+  if (cur) {
+    s = cur;                     /* 새로 만들지 않고 그 자리에서 고친다 (상태·차감 유지) */
+  } else if (sep) {
+    s = {
+      id: uid('lsn'), memberId: mid || null, packageId: '',
+      guestName: guest, lessonKind: kind,
+      separatePay: true, fee: fee,
+      date: date, startTime: time, durationMinutes: dur,
+      location: loc,
+      status: 'scheduled', deducted: false, charged: false,
+      memo: memo, settledAt: '', source: 'manual'
+    };
+  } else {
+    s = {
+      id: uid('lsn'), memberId: mid, packageId: pkgId,
+      date: date, startTime: time, durationMinutes: dur,
+      location: loc,
+      status: 'scheduled', deducted: false, memo: memo, settledAt: '',
+      source: 'manual'
+    };
+  }
+
+  if (sep) {
+    s.memberId = mid || null;
+    s.packageId = '';
+    s.guestName = mid ? '' : guest;
+    s.lessonKind = kind;
+    s.separatePay = true;
+    s.fee = fee;
+    s.durationMinutes = dur;
+    label = sepIcon({ lessonKind: kind }) + ' ' + sepKindName(kind) + ' · ' + (guest || memberName(mid));
+  } else {
+    s.memberId = mid;
+    s.packageId = pkgId;
+    s.guestName = '';
+    s.lessonKind = '';
+    s.separatePay = false;
+    s.fee = 0;
+    s.durationMinutes = dur;
+    label = sessionName(s) || '레슨';
+  }
+  s.date = date;
+  s.startTime = time;
+  s.location = loc;
+  s.memo = memo;
+
+  var isNew = !cur;
+  if (isNew) state.sessions.push(s);
   save();
   ui.tab = 'calendar';
   ui.date = s.date;
@@ -2785,8 +2858,12 @@ function saveBooking(){
   if (sh) sh.close();
   if (memberCtx) paintMemberSheet();
   render();
-  toast(label + ' · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분 추가');
-  calendarAfterAdd(s);
+  if (isNew) {
+    toast(label + ' · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분 추가');
+    calendarAfterAdd(s);
+  } else {
+    toast(label + ' 수정 · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분');
+  }
 }
 
 /* =========================================================
@@ -5211,6 +5288,15 @@ function onClick(e){
       openStatusSheet(el.getAttribute('data-sid'));
       break;
 
+    /* 수정 = 상태는 그대로 두고 예약 내용만 고치는 폼을 연다 */
+    case 'lesson-edit': {
+      var eid = el.getAttribute('data-sid');
+      w = el.closest('.sheetwrap');
+      if (w) closeSheetEl(w);
+      openBookSheet({ edit: eid });
+      break;
+    }
+
     case 'status-set': {
       var s = findSession(el.getAttribute('data-sid'));
       if (!s) break;
@@ -5536,7 +5622,14 @@ function onClick(e){
     case 'bk-mode':
       if (!bookCtx) break;
       bookSync();
-      bookCtx.mode = el.getAttribute('data-v') === 'sep' ? 'sep' : 'pass';
+      var modeNext = el.getAttribute('data-v') === 'sep' ? 'sep' : 'pass';
+      /* 이미 정산된 레슨은 수강권↔별도 결제를 바꾸면 차감이 어긋난다 */
+      var editCur = bookCtx.editing ? findSession(bookCtx.editing) : null;
+      if (editCur && (editCur.deducted || editCur.charged) && (isSep(editCur) !== (modeNext === 'sep'))) {
+        toast('이미 정산된 레슨이라 모드는 바꿀 수 없어요');
+        break;
+      }
+      bookCtx.mode = modeNext;
       if (bookCtx.mode === 'sep' && !bookCtx.sepDur) bookCtx.sepDur = 120;
       paintBook();
       break;
