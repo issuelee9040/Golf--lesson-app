@@ -512,6 +512,59 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .calnote{margin-top:12px;padding:10px 11px;border-radius:12px;background:#FAFBFC;border:1px solid var(--line2);
   font-size:11px;font-weight:600;color:var(--muted);line-height:1.5}
 .calnote b{font-weight:800;color:var(--ink2)}
+/* ---------- 골프 태그 (클럽/영역 자동 분류) ---------- */
+.tagbar{display:flex;gap:5px;overflow-x:auto;margin:0 1px 8px;padding:1px 1px 3px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tagbar::-webkit-scrollbar{display:none}
+.tagf{flex:none;display:inline-flex;align-items:center;gap:5px;height:29px;padding:0 11px;border-radius:999px;
+  background:#fff;border:1px solid var(--line);font-size:11.5px;font-weight:800;color:var(--ink2);
+  white-space:nowrap;letter-spacing:-.2px}
+.tagf.on{background:var(--green);border-color:var(--green);color:#fff}
+.tagf .n{font-size:10px;font-weight:800;opacity:.55}
+.tagf.on .n{opacity:.75}
+.gtag{display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:6px;
+  font-size:10px;font-weight:800;letter-spacing:-.2px}
+.gtag.t-driver{background:#E7EFFD;color:#2457A8}
+.gtag.t-iron{background:#E6F4EC;color:#0A5C37}
+.gtag.t-approach{background:#FFF3DF;color:#8A5200}
+.gtag.t-putt{background:#F0EAFE;color:#5B34A8}
+.gtag.t-field{background:#E4F3F5;color:#0C6068}
+.tagchips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.tagchip{display:inline-flex;align-items:center;height:25px;padding:0 9px;border-radius:8px;background:#fff;
+  border:1px dashed #D6DBE2;font-size:10.5px;font-weight:800;color:#9AA1AA;letter-spacing:-.2px}
+.tagchip.on{border:1px solid var(--green-mid);background:var(--green-soft);color:var(--green-d)}
+.tagchip:active{transform:scale(.97)}
+/* ---------- 카톡 요약 복사 ---------- */
+.btn.btn-kakao{background:#FEE500;border:1px solid #EBD400;color:#3A2A00;font-weight:800;box-shadow:0 1px 2px rgba(120,90,0,.12)}
+.btn.btn-kakao:active{background:#F3DC00}
+/* ---------- 재등록 골든타임 (오늘 탭) ---------- */
+.golden{margin-top:10px;padding:10px 12px 8px;border-radius:16px;
+  background:linear-gradient(135deg,#FFF8E9,#FFFDF8);border:1px solid var(--amber-line)}
+.golden-hd{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:#8A5200;letter-spacing:-.1px;margin-bottom:2px}
+.golden-hd svg{width:13px;height:13px;flex:none}
+.golden-row{display:flex;align-items:center;gap:8px;width:100%;padding:7px 0;text-align:left}
+.golden-row+.golden-row{border-top:1px solid rgba(241,217,168,.7)}
+.golden-n{flex:1;min-width:0;font-size:13px;font-weight:800;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.golden-r{flex:none;font-size:11px;font-weight:800;color:#8A5200;white-space:nowrap}
+.golden-go{flex:none;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:9px;
+  background:#8A5200;color:#fff;font-size:11px;font-weight:800}
+.golden-more{font-size:10.5px;font-weight:700;color:#A98343;padding:3px 0 1px}
+/* ---------- 수강권 연장 (재등록) ---------- */
+.renewbtn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:46px;margin-top:10px;
+  border-radius:14px;background:linear-gradient(160deg,#12975A,#0B6A42);color:#fff;font-size:13.5px;
+  font-weight:800;letter-spacing:-.2px;box-shadow:0 8px 18px rgba(8,73,44,.18)}
+.renewbtn:active{transform:scale(.99)}
+.renewbtn .rb-sub{font-size:11px;font-weight:700;opacity:.82}
+.rpreset{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.rpre{height:50px;border-radius:13px;background:#fff;border:1px solid var(--line);font-size:13.5px;
+  font-weight:800;letter-spacing:-.3px;text-align:center;color:var(--ink2);padding:0 2px}
+.rpre.on{background:var(--green-soft);border-color:var(--green-mid);color:var(--green-d);box-shadow:inset 0 0 0 1px var(--green)}
+.rsum{margin-top:12px;padding:11px 12px 10px;border-radius:14px;background:#F7F9FA;border:1px solid var(--line2)}
+.rline{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--ink2);letter-spacing:-.2px}
+.rline+.rline{margin-top:5px}
+.rline .k{flex:none;min-width:56px;font-size:11px;font-weight:700;color:var(--muted)}
+.rline b{font-weight:800;color:var(--ink)}
+.rline .big{font-size:14.5px;font-weight:800;color:var(--green-d)}
+.rline .arrow{color:#B7BDC6;font-weight:700}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -1281,6 +1334,7 @@ function closeSheetEl(wrap){
   if (pkgCtx && pkgCtx.sh && pkgCtx.sh.el === wrap) pkgCtx = null;
   if (qaCtx && qaCtx.sh && qaCtx.sh.el === wrap) { stopQaVoice(); qaCtx = null; }
   if (priceCtx && priceCtx.sh && priceCtx.sh.el === wrap) priceCtx = null;
+  if (renewCtx && renewCtx.sh && renewCtx.sh.el === wrap) renewCtx = null;
   if (pickCtx && pickCtx.sh && pickCtx.sh.el === wrap) pickCtx = null;
   if (dpCtx && dpCtx.sh && dpCtx.sh.el === wrap) dpCtx = null;
   if (tpCtx && tpCtx.sh && tpCtx.sh.el === wrap) tpCtx = null;
@@ -1310,7 +1364,8 @@ var PICK_META = {
   mfLevel:  { title:'레벨', sub:'회원 목록에 함께 표시돼요.' },
   mSort:    { title:'회원 정렬', sub:'회원 목록을 어떤 순서로 볼지 골라 주세요.' },
   mfMonths: { title:'유효기간', sub:'시작일부터 이 기간이 지나면 만료로 표시돼요.' },
-  pkMonths: { title:'유효기간', sub:'시작일부터 이 기간이 지나면 만료로 표시돼요.' }
+  pkMonths: { title:'유효기간', sub:'시작일부터 이 기간이 지나면 만료로 표시돼요.' },
+  rqMonths: { title:'유효기간', sub:'새 수강권의 시작일부터 이 기간이 지나면 만료로 표시돼요.' }
 };
 
 function pickOptHTML(o, inField){
@@ -1526,17 +1581,25 @@ function viewToday(){
   var low = [], exp = [];
   state.members.forEach(function(m){
     var tr = totalRemaining(m.id);
-    if (tr > 0 && tr <= LOW_LIMIT) low.push(m.name + ' ' + tr + '회');
+    if (tr > 0 && tr <= LOW_LIMIT) low.push({ m: m, rem: tr });
   });
+  low.sort(function(a, b){ return a.rem - b.rem; });
   state.packages.forEach(function(p){
     if (p.remainingSessions > 0 && p.expiryDate < addDays(t, 21)) {
       exp.push(memberName(p.memberId) + ' ' + fmtDot(p.expiryDate) + ' 만료');
     }
   });
   if (low.length) {
-    h += '<div class="alert"><span class="ai">' + ICON.bell + '</span><div>' +
-      '<div class="at">수강권이 얼마 남지 않았어요</div>' +
-      '<div class="ad">' + esc(low.join(' · ')) + ' — 잔여 ' + LOW_LIMIT + '회 이하면 알려드려요.</div></div></div>';
+    h += '<div class="golden"><div class="golden-hd">' + ICON.flag +
+      '재등록 골든타임 · 잔여 ' + LOW_LIMIT + '회 이하 ' + low.length + '명</div>' +
+      low.slice(0, 4).map(function(x){
+        return '<button class="golden-row" data-act="renew-open" data-id="' + x.m.id + '">' +
+          '<span class="golden-n">' + esc(x.m.name) + '</span>' +
+          '<span class="golden-r">잔여 ' + x.rem + '회</span>' +
+          '<span class="golden-go">연장</span></button>';
+      }).join('') +
+      (low.length > 4 ? '<div class="golden-more">회원 탭에서 ' + (low.length - 4) + '명 더 볼 수 있어요</div>' : '') +
+      '</div>';
   }
   if (exp.length) {
     h += '<div class="alert blue"><span class="ai">' + ICON.flag + '</span><div>' +
@@ -1636,7 +1699,8 @@ function openStatusSheet(sid){
     title:'레슨 상태',
     sub: '잔여 횟수는 상태 변경에 맞춰 자동으로 조정되고, 일반취소는 일정에서 지워져요.',
     body: body,
-    footer: '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '" style="margin-bottom:8px">📅 내 캘린더에 추가</button>' +
+    footer: '<button class="btn btn-kakao btn-block" data-act="kakao-copy" data-sid="' + s.id + '" style="margin-bottom:8px">💬 카톡 요약 복사</button>' +
+      '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '" style="margin-bottom:8px">📅 내 캘린더에 추가</button>' +
       '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
       '<span class="cta-go">' + ICON.chev + '</span></button>'
   });
@@ -2146,6 +2210,195 @@ function memberRowsHTML(list){
 }
 
 /* =========================================================
+   골프 전용 레슨 차트 — 클럽/영역 자동 태그
+   ========================================================= */
+var GOLF_TAGS = [
+  { key:'드라이버', cls:'t-driver',   words:['드라이버','티샷','우드','유틸','하이브리드','비거리','슬라이스','훅'] },
+  { key:'아이언',   cls:'t-iron',     words:['아이언','7번','8번','9번','피칭','다운블로','임팩트','핸드퍼스트'] },
+  { key:'어프로치', cls:'t-approach', words:['어프로치','웨지','칩샷','피치샷','벙커','로브','거리감'] },
+  { key:'퍼팅',     cls:'t-putt',     words:['퍼팅','퍼터','그린','스트로크','라인','숏퍼트'] },
+  { key:'필드',     cls:'t-field',    words:['필드','라운딩','코스','트러블','파3'] }
+];
+
+function isArr(v){ return Object.prototype.toString.call(v) === '[object Array]'; }
+function golfTagIndex(name){
+  for (var i = 0; i < GOLF_TAGS.length; i++) if (GOLF_TAGS[i].key === name) return i;
+  return 99;
+}
+function golfTagInfo(name){
+  var i = golfTagIndex(name);
+  return i < GOLF_TAGS.length ? GOLF_TAGS[i] : null;
+}
+function sortTags(list){
+  return (list || []).slice().sort(function(a, b){ return golfTagIndex(a) - golfTagIndex(b); });
+}
+
+/* 본문에서 골프 키워드를 찾아 태그를 붙입니다 (고정된 순서) */
+function detectGolfTags(text){
+  var src = String(text || '').toLowerCase().replace(/\s+/g, ' ');
+  var out = [];
+  GOLF_TAGS.forEach(function(t){
+    for (var i = 0; i < t.words.length; i++) {
+      if (src.indexOf(t.words[i].toLowerCase()) >= 0) { out.push(t.key); return; }
+    }
+  });
+  return out;
+}
+
+/* 예전에 저장된 기록(태그 없음)은 본문에서 바로 계산합니다 */
+function noteTags(n){
+  if (n && isArr(n.tags)) return n.tags.slice();
+  return detectGolfTags(n ? n.text : '');
+}
+function noteTagHTML(name){
+  var t = golfTagInfo(name);
+  if (!t) return '';
+  return '<span class="gtag ' + t.cls + '">#' + esc(name) + '</span>';
+}
+function tagFilterCounts(notes){
+  var c = {};
+  GOLF_TAGS.forEach(function(t){ c[t.key] = 0; });
+  notes.forEach(function(n){
+    noteTags(n).forEach(function(k){ if (c[k] !== undefined) c[k]++; });
+  });
+  return c;
+}
+
+/* 입력칸 위 태그 칩 — 본문에서 자동으로 켜지고, 눌러서 직접 고칠 수 있습니다 */
+function noteTagChipsHTML(){
+  var sel = (memberCtx && isArr(memberCtx.tagSel)) ? memberCtx.tagSel : [];
+  return '<div class="tagchips" id="noteTags">' + GOLF_TAGS.map(function(t){
+    return '<button class="tagchip' + (sel.indexOf(t.key) >= 0 ? ' on' : '') + '" data-act="note-tag" data-v="' + t.key + '">#' + t.key + '</button>';
+  }).join('') + '</div>' +
+    '<div class="hint" id="noteTagHint">말하거나 적으면 클럽·영역 태그가 자동으로 붙어요. 잘못 붙으면 눌러서 끄세요.</div>';
+}
+
+/* 타이핑·음성으로 본문이 바뀔 때 칩만 다시 칠합니다(입력 포커스 유지) */
+function refreshNoteTags(){
+  if (!memberCtx) return;
+  var ta = document.getElementById('noteText');
+  if (!ta) return;
+  if (!memberCtx.tagTouched) memberCtx.tagSel = detectGolfTags(ta.value);
+  var box = document.getElementById('noteTags');
+  if (!box) return;
+  var chips = box.querySelectorAll('.tagchip');
+  for (var i = 0; i < chips.length; i++) {
+    chips[i].classList.toggle('on', (memberCtx.tagSel || []).indexOf(chips[i].getAttribute('data-v')) >= 0);
+  }
+}
+
+/* =========================================================
+   카톡 복사용 1초 리포트
+   ========================================================= */
+function kakaoMD(date){
+  var d = parseISO(date);
+  return (d.getMonth() + 1) + '/' + d.getDate() + '(' + WEEK[d.getDay()] + ')';
+}
+
+/* 그 날짜의 최신 차트 기록 → 없으면 레슨 메모 → 없으면 회원의 최근 기록 */
+function kakaoPointText(s, m){
+  var mid = s ? s.memberId : (m ? m.id : '');
+  var text = '';
+  if (mid && s && s.date) {
+    var hits = notesByMember(mid).filter(function(n){ return n.date === s.date; });
+    if (hits.length) text = hits[0].text;
+  }
+  if (!text && s && s.memo) text = s.memo;
+  if (!text && mid) {
+    var all = notesByMember(mid);
+    if (all.length) text = all[0].text;
+  }
+  text = String(text || '').replace(/\s+/g, ' ').trim();
+  if (text.length > 160) text = text.slice(0, 159) + '…';
+  return text;
+}
+
+function kakaoReport(o){
+  o = o || {};
+  var lines = ['[' + (o.pro || '프로') + ' 프로 레슨 노트]'];
+  var when = [];
+  if (o.date) when.push(kakaoMD(o.date));
+  if (o.time) when.push(o.time);
+  if (o.duration) when.push('(' + o.duration + '분)');
+  var head = (o.name || '') + '님';
+  if (when.length) head += ' · ' + when.join(' ');
+  lines.push(head);
+  if (o.total > 0 && o.remaining !== null && o.remaining !== undefined) {
+    lines.push('잔여 횟수: ' + o.remaining + '/' + o.total + '회');
+  }
+  if (o.point) lines.push('오늘 포인트: ' + o.point);
+  return lines.join('\n');
+}
+
+function kakaoReportForSession(sid){
+  var s = findSession(sid);
+  if (!s) return '';
+  var m = memberById(s.memberId);
+  var pkg = pkgById(s.packageId) || (m ? activePkgs(m.id)[0] : null);
+  return kakaoReport({
+    pro: (state.pro && state.pro.name) || '프로',
+    name: m ? m.name : '',
+    date: s.date, time: s.startTime, duration: s.durationMinutes,
+    remaining: pkg ? pkg.remainingSessions : null,
+    total: pkg ? pkg.totalSessions : 0,
+    point: kakaoPointText(s, m)
+  });
+}
+
+/* 가장 최근에 진행한 레슨 (없으면 가장 가까운 예정 레슨) */
+function latestLessonFor(mid){
+  var list = state.sessions.filter(function(s){ return s.memberId === mid && s.status !== 'excused_cancel'; })
+    .sort(function(a, b){
+      if (a.date === b.date) return minOf(b.startTime) - minOf(a.startTime);
+      return a.date < b.date ? 1 : -1;
+    });
+  var t = todayISO();
+  for (var i = 0; i < list.length; i++) if (list[i].date <= t) return list[i];
+  return list.length ? list[list.length - 1] : null;
+}
+
+function kakaoReportForMember(mid){
+  var m = memberById(mid);
+  if (!m) return '';
+  var s = latestLessonFor(mid);
+  if (s) return kakaoReportForSession(s.id);
+  var lp = lastPkgOf(mid);
+  return kakaoReport({
+    pro: (state.pro && state.pro.name) || '프로',
+    name: m.name, date: todayISO(), time: '', duration: lp ? lp.durationMinutes : '',
+    remaining: lp ? lp.remainingSessions : null, total: lp ? lp.totalSessions : 0,
+    point: kakaoPointText(null, m)
+  });
+}
+
+/* iOS 사파리: clipboard API → 안 되면 textarea + execCommand */
+function copyText(text, done){
+  function fallback(){
+    var ok = false, ta = null;
+    try {
+      ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '0';
+      ta.style.left = '0';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, ta.value.length);
+      ok = document.execCommand('copy');
+    } catch(e){ ok = false; }
+    if (ta && ta.parentNode) ta.parentNode.removeChild(ta);
+    done(!!ok);
+  }
+  if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function(){ done(true); }, fallback);
+    return;
+  }
+  fallback();
+}
+
+/* =========================================================
    회원 정보창 (레슨 차트 포함)
    ========================================================= */
 var memberCtx = null;
@@ -2162,7 +2415,8 @@ function openMemberSheet(memberId){
   var m = memberById(memberId);
   if (!m) return;
   var sh = openSheet({ title: m.name });
-  memberCtx = { sh: sh, memberId: memberId, noteDate: todayISO(), draft: '', voiceUsed: false };
+  memberCtx = { sh: sh, memberId: memberId, noteDate: todayISO(), draft: '', voiceUsed: false,
+    tagSel: [], tagTouched: false, tagFilter: '전체' };
   sh.footer.style.display = '';
   sh.footer.innerHTML =
     '<div style="display:flex;gap:8px">' +
@@ -2202,6 +2456,10 @@ function memberBodyHTML(m){
     return b.remainingSessions - a.remainingSessions;
   });
   var notes = notesByMember(m.id);
+  var rem = totalRemaining(m.id);
+  var tf = (memberCtx && memberCtx.tagFilter) ? memberCtx.tagFilter : '전체';
+  var shown = (tf === '전체') ? notes : notes.filter(function(n){ return noteTags(n).indexOf(tf) >= 0; });
+  var renewCnt = isArr(m.passHistory) ? m.passHistory.length : 0;
 
   var h = '<div class="card" style="padding:6px 16px">' +
     '<div class="kv"><span class="k">성별</span><span class="v">' + (genderLabel(m.gender) || '-') + '</span></div>' +
@@ -2212,9 +2470,16 @@ function memberBodyHTML(m){
     '<div class="kv"><span class="k">등록일</span><span class="v">' + fmtLong(m.since || todayISO()) + '</span></div>' +
   '</div>';
 
-  h += '<div class="sec"><h2>수강권</h2><span class="aside">' + pkgs.length + '개</span></div>';
+  h += '<div class="sec"><h2>수강권</h2><span class="aside">' + pkgs.length + '개' +
+    (renewCnt ? ' · 재등록 ' + renewCnt + '회' : '') + '</span></div>';
   if (!pkgs.length) h += '<div class="empty"><div class="et">등록된 수강권이 없어요</div><div class="ed">아래 버튼으로 25분 · 55분 수강권을 추가하세요.</div></div>';
   else h += pkgs.map(pkgCardHTML).join('');
+
+  h += '<button class="renewbtn" data-act="renew-open" data-id="' + m.id + '">🔄 수강권 연장 (재등록)' +
+    '<span class="rb-sub">잔여 ' + rem + '회</span></button>';
+  if (rem > 0 && rem <= LOW_LIMIT) {
+    h += '<div class="hint" style="margin-top:7px">잔여 ' + rem + '회 · 지금이 재등록 골든타임이에요. 연장하면 새 수강권이 오늘부터 시작되고 기존 차트는 그대로 남습니다.</div>';
+  }
 
   h += '<div class="sec"><h2>스윙 메모</h2><span class="aside">고정 메모</span></div>' +
     '<div class="card">' +
@@ -2222,13 +2487,30 @@ function memberBodyHTML(m){
       '<div class="chiprow mt10"><button class="btn btn-sm btn-outline" data-act="memo-save">메모 저장</button></div>' +
     '</div>';
 
-  h += '<div class="sec"><h2>레슨 차트</h2><span class="aside">' + notes.length + '건 · 최신순</span></div>';
+  h += '<div class="sec"><h2>레슨 차트</h2>' +
+    '<button class="tagf" data-act="kakao-copy" data-mid="' + m.id + '" style="height:26px;padding:0 9px">💬 카톡 요약</button></div>';
+  h += tagBarHTML(notes);
   h += composerHTML();
   h += '<div class="card" style="padding:2px 16px 8px">' +
-    (notes.length ? notes.map(noteRowHTML).join('') :
-      '<div class="empty" style="border:0;padding:18px 4px"><div class="et">아직 기록이 없어요</div><div class="ed">레슨 내용을 적으면 날짜순으로 차트가 쌓입니다.</div></div>') +
+    (shown.length ? shown.map(noteRowHTML).join('') :
+      (notes.length
+        ? '<div class="empty" style="border:0;padding:18px 4px"><div class="et">#' + esc(tf) + ' 기록이 없어요</div><div class="ed">전체를 누르면 모든 기록을 볼 수 있어요.</div></div>'
+        : '<div class="empty" style="border:0;padding:18px 4px"><div class="et">아직 기록이 없어요</div><div class="ed">레슨 내용을 적으면 날짜순으로 차트가 쌓입니다.</div></div>')) +
     '</div>';
   return h;
+}
+
+/* 레슨 차트 위 태그 필터 바 (전체 · 드라이버 · 아이언 · 어프로치 · 퍼팅 · 필드) */
+function tagBarHTML(notes){
+  var tf = (memberCtx && memberCtx.tagFilter) ? memberCtx.tagFilter : '전체';
+  var counts = tagFilterCounts(notes);
+  var out = '<div class="tagbar">' +
+    '<button class="tagf' + (tf === '전체' ? ' on' : '') + '" data-act="tag-filter" data-v="전체">전체 <span class="n">' + notes.length + '</span></button>';
+  GOLF_TAGS.forEach(function(t){
+    out += '<button class="tagf' + (tf === t.key ? ' on' : '') + '" data-act="tag-filter" data-v="' + t.key + '">#' + t.key +
+      ' <span class="n">' + (counts[t.key] || 0) + '</span></button>';
+  });
+  return out + '</div>';
 }
 
 function pkgCardHTML(p){
@@ -2262,6 +2544,7 @@ function composerHTML(){
       dateFieldHTML('noteDate', d, true, 'dateinput') +
       '<button class="btn btn-sm btn-primary" data-act="note-save">저장</button>' +
     '</div>' +
+    noteTagChipsHTML() +
     '<div class="hint" id="noteHint">본문에 “오늘 · 어제 · 그제 · 11월 20일 · 11/20”처럼 쓰면 날짜를 알아서 잡아요. 없으면 오늘로 저장됩니다.</div>' +
   '</div>';
 }
@@ -2279,10 +2562,11 @@ function noteRowHTML(n){
     if (st) chips += '<span class="st st-' + st.cls + '">' + st.label + '</span>';
   }
   if (n.source === 'voice') chips += '<span class="st st-makeup">음성</span>';
+  var tags = noteTags(n).map(noteTagHTML).join('');
   return '<div class="cnote">' +
     '<div class="cn-d"><b>' + fmtDot(n.date) + '</b><span>' + WEEK[d.getDay()] + '</span></div>' +
     '<div class="cn-b"><div class="cn-t">' + esc(n.text) + '</div>' +
-      '<div class="cn-m">' + chips + '</div></div>' +
+      '<div class="cn-m">' + tags + chips + '</div></div>' +
     '<button class="cn-x" data-act="note-del" data-nid="' + n.id + '" aria-label="기록 삭제">' + ICON.x + '</button>' +
   '</div>';
 }
@@ -2472,7 +2756,7 @@ function vrJoin(a, b){
 function vrRefresh(kind){
   try {
     if (kind === 'qa') applyQuickParse();
-    else refreshNoteDate();
+    else { refreshNoteDate(); refreshNoteTags(); }
   } catch(e){}
 }
 
@@ -2692,14 +2976,19 @@ function saveNote(){
   var date = (dEl && dEl.value) ? dEl.value : (p.date || todayISO());
   var text = p.cleaned || raw;
   var wasVoice = !!(memberCtx.voiceUsed || (voice.want && voice.kind === 'note'));
+  /* 손대지 않았으면 본문에서 자동 태그, 칩을 눌렀으면 그 선택을 그대로 */
+  var tags = memberCtx.tagTouched ? sortTags(memberCtx.tagSel || []) : detectGolfTags(text);
   state.notes.push({
     id: uid('note'), memberId: memberCtx.memberId, date: date, text: text,
-    createdAt: nowLocalISO(), source: wasVoice ? 'voice' : 'text', raw: raw
+    createdAt: nowLocalISO(), source: wasVoice ? 'voice' : 'text', raw: raw, tags: tags
   });
   save();
   memberCtx.draft = '';
   memberCtx.noteDate = todayISO();
   memberCtx.voiceUsed = false;
+  memberCtx.tagSel = [];
+  memberCtx.tagTouched = false;
+  memberCtx.tagFilter = '전체';
   stopVoice();
   paintMemberSheet();
   render(true);
@@ -3006,6 +3295,156 @@ function savePrice(){
   if (memberCtx) paintMemberSheet();
   render(true);
   toast(n ? '수강권 금액을 저장했어요' : '저장할 수강권이 없어요');
+}
+
+/* =========================================================
+   재등록 골든타임 · 1탭 수강권 연장
+   ========================================================= */
+var RENEW_PRESETS = [8, 10, 20];
+var renewCtx = null;
+
+/* 가장 최근에 산 수강권 */
+function lastPkgOf(mid){
+  var list = memberPkgs(mid).slice().sort(function(a, b){
+    if (String(a.startDate) !== String(b.startDate)) return String(a.startDate) < String(b.startDate) ? 1 : -1;
+    return 0;
+  });
+  return list.length ? list[0] : null;
+}
+
+/* 지난 수강권의 회당 금액 × 추가 횟수 (금액 미입력 수강권만 있으면 빈 값) */
+function renewalDefaultAmount(mid, n, dur){
+  n = +n || 0;
+  if (n <= 0) return '';
+  var paid = memberPkgs(mid).filter(function(p){ return +p.price > 0; });
+  if (!paid.length) return '';
+  var same = paid.filter(function(p){ return p.durationMinutes === dur; });
+  var pool = same.length ? same : paid;
+  var p = pool.slice().sort(function(a, b){ return String(a.startDate) < String(b.startDate) ? 1 : -1; })[0];
+  var unit = perSessionPrice(p);
+  return unit > 0 ? Math.round(unit * n) : '';
+}
+
+function renewUnitHint(){
+  if (!renewCtx) return '';
+  var n = +renewCtx.sessions || 0;
+  var amount = parseInt(renewCtx.amount, 10) || 0;
+  if (amount > 0 && n > 0) return '회당 약 <b>' + money(Math.round(amount / n)) + '</b> · 총 ' + money(amount);
+  return '금액을 넣으면 회당 금액을 계산해 드려요.';
+}
+
+function renewSummaryHTML(m){
+  if (!renewCtx) return '';
+  var n = +renewCtx.sessions || 0;
+  var before = totalRemaining(m.id);
+  var after = before + n;
+  var amount = parseInt(renewCtx.amount, 10) || 0;
+  var unit = (amount > 0 && n > 0) ? Math.round(amount / n) : 0;
+  return '<div class="rline"><span class="k">연장 후 잔여</span><b>' + before + '회</b>' +
+      '<span class="arrow">→</span><span class="big">' + after + '회</span>' +
+      '<span style="font-size:11px;font-weight:700;color:var(--muted)">(+' + n + ')</span></div>' +
+    '<div class="rline"><span class="k">새 수강권</span><b>' + renewCtx.duration + '분 ' + n + '회</b>' +
+      '<span>' + (amount ? ' · ' + money(amount) : '') + (unit ? ' · 회당 ' + money(unit) : '') + '</span></div>' +
+    '<div class="hint" style="margin-top:7px;padding:0">기존 레슨 차트·지난 수강권 기록은 그대로 남고, 새 수강권은 오늘부터 시작해요.</div>';
+}
+
+function renewBodyHTML(m){
+  var c = renewCtx, lp = lastPkgOf(m.id);
+  return '<div class="formnote"><b>' + esc(m.name) + '</b> · 잔여 <b>' + totalRemaining(m.id) + '회</b>' +
+      (lp && lp.price ? ' · 지난 수강권 회당 ' + money(perSessionPrice(lp)) : '') + '</div>' +
+    '<div class="field"><label>추가할 횟수</label>' +
+      '<div class="rpreset">' + RENEW_PRESETS.map(function(n){
+        return '<button class="rpre' + (+c.sessions === n ? ' on' : '') + '" data-act="renew-preset" data-v="' + n + '">+' + n + '회</button>';
+      }).join('') +
+        '<button class="rpre" data-act="renew-direct" style="font-size:11.5px">직접 입력</button></div>' +
+      '<input class="input" id="rqSessions" type="number" inputmode="numeric" min="1" step="1" value="' + c.sessions + '" style="margin-top:8px">' +
+    '</div>' +
+    '<div class="field"><label>레슨 시간</label><div class="seg" id="rqDur">' +
+      '<button class="' + (c.duration === 25 ? 'on' : '') + '" data-act="renew-dur" data-v="25">25분</button>' +
+      '<button class="' + (c.duration === 55 ? 'on' : '') + '" data-act="renew-dur" data-v="55">55분</button>' +
+    '</div></div>' +
+    '<div class="row2">' +
+      '<div class="field"><label>금액 (선택)</label><input class="input" id="rqAmount" type="number" inputmode="numeric" value="' +
+        (c.amount === '' ? '' : c.amount) + '" placeholder="예) 600000"><div class="hint" id="rqUnit">' + renewUnitHint() + '</div></div>' +
+      '<div class="field"><label>유효기간</label>' + pickFieldHTML('rqMonths', monthPickOptions(), c.months) + '</div>' +
+    '</div>' +
+    '<div class="rsum" id="rqSum">' + renewSummaryHTML(m) + '</div>';
+}
+
+function paintRenew(){
+  if (!renewCtx) return;
+  var m = memberById(renewCtx.memberId);
+  if (!m) return;
+  var body = renewCtx.sh.body;
+  var pres = body.querySelectorAll('.rpre[data-v]');
+  for (var i = 0; i < pres.length; i++) {
+    pres[i].classList.toggle('on', +pres[i].getAttribute('data-v') === +renewCtx.sessions);
+  }
+  var sum = document.getElementById('rqSum');
+  if (sum) sum.innerHTML = renewSummaryHTML(m);
+  var uh = document.getElementById('rqUnit');
+  if (uh) uh.innerHTML = renewUnitHint();
+  var amt = document.getElementById('rqAmount');
+  if (amt && !renewCtx.amountTouched) amt.value = (renewCtx.amount === '' ? '' : renewCtx.amount);
+}
+
+function openRenewSheet(memberId){
+  var m = memberById(memberId);
+  if (!m) return;
+  var lp = lastPkgOf(memberId);
+  var dur = lp ? lp.durationMinutes : 55;
+  var n = RENEW_PRESETS[0];
+  var sh = openSheet({
+    title:'수강권 연장 (재등록)',
+    sub: esc(m.name) + ' · 지금 잔여 ' + totalRemaining(m.id) + '회 · 1탭으로 새 수강권을 시작해요.'
+  });
+  renewCtx = { sh: sh, memberId: memberId, duration: dur, sessions: n,
+    amount: renewalDefaultAmount(memberId, n, dur), amountTouched: false, months: '6' };
+  sh.body.innerHTML = renewBodyHTML(m);
+  sh.footer.style.display = '';
+  sh.footer.innerHTML = '<div style="display:flex;gap:8px">' +
+    '<button class="btn btn-ghost" style="flex:0 0 32%" data-act="sheet-close">취소</button>' +
+    '<button class="btn btn-primary" style="flex:1" data-act="renew-apply">🔄 연장 적용</button></div>';
+  sh.el.setAttribute('data-sheet', 'renew');
+}
+
+/* 새 수강권 사이클을 만들어 잔여·총 횟수를 늘리고, 이력을 renewalLog·passHistory에 남깁니다 */
+function saveRenewal(){
+  if (!renewCtx) return;
+  var m = memberById(renewCtx.memberId);
+  if (!m) return;
+  var nEl = document.getElementById('rqSessions');
+  var n = parseInt(nEl ? nEl.value : renewCtx.sessions, 10);
+  if (!(n > 0)) { toast('추가할 횟수를 1 이상으로 적어주세요'); if (nEl) nEl.focus(); return; }
+  var aEl = document.getElementById('rqAmount');
+  var amount = parseInt(String(aEl ? aEl.value : renewCtx.amount).replace(/[^0-9]/g, ''), 10);
+  if (isNaN(amount)) amount = 0;
+  var mEl = document.getElementById('rqMonths');
+  var months = parseInt(mEl ? mEl.value : renewCtx.months, 10);
+  if (isNaN(months)) months = 6;
+  var start = todayISO();
+  var dur = renewCtx.duration;
+  var pkg = {
+    id: uid('pkg'), memberId: m.id, durationMinutes: dur,
+    totalSessions: n, remainingSessions: n, startDate: start,
+    expiryDate: months > 0 ? addMonths(start, months) : '9999-12-31',
+    price: amount, note: '재등록', renewal: true
+  };
+  state.packages.push(pkg);
+  if (!isArr(m.passHistory)) m.passHistory = [];
+  var entry = { date: start, at: nowLocalISO(), sessions: n, durationMinutes: dur,
+    amount: amount, months: months > 0 ? months : 0, pkgId: pkg.id, kind: 'renewal' };
+  m.passHistory.push(entry);
+  if (!isArr(state.renewalLog)) state.renewalLog = [];
+  state.renewalLog.push({ memberId: m.id, name: m.name, kind: 'renewal', pkgId: pkg.id,
+    date: start, at: entry.at, sessions: n, durationMinutes: dur, amount: amount });
+  var sh = renewCtx.sh;
+  renewCtx = null;
+  save();
+  if (sh) sh.close();
+  if (memberCtx) paintMemberSheet();
+  render(true);
+  toast(m.name + ' 수강권 +' + n + '회 연장 · 잔여 ' + totalRemaining(m.id) + '회');
 }
 
 /* =========================================================
@@ -3984,6 +4423,74 @@ function onClick(e){
       openSessionMemoSheet(el.getAttribute('data-sid'));
       break;
 
+    /* ---------- 카톡 요약 복사 ---------- */
+    case 'kakao-copy': {
+      var ksid = el.getAttribute('data-sid');
+      var kmid = el.getAttribute('data-mid');
+      var ktxt = ksid ? kakaoReportForSession(ksid) : (kmid ? kakaoReportForMember(kmid) : '');
+      if (!ktxt) { toast('복사할 레슨 정보가 없어요'); break; }
+      copyText(ktxt, function(ok){
+        toast(ok ? '카톡용 레슨 요약이 복사됐어요' : '복사가 안 됐어요 · 다시 눌러 주세요', { ms: ok ? 2200 : 3000 });
+      });
+      break;
+    }
+
+    /* ---------- 수강권 연장 (재등록) ---------- */
+    case 'renew-open':
+      openRenewSheet(el.getAttribute('data-id'));
+      break;
+
+    case 'renew-preset': {
+      if (!renewCtx) break;
+      renewCtx.sessions = parseInt(el.getAttribute('data-v'), 10) || 0;
+      var rqEl = document.getElementById('rqSessions');
+      if (rqEl) rqEl.value = renewCtx.sessions;
+      if (!renewCtx.amountTouched) renewCtx.amount = renewalDefaultAmount(renewCtx.memberId, renewCtx.sessions, renewCtx.duration);
+      paintRenew();
+      break;
+    }
+
+    case 'renew-direct': {
+      var rqEl2 = document.getElementById('rqSessions');
+      if (rqEl2) { rqEl2.focus(); try { rqEl2.select(); } catch(e){} }
+      break;
+    }
+
+    case 'renew-dur': {
+      if (!renewCtx) break;
+      renewCtx.duration = parseInt(el.getAttribute('data-v'), 10) || 55;
+      for (i = 0; i < el.parentNode.children.length; i++) {
+        el.parentNode.children[i].classList.toggle('on', el.parentNode.children[i] === el);
+      }
+      if (!renewCtx.amountTouched) renewCtx.amount = renewalDefaultAmount(renewCtx.memberId, renewCtx.sessions, renewCtx.duration);
+      paintRenew();
+      break;
+    }
+
+    case 'renew-apply':
+      saveRenewal();
+      break;
+
+    /* ---------- 골프 태그 ---------- */
+    case 'note-tag': {
+      if (!memberCtx) break;
+      var tkey = el.getAttribute('data-v');
+      var sel = isArr(memberCtx.tagSel) ? memberCtx.tagSel : [];
+      var at = sel.indexOf(tkey);
+      if (at >= 0) sel.splice(at, 1); else sel.push(tkey);
+      memberCtx.tagSel = sortTags(sel);
+      memberCtx.tagTouched = true;
+      el.classList.toggle('on', memberCtx.tagSel.indexOf(tkey) >= 0);
+      break;
+    }
+
+    case 'tag-filter': {
+      if (!memberCtx) break;
+      memberCtx.tagFilter = el.getAttribute('data-v') || '전체';
+      paintMemberSheet();
+      break;
+    }
+
     case 'sm-save': {
       var ss = findSession(el.getAttribute('data-sid'));
       var ta = document.getElementById('smMemo');
@@ -4206,6 +4713,19 @@ function onFieldChange(e){
     updatePkUnit();
   } else if (id === 'noteText') {
     refreshNoteDate();
+    refreshNoteTags();
+  } else if (id === 'rqSessions') {
+    if (!renewCtx) return;
+    var rn = parseInt(e.target.value, 10);
+    renewCtx.sessions = (rn > 0) ? rn : 0;
+    if (!renewCtx.amountTouched) renewCtx.amount = renewalDefaultAmount(renewCtx.memberId, renewCtx.sessions, renewCtx.duration);
+    paintRenew();
+  } else if (id === 'rqAmount') {
+    if (!renewCtx) return;
+    var rav = String(e.target.value).replace(/[^0-9]/g, '');
+    renewCtx.amount = rav === '' ? '' : parseInt(rav, 10);
+    renewCtx.amountTouched = true;
+    paintRenew();
   } else if (id === 'noteDate') {
     if (memberCtx) memberCtx.noteDate = e.target.value;
     var b = document.getElementById('noteDateBadge');
@@ -4229,6 +4749,14 @@ function init(){
   try { firstRun = !localStorage.getItem(KEY); } catch (e) {}
   load();
   if (!state.notes) state.notes = [];
+  /* 예전에 저장한 레슨 기록은 본문에서 태그를 한 번 계산해 둡니다 */
+  var tagged = 0;
+  state.notes.forEach(function(n){
+    if (!isArr(n.tags)) { n.tags = detectGolfTags(n.text || ''); tagged++; }
+  });
+  if (!isArr(state.renewalLog)) state.renewalLog = [];
+  state.members.forEach(function(mm){ if (!isArr(mm.passHistory)) mm.passHistory = []; });
+  if (tagged) save();
   if (!state.pro) state.pro = { name: '이시훈', title: 'KPGA 투어 프로', academy: '' };
   if (!state.templates) state.templates = [];
   ui.date = todayISO();
