@@ -481,6 +481,37 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .sguide-note{margin-top:7px;padding-top:7px;border-top:1px solid var(--line2);font-size:10.5px;font-weight:600;color:var(--muted);line-height:1.4;letter-spacing:-.1px}
 .big-num{font-size:27px;font-weight:800;letter-spacing:-1px;line-height:1.1}
 .divider{height:1px;background:var(--line2);margin:12px 0}
+/* ---------- 외부 캘린더 연동 ---------- */
+.calrow{display:flex;align-items:center;gap:12px;padding:1px 0 10px}
+.calrow-t{flex:1;min-width:0}
+.calrow-t b{display:block;font-size:13.5px;font-weight:800;letter-spacing:-.2px}
+.calrow-t span{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-top:2px}
+.switch{flex:none;position:relative;width:50px;height:30px;border-radius:999px;background:#D5D9DF;
+  box-shadow:inset 0 1px 2px rgba(16,24,40,.12);transition:background .18s ease}
+.switch i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 3px rgba(16,24,40,.3);transition:transform .18s ease}
+.switch.on{background:var(--green)}
+.switch.on i{transform:translateX(20px)}
+.seg.caltargets button{font-size:12.5px;padding:0 4px;white-space:nowrap}
+.seg.caltargets.dim{opacity:.45}
+.calstat{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;color:var(--muted)}
+.calstat .dot{flex:none;width:6px;height:6px;border-radius:50%;background:#C3C8CF}
+.calstat.on{color:var(--green-d)}
+.calstat.on .dot{background:var(--green)}
+.calopt{display:flex;align-items:center;gap:11px;width:100%;padding:12px 13px;border-radius:15px;
+  background:#fff;border:1px solid var(--line);margin-top:9px;box-shadow:var(--shadow)}
+.calopt:active{background:#F7F8FA}
+.calopt .co-ic{flex:none;width:36px;height:36px;border-radius:11px;display:flex;align-items:center;
+  justify-content:center;font-size:17px;line-height:1;background:#EEF0F4}
+.calopt .co-ic.gg{background:#EAF1FF}
+.calopt .co-b{flex:1;min-width:0}
+.calopt .co-t{display:block;font-size:14px;font-weight:800;letter-spacing:-.2px}
+.calopt .co-d{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-top:2px;line-height:1.35}
+.calopt .co-go{flex:none;color:#B7BDC6;display:flex}
+.calopt .co-go svg{width:15px;height:15px}
+.calnote{margin-top:12px;padding:10px 11px;border-radius:12px;background:#FAFBFC;border:1px solid var(--line2);
+  font-size:11px;font-weight:600;color:var(--muted);line-height:1.5}
+.calnote b{font-weight:800;color:var(--ink2)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -576,6 +607,213 @@ function esc(s){ return String(s === null || s === undefined ? '' : s).replace(/
 function uid(p){ return (p || 'id') + '_' + Math.random().toString(36).slice(2, 9); }
 function durName(d){ return d + '분'; }
 function sum(arr, f){ var s = 0; for (var i = 0; i < arr.length; i++) s += f(arr[i]); return s; }
+
+/* =========================================================
+   외부 캘린더 연동 (아이폰 캘린더 .ics · 구글 캘린더 템플릿 링크)
+   ========================================================= */
+var CAL_TARGETS = [['both','둘 다'],['apple','아이폰 캘린더'],['google','구글 캘린더']];
+var calPendingSid = null;   /* 팝업이 막혔을 때 토스트 [열기]로 다시 여는 레슨 */
+
+function calSync(){
+  if (!state.calendarSync || typeof state.calendarSync !== 'object') state.calendarSync = {};
+  var cs = state.calendarSync;
+  cs.enabled = (cs.enabled === true);
+  var ok = false;
+  for (var i = 0; i < CAL_TARGETS.length; i++) if (CAL_TARGETS[i][0] === cs.target) ok = true;
+  if (!ok) cs.target = 'both';
+  return cs;
+}
+function calTargetLabel(v){
+  for (var i = 0; i < CAL_TARGETS.length; i++) if (CAL_TARGETS[i][0] === v) return CAL_TARGETS[i][1];
+  return '둘 다';
+}
+
+/* 레슨 하나 → 캘린더 내용 */
+function calSummary(s){
+  return '[골프 레슨] ' + memberName(s.memberId) + ' · ' + s.durationMinutes + '분';
+}
+function calDescLines(s){
+  var m = memberById(s.memberId), pkg = pkgById(s.packageId), out = [];
+  var rem = '';
+  if (pkg) rem = ' · 잔여 ' + pkg.remainingSessions + '/' + pkg.totalSessions + '회';
+  else { var tr = totalRemaining(s.memberId); if (tr) rem = ' · 잔여 ' + tr + '회'; }
+  out.push('회원: ' + (m ? m.name : '회원') + rem);
+  out.push('레슨: ' + s.durationMinutes + '분');
+  if (s.location) out.push('장소: ' + s.location);
+  if (s.memo) out.push('메모: ' + s.memo);
+  out.push('레슨 관리 앱에서 추가');
+  return out;
+}
+function calDescText(s){ return calDescLines(s).join('\n'); }
+
+/* KST 벽시걸 → 20261124T150000 (기기 시간대와 무관하게 계산) */
+function calStamp(date, time, addMin){
+  var y = +String(date).slice(0,4), mo = +String(date).slice(5,7), d = +String(date).slice(8,10);
+  var p = String(time || '00:00').split(':');
+  var t = (+p[0]) * 60 + (+p[1] || 0) + (addMin || 0);
+  var base = new Date(Date.UTC(y, mo - 1, d));
+  base.setUTCDate(base.getUTCDate() + Math.floor(t / 1440));
+  var m = ((t % 1440) + 1440) % 1440;
+  return base.getUTCFullYear() + pad(base.getUTCMonth() + 1) + pad(base.getUTCDate()) +
+    'T' + pad(Math.floor(m / 60)) + pad(m % 60) + '00';
+}
+function calUtcNow(){
+  var d = new Date();
+  return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate()) + 'T' +
+    pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + 'Z';
+}
+
+/* RFC 5545 문자 이스케이프 · 75옥텟 줄바꿈 */
+function icsEsc(v){
+  return String(v === null || v === undefined ? '' : v)
+    .replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,')
+    .replace(/\r\n|\r|\n/g, '\\n');
+}
+function utf8Len(ch){
+  var c = ch.charCodeAt(0);
+  if (c < 0x80) return 1;
+  if (c < 0x800) return 2;
+  if (c < 0x10000) return 3;
+  return 4;
+}
+function icsFold(line){
+  var out = '', cur = '', n = 0;
+  for (var i = 0; i < line.length; i++){
+    var ch = line.charAt(i), len = utf8Len(ch);
+    if (n + len > 73) { out += cur + '\r\n '; cur = ''; n = 1; }   /* 접힘 줄은 앞 공백 1옥텟 포함 */
+    cur += ch; n += len;
+  }
+  return out + cur;
+}
+function icsUid(s){ return String(s.id) + '@golf-lesson-app'; }
+
+function icsText(s){
+  var L = [
+    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Golf Lesson App//KO','CALSCALE:GREGORIAN','METHOD:PUBLISH',
+    'BEGIN:VTIMEZONE','TZID:Asia/Seoul',
+    'BEGIN:STANDARD','DTSTART:19700101T000000','TZOFFSETFROM:+0900','TZOFFSETTO:+0900','TZNAME:KST','END:STANDARD',
+    'END:VTIMEZONE',
+    'BEGIN:VEVENT','UID:' + icsEsc(icsUid(s)),'DTSTAMP:' + calUtcNow(),
+    'DTSTART;TZID=Asia/Seoul:' + calStamp(s.date, s.startTime, 0),
+    'DTEND;TZID=Asia/Seoul:' + calStamp(s.date, s.startTime, s.durationMinutes),
+    'SUMMARY:' + icsEsc(calSummary(s))
+  ];
+  if (s.location) L.push('LOCATION:' + icsEsc(s.location));
+  L.push('DESCRIPTION:' + icsEsc(calDescText(s)));
+  L.push('SEQUENCE:0','STATUS:CONFIRMED','TRANSP:OPAQUE','END:VEVENT','END:VCALENDAR');
+  return L.map(icsFold).join('\r\n') + '\r\n';
+}
+function icsFileName(s){ return 'golf-lesson-' + String(s.date).replace(/-/g, '') + '-' + String(s.startTime).replace(':', '') + '.ics'; }
+
+function addToAppleCalendar(s){
+  try {
+    var blob = new Blob([icsText(s)], { type:'text/calendar;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = icsFileName(s); a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ try { URL.revokeObjectURL(url); } catch(e){} }, 30000);
+    return true;
+  } catch(e){ return false; }
+}
+
+function gcalUrl(s){
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    '&text=' + encodeURIComponent(calSummary(s)) +
+    '&dates=' + calStamp(s.date, s.startTime, 0) + '/' + calStamp(s.date, s.startTime, s.durationMinutes) +
+    '&ctz=Asia/Seoul' +
+    (s.location ? '&location=' + encodeURIComponent(s.location) : '') +
+    '&details=' + encodeURIComponent(calDescText(s));
+}
+function addToGoogleCalendar(s){
+  var u = gcalUrl(s), w = null;
+  try { w = window.open(u, '_blank'); } catch(e){ w = null; }
+  if (!w) { try { w = window.open(u); } catch(e2){ w = null; } }
+  return !!w;
+}
+
+/* 설정 카드 */
+function calSettingHTML(){
+  var cs = calSync();
+  var segs = CAL_TARGETS.map(function(t){
+    return '<button class="' + (cs.target === t[0] ? 'on' : '') + '" data-act="cal-target" data-v="' + t[0] + '">' + t[1] + '</button>';
+  }).join('');
+  return '<div class="calrow"><div class="calrow-t">' +
+      '<b>레슨 등록하면 캘린더에 넣기</b>' +
+      '<span id="calStateTxt">' + (cs.enabled ? '켜짐 · ' + calTargetLabel(cs.target) + '로 들어가요' : '꺼짐 · 레슨만 앱에 저장돼요') + '</span>' +
+    '</div>' +
+    '<button class="switch' + (cs.enabled ? ' on' : '') + '" id="calSwitch" data-act="cal-toggle" role="switch" aria-checked="' + (cs.enabled ? 'true' : 'false') + '" aria-label="캘린더 연동"><i></i></button>' +
+  '</div>' +
+  '<div class="field" style="margin-bottom:6px"><label>연동할 캘린더</label>' +
+    '<div class="seg caltargets' + (cs.enabled ? '' : ' dim') + '" id="calTargets">' + segs + '</div></div>' +
+  '<div class="calstat' + (cs.enabled ? ' on' : '') + '" id="calStat"><span class="dot"></span>' +
+    (cs.enabled ? '레슨을 추가하면 바로 캘린더 등록 창이 떠요' : '스위치를 켜면 등록할 때 캘린더로 보낼 수 있어요') + '</div>' +
+  '<div class="hint">사파리 웹은 레슨을 등록할 때 캘린더 추가 창이 한 번 뜨고, 앱스토어 정식 앱에서는 아이폰 캘린더 권한 한 번으로 자동 등록·변경·취소가 이어져요.</div>';
+}
+function paintCalSetting(){
+  var cs = calSync();
+  var sw = document.getElementById('calSwitch');
+  if (sw) { sw.classList.toggle('on', cs.enabled); sw.setAttribute('aria-checked', cs.enabled ? 'true' : 'false'); }
+  var seg = document.getElementById('calTargets');
+  if (seg) {
+    seg.classList.toggle('dim', !cs.enabled);
+    for (var i = 0; i < seg.children.length; i++) {
+      seg.children[i].classList.toggle('on', seg.children[i].getAttribute('data-v') === cs.target);
+    }
+  }
+  var txt = document.getElementById('calStateTxt');
+  if (txt) txt.textContent = cs.enabled ? ('켜짐 · ' + calTargetLabel(cs.target) + '로 들어가요') : '꺼짐 · 레슨만 앱에 저장돼요';
+  var stat = document.getElementById('calStat');
+  if (stat) {
+    stat.classList.toggle('on', cs.enabled);
+    stat.innerHTML = '<span class="dot"></span>' +
+      (cs.enabled ? '레슨을 추가하면 바로 캘린더 등록 창이 떠요' : '스위치를 켜면 등록할 때 캘린더로 보낼 수 있어요');
+  }
+}
+
+/* 캘린더 등록 시트 (두 곳 다 넣을 때 · 기존 레슨을 보낼 때) */
+function openCalSheet(sid, justAdded){
+  var s = findSession(sid);
+  if (!s) return;
+  var m = memberById(s.memberId);
+  var body = '<div class="formnote"><b>' + esc(m ? m.name : '-') + '</b> · ' + fmtShort(s.date) + ' ' + s.startTime +
+      ' · ' + s.durationMinutes + '분' + (s.location ? ' · ' + esc(s.location) : '') + '</div>' +
+    '<button class="calopt" data-act="cal-apple" data-sid="' + s.id + '">' +
+      '<span class="co-ic">📱</span>' +
+      '<span class="co-b"><span class="co-t">아이폰 캘린더에 추가</span>' +
+      '<span class="co-d">캘린더 파일이 열려요 · "추가"만 누르면 끝</span></span>' +
+      '<span class="co-go">' + ICON.chev + '</span></button>' +
+    '<button class="calopt" data-act="cal-google" data-sid="' + s.id + '">' +
+      '<span class="co-ic gg">🌐</span>' +
+      '<span class="co-b"><span class="co-t">구글 캘린더에 추가</span>' +
+      '<span class="co-d">구글 캘린더가 새로 열려요 · "저장"만 누르면 끝</span></span>' +
+      '<span class="co-go">' + ICON.chev + '</span></button>' +
+    '<div class="calnote">사파리는 앱이 뒤에서 캘린더를 직접 고치는 걸 막아 두었어요. 그래서 등록할 때 이 두 버튼으로 한 번씩 눌러 넣고, 앱스토어 정식 앱에서는 <b>권한 한 번 허용으로 자동 등록</b>돼요.</div>';
+  var sh = openSheet({
+    title: '캘린더에 추가',
+    sub: justAdded ? '레슨을 저장했어요 · 넣고 싶은 캘린더를 눌러 주세요' : fmtShort(s.date) + ' ' + s.startTime + ' 레슨을 어디에 넣을까요',
+    body: body,
+    footer: '<button class="btn btn-ghost btn-block" data-act="sheet-close">닫기</button>'
+  });
+  return sh;
+}
+
+/* 레슨을 저장한 직후: 설정에 맞춰 캘린더로 보낸다 */
+function calendarAfterAdd(s){
+  var cs = calSync();
+  if (!cs.enabled || !s) return;
+  if (cs.target === 'apple') {
+    toast(addToAppleCalendar(s) ? '.ics 파일을 만들었어요 · 열어서 "캘린더에 추가"를 누르면 끝'
+      : '캘린더 파일을 만들지 못했어요 · 레슨 상태에서 다시 시도해 주세요', { ms: 3600 });
+  } else if (cs.target === 'google') {
+    if (!addToGoogleCalendar(s)) {
+      calPendingSid = s.id;
+      toast('팝업이 막혔어요 · 구글 캘린더로 열기', { act:'cal-google-retry', label:'열기', ms: 8000 });
+    }
+  } else {
+    openCalSheet(s.id, true);
+  }
+}
 
 /* ---------- 상태 ---------- */
 var state = null;
@@ -1398,7 +1636,8 @@ function openStatusSheet(sid){
     title:'레슨 상태',
     sub: '잔여 횟수는 상태 변경에 맞춰 자동으로 조정되고, 일반취소는 일정에서 지워져요.',
     body: body,
-    footer: '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
+    footer: '<button class="btn btn-outline btn-block" data-act="cal-sheet" data-sid="' + s.id + '" style="margin-bottom:8px">📅 내 캘린더에 추가</button>' +
+      '<button class="cta-hero" data-act="member-open" data-id="' + s.memberId + '">' + esc(m ? m.name : '회원') + ' 정보 · 레슨 차트 열기' +
       '<span class="cta-go">' + ICON.chev + '</span></button>'
   });
   return sh;
@@ -1811,6 +2050,7 @@ function saveBooking(){
   if (memberCtx) paintMemberSheet();
   render();
   toast(memberName(s.memberId) + ' · ' + fmtDot(s.date) + ' ' + s.startTime + ' ' + s.durationMinutes + '분 예약 추가');
+  calendarAfterAdd(s);
 }
 
 /* =========================================================
@@ -2904,6 +3144,10 @@ function viewLessonStats(){
     '<div class="hint">이 프로토타입의 데이터는 이 브라우저(localStorage)에만 저장됩니다. 실제 앱에서는 기기 DB + iCloud 백업으로 옮겨갑니다.</div>' +
   '</div>';
 
+  h += '<div class="sec"><h2>외부 캘린더 연동</h2><span class="aside">아이폰 · 구글</span></div><div class="card">' +
+    calSettingHTML() +
+  '</div>';
+
   h += '<div class="foot">레슨 관리 프로토타입 · 아이디어 검증용<br>실제 회원 정보가 아닌 예시 데이터입니다</div>';
   return h;
 }
@@ -3381,6 +3625,7 @@ function saveQuickLesson(){
   if (sh) sh.close();
   render();
   toast(fmtShort(date) + ' ' + time + ' · ' + memberName(mid) + ' ' + dur + '분 추가');
+  calendarAfterAdd(s);
 }
 
 function toggleQaVoice(){
@@ -3651,6 +3896,63 @@ function onClick(e){
           (STATUS[bs.status] ? STATUS[bs.status].label : '예정') + ' 상태로 되돌렸어요' +
           (uc.wasDeducted ? ' · 차감도 원래대로' : ''));
       }
+      break;
+    }
+
+    /* ---------- 외부 캘린더 ---------- */
+    case 'cal-toggle': {
+      var cst = calSync();
+      cst.enabled = !cst.enabled;
+      save();
+      paintCalSetting();
+      toast(cst.enabled ? '캘린더 연동 켜짐 · ' + calTargetLabel(cst.target) : '캘린더 연동 꺼짐');
+      break;
+    }
+
+    case 'cal-target': {
+      var csg = calSync();
+      if (!csg.enabled) { toast('캘린더 연동 스위치를 먼저 켜 주세요'); break; }
+      var cv = el.getAttribute('data-v');
+      if (csg.target === cv) break;
+      csg.target = cv;
+      save();
+      paintCalSetting();
+      toast('연동 캘린더 · ' + calTargetLabel(cv));
+      break;
+    }
+
+    case 'cal-sheet':
+      openCalSheet(el.getAttribute('data-sid'));
+      break;
+
+    case 'cal-apple': {
+      var sa = findSession(el.getAttribute('data-sid'));
+      if (!sa) break;
+      toast(addToAppleCalendar(sa)
+        ? '.ics 파일을 만들었어요 · 열어서 "캘린더에 추가"를 누르면 끝'
+        : '캘린더 파일을 만들지 못했어요 · 다시 시도해 주세요', { ms: 3600 });
+      break;
+    }
+
+    case 'cal-google': {
+      var sg = findSession(el.getAttribute('data-sid'));
+      if (!sg) break;
+      if (addToGoogleCalendar(sg)) {
+        w = el.closest('.sheetwrap');
+        if (w) closeSheetEl(w);
+      } else {
+        calPendingSid = sg.id;
+        toast('팝업이 막혔어요 · 구글 캘린더로 열기', { act:'cal-google-retry', label:'열기', ms: 8000 });
+      }
+      break;
+    }
+
+    case 'cal-google-retry': {
+      var sp = calPendingSid ? findSession(calPendingSid) : null;
+      calPendingSid = null;
+      var tel = document.getElementById('toast');
+      if (tel) tel.classList.remove('on');
+      if (sp) { try { window.open(gcalUrl(sp), '_blank'); } catch(e){} }
       break;
     }
 
