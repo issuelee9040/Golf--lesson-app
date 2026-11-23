@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F6F7F8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>레슨 관리 · 프로토타입</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ProPlan">
+<meta name="application-name" content="ProPlan">
+<meta name="description" content="ProPlan — 프로의 레슨 · 회원 · 일정 관리">
+<title>ProPlan</title>
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" as="image" href="assets/proplan-lockup-green.png">
 <script>
 /* 화면 테마 — 첫 페인트 전에 적용해 '시크 블랙'에서 흰 화면이 번쩍이지 않게 합니다 */
 (function(){
@@ -727,17 +736,15 @@ html[data-theme="black"] .kakaochip{box-shadow:0 2px 10px rgba(254,229,0,.18)}
   background:linear-gradient(180deg,rgba(2,32,19,0),rgba(2,32,19,.22))}
 .splash.out{opacity:0;transform:scale(1.035);pointer-events:none;visibility:hidden}
 .splash[hidden]{display:none}
-.sp-badge{position:relative;width:104px;height:104px;border-radius:33px;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(160deg,rgba(255,255,255,.21),rgba(255,255,255,.06));
-  border:1px solid rgba(255,255,255,.26);
-  box-shadow:0 20px 44px rgba(3,36,22,.34),inset 0 1px 0 rgba(255,255,255,.34);
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
-  animation:spBadge 900ms cubic-bezier(.22,1,.36,1) both}
-.sp-badge svg{width:66px;height:66px;display:block}
-.sp-title{position:relative;margin-top:26px;font-size:27px;font-weight:800;letter-spacing:-.9px;line-height:1.2;
-  text-shadow:0 2px 12px rgba(2,28,17,.24);
-  animation:spUp 820ms 120ms cubic-bezier(.22,1,.36,1) both}
-.sp-sub{position:relative;margin-top:9px;font-size:12px;font-weight:700;letter-spacing:.45px;color:rgba(255,255,255,.76);
+/* ProPlan 브랜드 락업 — 깃발 엠블럼 + 워드마크 (테마마다 다른 파일) */
+.sp-lockup{position:relative;display:block;width:min(60vw,232px);
+  animation:spBadge 900ms cubic-bezier(.22,1,.36,1) both;
+  filter:drop-shadow(0 14px 30px rgba(2,28,17,.30))}
+.sp-lockup img{display:block;width:100%;height:auto}
+.sp-lockup .lk-black{display:none}
+html[data-theme="black"] .sp-lockup .lk-green{display:none}
+html[data-theme="black"] .sp-lockup .lk-black{display:block}
+.sp-sub{position:relative;margin-top:20px;font-size:12px;font-weight:700;letter-spacing:.45px;color:rgba(255,255,255,.76);
   animation:spUp 820ms 210ms cubic-bezier(.22,1,.36,1) both}
 .sp-bar{position:relative;margin-top:36px;width:104px;height:3px;border-radius:999px;
   background:rgba(255,255,255,.22);overflow:hidden;
@@ -748,6 +755,60 @@ html[data-theme="black"] .kakaochip{box-shadow:0 2px 10px rgba(254,229,0,.18)}
 @keyframes spBadge{from{opacity:0;transform:scale(.86) translateY(8px)}to{opacity:1;transform:none}}
 @keyframes spUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes spFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+/* ---------- 체험판 시작 온보딩 — 처음 여는 프로가 자기 이름으로 바로 시작 ---------- */
+.onboard{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:column;align-items:center;
+  width:100%;height:100vh;height:100dvh;overflow-y:auto;color:#fff;text-align:center;
+  background:linear-gradient(152deg,#128A53 0%,#0C6B41 52%,#08492C 100%);
+  padding:calc(env(safe-area-inset-top) + 34px) 22px calc(env(safe-area-inset-bottom) + 24px);
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  animation:obIn 420ms ease both}
+.onboard[hidden]{display:none}
+@keyframes obIn{from{opacity:0}to{opacity:1}}
+.ob-wrap{width:100%;max-width:362px;margin:auto;display:flex;flex-direction:column;align-items:center}
+.ob-lockup{display:block;width:min(52vw,200px);margin:0 auto 22px;
+  filter:drop-shadow(0 14px 30px rgba(2,28,17,.32))}
+.ob-lockup img{display:block;width:100%;height:auto}
+.ob-lockup .lk-black{display:none}
+html[data-theme="black"] .ob-lockup .lk-green{display:none}
+html[data-theme="black"] .ob-lockup .lk-black{display:block}
+.ob-wrap h2{font-size:23px;font-weight:800;letter-spacing:-.8px;line-height:1.3}
+.ob-lead{margin-top:7px;font-size:13.5px;font-weight:600;letter-spacing:-.2px;color:rgba(255,255,255,.82)}
+.ob-form{width:100%;margin-top:24px;padding:16px 14px 15px;border-radius:20px;text-align:left;
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.20);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  box-shadow:0 18px 40px rgba(2,28,17,.24),inset 0 1px 0 rgba(255,255,255,.16)}
+.ob-field+.ob-field{margin-top:12px}
+.ob-field label{display:flex;align-items:center;gap:5px;margin:0 2px 6px;
+  font-size:11.5px;font-weight:800;letter-spacing:-.1px;color:rgba(255,255,255,.88)}
+.ob-field label em{font-style:normal;font-size:10.5px;font-weight:700;color:rgba(255,255,255,.60)}
+.ob-field .input{height:48px;background:rgba(255,255,255,.97);border-color:rgba(255,255,255,.30);color:#0B0F14}
+.ob-field .input::placeholder{color:#9AA1AA;font-weight:600}
+.ob-field .input:focus{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.26)}
+.ob-err{display:none;margin:8px 2px 0;font-size:11.5px;font-weight:800;color:#FFE2DC}
+.ob-err.on{display:block}
+.ob-start{display:flex;align-items:center;justify-content:center;width:100%;height:50px;margin-top:15px;
+  border-radius:15px;background:#fff;color:#0A5C37;font-size:15px;font-weight:800;letter-spacing:-.3px;
+  text-align:center;box-shadow:0 8px 20px rgba(2,28,17,.24)}
+.ob-start:active{transform:translateY(1px)}
+.ob-demo{display:block;width:100%;margin-top:13px;padding:4px 0;text-align:center;
+  font-size:12.5px;font-weight:800;color:rgba(255,255,255,.88)}
+.ob-demo span{border-bottom:1px solid rgba(255,255,255,.38);padding-bottom:2px}
+.ob-foot{margin-top:18px;font-size:11px;font-weight:700;letter-spacing:-.1px;color:rgba(255,255,255,.62)}
+html[data-theme="black"] .onboard{background:linear-gradient(165deg,#1C1C20 0%,#161618 52%,#0F0F11 100%)}
+html[data-theme="black"] .ob-lockup{filter:drop-shadow(0 16px 34px rgba(0,0,0,.66))}
+html[data-theme="black"] .ob-form{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.12);
+  box-shadow:0 20px 44px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
+html[data-theme="black"] .ob-field .input{background:#26262C;border-color:rgba(255,255,255,.14);color:#F3F4F6}
+html[data-theme="black"] .ob-field .input::placeholder{color:#7E848C}
+html[data-theme="black"] .ob-start{background:#34D399;color:#062B1C}
+/* 브랜드 · 체험판 안내 (설정 탭 맨 아래) */
+.brandfoot{display:flex;align-items:center;justify-content:center;gap:9px;margin:28px 0 6px}
+.brandfoot img{display:block;width:96px;height:auto}
+.brandfoot .lk-lightword{display:block}
+.brandfoot .lk-darkword{display:none}
+html[data-theme="black"] .brandfoot .lk-lightword{display:none}
+html[data-theme="black"] .brandfoot .lk-darkword{display:block}
+.brandfoot .bf-tag{font-size:11px;font-weight:800;letter-spacing:.3px;color:var(--muted)}
 /* ---------- 화면 테마 선택 (설정 탭) ---------- */
 .themegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .themecard{position:relative;display:block;width:100%;padding:9px 9px 10px;border-radius:16px;background:var(--card);
@@ -931,10 +992,7 @@ html[data-theme="black"] .toast{background:rgba(38,38,44,.97);box-shadow:0 10px 
 html[data-theme="black"] .splash{background:linear-gradient(165deg,#1C1C20 0%,#161618 52%,#0F0F11 100%)}
 html[data-theme="black"] .splash:before{background:radial-gradient(circle at 50% 50%,rgba(70,214,156,.13),rgba(255,255,255,.05) 44%,rgba(255,255,255,0) 70%)}
 html[data-theme="black"] .splash:after{background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.5))}
-html[data-theme="black"] .sp-badge{background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.025));
-  border-color:rgba(255,255,255,.16);box-shadow:0 24px 50px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.22)}
-html[data-theme="black"] .sp-badge svg{filter:drop-shadow(0 0 14px rgba(70,214,156,.26))}
-html[data-theme="black"] .sp-title{text-shadow:0 2px 18px rgba(0,0,0,.55)}
+html[data-theme="black"] .sp-lockup{filter:drop-shadow(0 16px 34px rgba(0,0,0,.66)) drop-shadow(0 0 18px rgba(70,214,156,.18))}
 html[data-theme="black"] .sp-sub{color:rgba(255,255,255,.60)}
 html[data-theme="black"] .sp-bar{background:rgba(255,255,255,.14)}
 html[data-theme="black"] .sp-bar>i{background:linear-gradient(90deg,rgba(255,255,255,.45),#9BF0C9)}
@@ -942,18 +1000,39 @@ html[data-theme="black"] .sp-bar>i{background:linear-gradient(90deg,rgba(255,255
 </style>
 </head>
 <body>
-<div class="splash" id="splash" role="status" aria-label="레슨 관리 앱을 여는 중">
-  <div class="sp-badge" aria-hidden="true">
-    <svg viewBox="0 0 48 48" fill="none">
-      <path d="M7.6 38.2c5.6-3.1 11.4-4.6 17.4-4.6 6 0 11.6 1.4 16.4 4.2" stroke="rgba(255,255,255,.40)" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M18.4 35.2V11.4" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
-      <path d="M18.4 12.1 31.6 16.3 18.4 20.5Z" fill="#fff"/>
-      <circle cx="30.8" cy="33.6" r="3.5" fill="#fff"/>
-    </svg>
-  </div>
-  <div class="sp-title">레슨 관리</div>
-  <div class="sp-sub">KPGA 투어 프로 레슨 관리</div>
+<div class="splash" id="splash" role="status" aria-label="ProPlan · 레슨 관리 앱을 여는 중">
+  <span class="sp-lockup" aria-hidden="true">
+    <img class="lk-green" src="assets/proplan-lockup-green.png" alt="" width="864" height="491" decoding="async">
+    <img class="lk-black" src="assets/proplan-lockup-black.png" alt="" width="864" height="491" decoding="async">
+  </span>
+  <div class="sp-sub">프로의 레슨 · 일정 관리</div>
   <div class="sp-bar" aria-hidden="true"><i></i></div>
+</div>
+<div class="onboard" id="onboard" role="dialog" aria-modal="true" aria-labelledby="obTitle" hidden>
+  <div class="ob-wrap">
+    <span class="ob-lockup" aria-hidden="true">
+      <img class="lk-green" src="assets/proplan-lockup-green.png" alt="" width="864" height="491" decoding="async">
+      <img class="lk-black" src="assets/proplan-lockup-black.png" alt="" width="864" height="491" decoding="async">
+    </span>
+    <h2 id="obTitle">반가워요 프로님!</h2>
+    <div class="ob-lead">이름으로 바로 시작해 보세요</div>
+    <div class="ob-form">
+      <div class="ob-field">
+        <label for="ozPro">프로 이름</label>
+        <input class="input" id="ozPro" name="proName" type="text" inputmode="text" autocomplete="name"
+               maxlength="20" placeholder="예: 김프로 또는 홍길동" aria-required="true">
+      </div>
+      <div class="ob-field">
+        <label for="ozAcademy">소속 / 레슨장 <em>선택</em></label>
+        <input class="input" id="ozAcademy" name="studio" type="text" autocomplete="organization"
+               maxlength="30" placeholder="예: 판교 인도어연습장 (선택)">
+      </div>
+      <div class="ob-err" id="ozErr" role="alert">이름을 먼저 적어 주세요</div>
+      <button class="ob-start" data-act="onboard-start">내 레슨 관리 시작하기</button>
+      <button class="ob-demo" data-act="onboard-demo"><span>샘플 데이터로 먼저 둘러보기</span></button>
+    </div>
+    <div class="ob-foot">ProPlan Trial · 입력한 내용은 이 기기에만 저장돼요</div>
+  </div>
 </div>
 <div id="app">
   <header class="hd" id="hd"></header>
@@ -972,6 +1051,9 @@ html[data-theme="black"] .sp-bar>i{background:linear-gradient(90deg,rgba(255,255
 'use strict';
 
 var KEY = 'golfLessonApp.v2';
+/* 첫 실행 온보딩(체험판 시작)에서 이름을 받는 동안에는 저장하지 않습니다.
+   → 앱을 그냥 닫으면 다음에 또 온보딩부터 시작하고, 기존 사용자의 저장본은 절대 건드리지 않습니다. */
+var obWaiting = false;
 var HOUR_H = 60;          /* 타임라인 1시간 높이(px) */
 /* 레슨 시간 범위 — 기본 06:00~23:00, 설정 탭에서 바꿀 수 있습니다 (분 단위) */
 var DEF_FROM = 6 * 60, DEF_TO = 23 * 60;      /* 기본: 가장 이른 06:00 · 가장 늦은 23:00 */
@@ -1387,7 +1469,14 @@ function setTheme(t){
   toast(t === 'black' ? '🖤 시크 블랙 테마로 바뀌었어요' : '🌿 그린 화이트 테마로 바뀌었어요');
 }
 
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+function save(){
+  if (obWaiting) return;            /* 온보딩에서 시작 방식을 고르기 전에는 저장하지 않음 */
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+}
+/* 저장본이 있는지 — 있으면 온보딩을 띄우지 않습니다 (기존 사용자 데이터 보호) */
+function hasSavedState(){
+  try { return !!localStorage.getItem(KEY); } catch(e){ return false; }
+}
 function load(){
   var fresh = false;
   try {
@@ -1485,6 +1574,87 @@ function undoCancelExcused(ctx){
   return true;
 }
 
+/* =========================================================
+   체험판 시작 — 처음 여는 프로는 자기 이름으로 바로 시작
+
+   · 저장본이 하나도 없을 때만 온보딩을 띄웁니다(기존 사용자 데이터는 그대로).
+   · 내 레슨 관리 시작하기 → 이름·소속만 있는 빈 상태(회원 0 · 레슨 0)
+   · 샘플 데이터로 먼저 둘러보기 → 기능을 다 볼 수 있는 예시 데이터
+   ========================================================= */
+function defaultTemplates(){
+  return [
+    { id: uid('tpl'), name:'25분 집중 레슨', durationMinutes:25, sessions:10, price:600000 },
+    { id: uid('tpl'), name:'55분 정규 레슨', durationMinutes:55, sessions:8,  price:800000 },
+    { id: uid('tpl'), name:'55분 필드 준비반', durationMinutes:55, sessions:5, price:520000 }
+  ];
+}
+
+/* 이름만 있는 깨끗한 시작 상태 — 회원 · 수강권 · 레슨 · 기록 모두 0건 */
+function blankState(proName, academy){
+  return {
+    version: 2,
+    pro: { name: (proName || '프로'), title: '프로', academy: (academy || '') },
+    templates: defaultTemplates(),
+    members: [], packages: [], sessions: [], settlements: [], notes: [],
+    renewalLog: [], cancelLog: [],
+    hours: { fromMin: DEF_FROM, toMin: DEF_TO },
+    theme: 'green',
+    freshStart: true
+  };
+}
+
+function showOnboarding(){
+  var el = document.getElementById('onboard');
+  if (el) el.hidden = false;
+}
+function hideOnboarding(){
+  var el = document.getElementById('onboard');
+  if (el) el.hidden = true;
+}
+function focusOnboarding(){
+  var p = document.getElementById('ozPro');
+  if (!p) return;
+  try { p.focus({ preventScroll: true }); } catch(e){ try { p.focus(); } catch(e2){} }
+}
+
+/* 온보딩에서 고른 방식으로 상태를 만들고 저장한 뒤 앱 화면으로 넘어간다 */
+function finishOnboarding(useDemo){
+  var pEl = document.getElementById('ozPro'), aEl = document.getElementById('ozAcademy');
+  var name = pEl ? String(pEl.value || '').trim() : '';
+  var academy = aEl ? String(aEl.value || '').trim() : '';
+  var errEl = document.getElementById('ozErr');
+  if (!name && !useDemo) {          /* 이름은 필수 — 빈 이름으로는 시작하지 않음 */
+    if (errEl) errEl.classList.add('on');
+    focusOnboarding();
+    return false;
+  }
+  if (errEl) errEl.classList.remove('on');
+  var keepTheme = themeOf();
+  obWaiting = false;                /* 이제부터 저장 가능 */
+  if (useDemo) {
+    state = buildDemo();
+    state.pro.name = name || '프로';
+    if (academy) state.pro.academy = academy;
+  } else {
+    state = blankState(name, academy);
+  }
+  state.theme = keepTheme;
+  if (!isArr(state.notes)) state.notes = [];
+  if (!isArr(state.renewalLog)) state.renewalLog = [];
+  save();
+  applyTheme(keepTheme);
+  hideOnboarding();
+  ui.tab = 'today';
+  ui.date = todayISO();
+  ui.month = todayISO().slice(0, 7);
+  ui.search = '';
+  render();
+  toast(useDemo
+    ? '샘플 데이터로 둘러보는 중 · 설정에서 내 데이터로 새로 시작할 수 있어요'
+    : '반가워요 ' + state.pro.name + ' 프로! 첫 회원을 추가해 보세요');
+  return true;
+}
+
 /* ---------- 데모 데이터 ---------- */
 function pastDates(endISO, count, dows, fromISO){
   var out = [], d = endISO, guard = 0;
@@ -1500,11 +1670,7 @@ function buildDemo(){
   var st = {
     version: 2,
     pro: { name:'이시훈', title:'KPGA 투어 프로', academy:'그린필드 골프 아카데미' },
-    templates: [
-      { id:'tpl_25_10', name:'25분 집중 레슨', durationMinutes:25, sessions:10, price:600000 },
-      { id:'tpl_55_8',  name:'55분 정규 레슨', durationMinutes:55, sessions:8,  price:800000 },
-      { id:'tpl_55_5',  name:'55분 필드 준비반', durationMinutes:55, sessions:5, price:520000 }
-    ],
+    templates: defaultTemplates(),
     members: [], packages: [], sessions: [], settlements: [], notes: [],
     hours: { fromMin: DEF_FROM, toMin: DEF_TO }
   };
@@ -2280,6 +2446,15 @@ function viewToday(){
       '<span class="hb-go">' + ICON.chev + '</span>' +
     '</button>' +
   '</div>';
+
+  /* 아직 회원이 없는 새 프로 — 1탭으로 첫 회원 추가 */
+  if (!state.members.length) {
+    h += '<div class="card mt10" id="firstMemberCard">' +
+      '<div style="font-size:14.5px;font-weight:800;letter-spacing:-.3px">첫 회원을 추가해 볼까요?</div>' +
+      '<div class="hint" style="margin-top:3px">한 줄로 <b>이름 · 수강권</b>만 적으면 알아서 정리해 드려요.</div>' +
+      '<button class="btn btn-primary btn-block" data-act="member-add" style="margin-top:12px">+ 회원 추가</button>' +
+    '</div>';
+  }
 
   /* 알림 */
   var low = [], exp = [];
@@ -4674,15 +4849,22 @@ function viewSettings(){
     '<div class="divider"></div>' +
     '<button class="btn btn-ghost btn-block" data-act="export-data">데이터 내보내기 (JSON)</button>' +
     '<div style="height:8px"></div>' +
-    '<button class="btn btn-danger btn-block" data-act="demo-reset">데모 데이터로 초기화</button>' +
-    '<div class="hint">이 프로토타입의 데이터는 이 브라우저(localStorage)에만 저장돼요. 정식 앱에서는 기기 DB + iCloud 백업으로 옮겨가요.</div>' +
+    '<button class="btn btn-outline btn-block" data-act="demo-reset">샘플 데이터 채우기</button>' +
+    '<div style="height:8px"></div>' +
+    '<button class="btn btn-danger btn-block" data-act="fresh-start">내 데이터로 새로 시작 (초기화)</button>' +
+    '<div class="hint">샘플 데이터를 지우고 내 회원만 관리하려면 <b>내 데이터로 새로 시작</b>을 누르세요. 데이터는 이 브라우저(localStorage)에만 저장되고, 정식 앱에서는 기기 DB + iCloud 백업으로 옮겨가요.</div>' +
   '</div>';
 
   h += '<div class="sec"><h2>외부 캘린더 연동</h2><span class="aside">아이폰 · 구글</span></div><div class="card">' +
     calSettingHTML() +
   '</div>';
 
-  h += '<div class="foot">레슨 관리 프로토타입 · 아이디어 검증용<br>실제 회원 정보가 아닌 예시 데이터예요</div>';
+  h += '<div class="brandfoot">' +
+    '<img class="lk-lightword" src="assets/proplan-lockup-light.png" alt="ProPlan" width="864" height="491">' +
+    '<img class="lk-darkword" src="assets/proplan-lockup-black.png" alt="" width="864" height="491">' +
+    '<span class="bf-tag">Trial</span>' +
+  '</div>' +
+  '<div class="foot">ProPlan Trial · 버전 0.9 (아이디어 검증용 프로토타입)<br>모든 데이터는 이 기기에만 저장돼요</div>';
   return h;
 }
 
@@ -5445,7 +5627,28 @@ function resetDemo(){
   ui.search = '';
   closeAllSheets();
   render();
-  toast('데모 데이터로 되돌렸어요');
+  toast('샘플 데이터를 채웠어요');
+}
+
+/* 내 데이터로 새로 시작 — 프로 이름·소속·테마·시간 범위만 남기고 빈 상태로 */
+function resetFresh(){
+  var keepTheme = themeOf();
+  var keepHours = dayRange();
+  var keepName = (state.pro && state.pro.name) || '';
+  var keepAcad = (state.pro && state.pro.academy) || '';
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  state = blankState(keepName, keepAcad);
+  state.theme = keepTheme;
+  state.hours = { fromMin: keepHours.from, toMin: keepHours.to };
+  save();
+  applyTheme(keepTheme);
+  ui.tab = 'today';
+  ui.date = todayISO();
+  ui.month = todayISO().slice(0, 7);
+  ui.search = '';
+  closeAllSheets();
+  render();
+  toast('빈 상태로 새로 시작했어요 · 첫 회원을 추가해 보세요');
 }
 
 function onClick(e){
@@ -6081,7 +6284,20 @@ function onClick(e){
       break;
 
     case 'demo-reset':
-      askConfirm('데모 데이터로 초기화', '지금까지 이 브라우저에 저장한 예약·회원·기록이 모두 지워지고 처음 예시 데이터로 돌아가요.', '초기화', resetDemo);
+      askConfirm('샘플 데이터 채우기', '지금 이 브라우저에 저장한 예약·회원·기록이 모두 지워지고, 기능을 둘러볼 수 있는 예시 데이터로 바뀌어요.', '샘플로 바꾸기', resetDemo);
+      break;
+
+    case 'fresh-start':
+      askConfirm('내 데이터로 새로 시작', '이 브라우저에 저장한 예약·회원·수강권·레슨 기록이 모두 지워지고, 지금 프로 이름과 소속만 남긴 빈 상태로 시작해요. 되돌릴 수 없어요.', '빈 상태로 시작', resetFresh);
+      break;
+
+    /* ---------- 체험판 시작 온보딩 ---------- */
+    case 'onboard-start':
+      finishOnboarding(false);
+      break;
+
+    case 'onboard-demo':
+      finishOnboarding(true);
       break;
 
     default:
@@ -6099,6 +6315,11 @@ function renderGenderChips(el){
 
 function onFieldChange(e){
   var t = e.target;
+  /* 온보딩 이름칸에 글자가 들어오면 빨간 안내를 지운다 */
+  if (t && t.id === 'ozPro') {
+    var er = document.getElementById('ozErr');
+    if (er && String(t.value || '').trim()) er.classList.remove('on');
+  }
   var pid = t && t.getAttribute ? t.getAttribute('data-pid') : null;
   if (pid) {
     var pkg = pkgById(pid);
@@ -6207,9 +6428,14 @@ function startSplash(){
    시작
    ========================================================= */
 function init(){
-  var firstRun = false;
-  try { firstRun = !localStorage.getItem(KEY); } catch (e) {}
-  load();
+  /* 저장본이 하나도 없을 때만 '체험판 시작' 온보딩 — 기존 사용자의 데이터는 그대로 이어집니다 */
+  var firstRun = !hasSavedState();
+  if (firstRun) {
+    obWaiting = true;               /* 이름을 받기 전에는 아무것도 저장하지 않음 */
+    state = blankState('', '');
+  } else {
+    load();
+  }
   if (!state.notes) state.notes = [];
   /* 예전에 저장한 레슨 기록은 본문에서 태그를 한 번 계산해 둡니다 */
   var tagged = 0;
@@ -6230,7 +6456,11 @@ function init(){
   ui.date = todayISO();
   ui.month = todayISO().slice(0, 7);
   render();
-  if (firstRun) setTimeout(function(){ toast('데모 데이터로 시작해요 · 설정에서 초기화할 수 있어요'); }, 700);
+  if (firstRun) {
+    /* 스플래시 아래에 미리 깔아 두고, 2초 스플래시가 걷히면 자연스럽게 이어집니다 */
+    showOnboarding();
+    setTimeout(focusOnboarding, SPLASH_MS + SPLASH_FADE + 120);
+  }
 }
 
 document.addEventListener('click', onClick);
@@ -6238,6 +6468,11 @@ document.addEventListener('input', onFieldChange);
 document.addEventListener('change', onFieldChange);
 document.addEventListener('keydown', function(e){
   if (e.key === 'Escape') closeTopSheet();
+  /* 온보딩에서 이름을 적고 Enter 를 누르면 바로 시작 */
+  if (e.key === 'Enter') {
+    var ob = document.getElementById('onboard');
+    if (ob && !ob.hidden && (e.target.id === 'ozPro' || e.target.id === 'ozAcademy')) finishOnboarding(false);
+  }
 });
 /* 앱을 떠날 때는 마이크를 확실히 반납합니다 */
 window.addEventListener('pagehide', function(){ if (voice.want || voice.inst) vrStop(); });
