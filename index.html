@@ -4584,7 +4584,13 @@ function applyQuickLine(){
     listEl.innerHTML = bulk ? quickPreviewHTML(rows) : '';
   }
   var saveBtn = addCtx.sh && addCtx.sh.footer ? addCtx.sh.footer.querySelector('[data-act="member-save"]') : null;
-  if (saveBtn) saveBtn.textContent = bulk ? (quickValidRows(rows).length ? quickValidRows(rows).length + '명 한꺼번에 추가' : '이름을 적어 주세요') : '회원 추가';
+  if (saveBtn) {
+    var okN = quickValidRows(rows).length;
+    var namedN = rows.filter(function(p){ return p.found.name; }).length;
+    saveBtn.textContent = bulk
+      ? (okN ? okN + '명 한꺼번에 추가' : (namedN ? '새로 등록할 줄이 없어요' : '이름을 적어 주세요'))
+      : '회원 추가';
+  }
 
   if (!bulk && text.trim() && p) {
     var el;
