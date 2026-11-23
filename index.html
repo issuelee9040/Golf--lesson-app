@@ -571,10 +571,60 @@ textarea.input{height:auto;min-height:86px;padding:11px 12px;line-height:1.5;res
 .rline b{font-weight:800;color:var(--ink)}
 .rline .big{font-size:14.5px;font-weight:800;color:var(--green-d)}
 .rline .arrow{color:#B7BDC6;font-weight:700}
+/* ---------- 실행 스플래시 (앱을 키우면 약 2초) ---------- */
+.splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;height:100vh;height:100dvh;overflow:hidden;color:#fff;text-align:center;
+  background:linear-gradient(152deg,#128A53 0%,#0C6B41 52%,#08492C 100%);
+  padding:calc(env(safe-area-inset-top) + 28px) 28px calc(env(safe-area-inset-bottom) + 28px);
+  transition:opacity 420ms ease,transform 420ms ease,visibility 0s linear 420ms;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none}
+.splash:before{content:"";position:absolute;left:50%;top:40%;width:min(80vw,370px);height:min(80vw,370px);
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.18),rgba(255,255,255,.055) 46%,rgba(255,255,255,0) 70%)}
+.splash:after{content:"";position:absolute;left:50%;bottom:-26%;width:170%;height:58%;pointer-events:none;
+  transform:translateX(-50%);border-radius:50% 50% 0 0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(2,32,19,.20),rgba(2,32,19,0) 72%)}
+.splash.out{opacity:0;transform:scale(1.035);pointer-events:none;visibility:hidden}
+.splash[hidden]{display:none}
+.sp-badge{position:relative;width:104px;height:104px;border-radius:33px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,rgba(255,255,255,.21),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.26);
+  box-shadow:0 20px 44px rgba(3,36,22,.34),inset 0 1px 0 rgba(255,255,255,.34);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  animation:spBadge 900ms cubic-bezier(.22,1,.36,1) both}
+.sp-badge svg{width:62px;height:62px;display:block}
+.sp-title{position:relative;margin-top:26px;font-size:27px;font-weight:800;letter-spacing:-.9px;line-height:1.2;
+  text-shadow:0 2px 12px rgba(2,28,17,.24);
+  animation:spUp 820ms 120ms cubic-bezier(.22,1,.36,1) both}
+.sp-sub{position:relative;margin-top:9px;font-size:12px;font-weight:700;letter-spacing:.45px;color:rgba(255,255,255,.76);
+  animation:spUp 820ms 210ms cubic-bezier(.22,1,.36,1) both}
+.sp-bar{position:relative;margin-top:36px;width:104px;height:3px;border-radius:999px;
+  background:rgba(255,255,255,.22);overflow:hidden;
+  animation:spUp 820ms 300ms cubic-bezier(.22,1,.36,1) both}
+.sp-bar>i{display:block;width:100%;height:100%;border-radius:999px;transform-origin:left center;
+  background:linear-gradient(90deg,rgba(255,255,255,.5),#fff);
+  animation:spFill 2000ms cubic-bezier(.38,0,.3,1) both}
+@keyframes spBadge{from{opacity:0;transform:scale(.86) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes spUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes spFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<div class="splash" id="splash" role="status" aria-label="레슨 관리 앱을 여는 중">
+  <div class="sp-badge" aria-hidden="true">
+    <svg viewBox="0 0 48 48" fill="none">
+      <path d="M7.6 38.2c5.6-3.1 11.4-4.6 17.4-4.6 6 0 11.6 1.4 16.4 4.2" stroke="rgba(255,255,255,.40)" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M18.4 35.2V11.4" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M18.4 12.1 31.6 16.3 18.4 20.5Z" fill="#fff"/>
+      <circle cx="30.8" cy="33.6" r="3.5" fill="#fff"/>
+    </svg>
+  </div>
+  <div class="sp-title">레슨 관리</div>
+  <div class="sp-sub">KPGA 투어 프로 레슨 관리</div>
+  <div class="sp-bar" aria-hidden="true"><i></i></div>
+</div>
 <div id="app">
   <header class="hd" id="hd"></header>
   <main id="main"></main>
@@ -4755,6 +4805,29 @@ function onFieldChange(e){
 }
 
 /* =========================================================
+   실행 스플래시 (약 2초 · 탭하면 바로 넘어감)
+   ========================================================= */
+var SPLASH_MS = 2000;      /* 스플래시가 머무는 시간 */
+var SPLASH_FADE = 440;     /* 사라지는 전환(420ms) + 여유 */
+function endSplash(){
+  var el = document.getElementById('splash');
+  if (!el || el.getAttribute('data-done')) return;
+  el.setAttribute('data-done', '1');
+  el.classList.add('out');
+  el.setAttribute('aria-hidden', 'true');
+  setTimeout(function(){ el.hidden = true; }, SPLASH_FADE);
+}
+function startSplash(){
+  var el = document.getElementById('splash');
+  if (!el) return;
+  var skip = function(){ endSplash(); };
+  el.addEventListener('pointerdown', skip);
+  el.addEventListener('click', skip);
+  el.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') skip(); });
+  setTimeout(endSplash, SPLASH_MS);
+}
+
+/* =========================================================
    시작
    ========================================================= */
 function init(){
@@ -4787,6 +4860,8 @@ document.addEventListener('keydown', function(e){
 /* 앱을 떠날 때는 마이크를 확실히 반납합니다 */
 window.addEventListener('pagehide', function(){ if (voice.want || voice.inst) vrStop(); });
 
+/* 앱을 켜면 스플래시가 먼저 뜨고, 화면은 그 뒤에 준비됩니다 */
+startSplash();
 init();
 
 })();
