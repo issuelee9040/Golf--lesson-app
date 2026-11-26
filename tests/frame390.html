@@ -19,9 +19,13 @@
 <body>
 <div class="row">
   <div>
-    <iframe id="phone" src="../index.html" title="ProPlan 390px"></iframe>
+    <iframe id="phone" title="ProPlan 390px"></iframe>
     <div class="label">390 × 844 (아이폰 12·13·14)</div>
   </div>
 </div>
+<script>
+  /* 배포본이 브라우저 캐시에 남아 있지 않게 매번 새 주소로 엽니다 (Pages 캐시 10분) */
+  document.getElementById('phone').src = '../index.html?t=' + Date.now();
+</script>
 </body>
 </html>
