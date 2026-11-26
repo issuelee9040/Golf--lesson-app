@@ -178,7 +178,7 @@ globalThis.__api = {
 };
 """
 
-CSSMAP = {'.input': rule('.input'), '.hint': rule('.hint')}
+CSSMAP = {'.input': rule('.input'), '.hint': rule('.hint'), '.authtab': rule('.authtab')}
 SHIM = SHIM.replace('__CSSRULE__', json.dumps(CSSMAP))
 
 ctx = quickjs.Context()
@@ -719,6 +719,7 @@ sok('I-17 온보딩 안내 문구', '계정 없이 쓰면 이 기기에만 저�
 sok('I-18 온라인·복귀 감지 연결', 'bindCloudEvents();' in HTML)
 sok('I-19 인증 링크 세션 감지', 'detectSessionInUrl: true' in HTML)
 sok('I-20 기존 안내 문구 규칙 유지', 'font-size:11px' in rule('.hint'), rule('.hint'))
+sok('I-25 탭 글자가 가운데 정렬', 'text-align:center' in rule('.authtab'), rule('.authtab'))
 sok('I-24 설정 안내가 계정과 어긋나지 않음', '모든 데이터는 이 기기에만 저장돼요' not in HTML and '계정을 만들면 서버에도 함께 백업돼요' in HTML)
 sok('I-21 설계서에 계정 · 동기화 장', '클라우드 동기화' in SPEC)
 sok('I-22 설계서에 이관 함수', 'import_prototype_json' in SPEC)
