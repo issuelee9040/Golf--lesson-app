@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>ProPlan · 390px 확인용 틀</title>
+<!--
+  아이폰(390×844) 폭에서 앱 화면을 확인하기 위한 검사용 틀입니다.
+  배포본(index.html)을 390px iframe 에 넣어, 좁은 화면에서 글자 줄바꿈·버튼 폭·
+  입력칸 16px 이 그대로인지 눈으로 봅니다. 앱 자체는 이 파일을 쓰지 않습니다.
+-->
+<style>
+  html, body { margin: 0; padding: 0; background: #23272C; }
+  .row { display: flex; gap: 18px; justify-content: center; align-items: flex-start; padding: 0; }
+  iframe { width: 390px; height: 844px; border: 0; display: block; background: #fff; }
+  .label { color: #9AA3AE; font: 700 12px/1.4 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+    text-align: center; margin: 6px 0 0; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div>
+    <iframe id="phone" src="../index.html" title="ProPlan 390px"></iframe>
+    <div class="label">390 × 844 (아이폰 12·13·14)</div>
+  </div>
+</div>
+</body>
+</html>
