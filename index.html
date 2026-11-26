@@ -5695,7 +5695,7 @@ function viewSettings(){
   /* 홈 화면에 앱 추가 — 이미 앱처럼 열고 있으면(standalone) 카드가 통째로 숨습니다 */
   h += installCardHTML();
 
-  h += '<div class="sec"><h2>프로 정보 · 데이터</h2><span class="aside">이 기기에만</span></div><div class="card">' +
+  h += '<div class="sec"><h2>프로 정보 · 데이터</h2><span class="aside">이 기기 · 서버</span></div><div class="card">' +
     '<div class="field"><label>프로 이름</label><input class="input" id="setPro" value="' + esc(state.pro.name) + '"></div>' +
     '<div class="field"><label>소속 / 레슨장</label><input class="input" id="setAcademy" value="' + esc(state.pro.academy) + '"></div>' +
     '<button class="btn btn-outline btn-block" data-act="pro-save">저장</button>' +
@@ -5708,7 +5708,7 @@ function viewSettings(){
     '<button class="btn btn-outline btn-block" data-act="demo-reset">샘플 데이터 채우기</button>' +
     '<div style="height:8px"></div>' +
     '<button class="btn btn-danger btn-block" data-act="fresh-start">내 데이터로 새로 시작 (초기화)</button>' +
-    '<div class="hint">샘플 데이터를 지우고 내 회원만 관리하려면 <b>내 데이터로 새로 시작</b>을 누르세요. 데이터는 이 브라우저(localStorage)에만 저장되고, 정식 앱에서는 기기 DB + iCloud 백업으로 옮겨가요.</div>' +
+    '<div class="hint">샘플 데이터를 지우고 내 회원만 관리하려면 <b>내 데이터로 새로 시작</b>을 누르세요. 기록은 이 기기 브라우저(localStorage)에 저장되고, 위에서 계정을 만들면 서버에도 함께 백업돼요.</div>' +
   '</div>';
 
   h += '<div class="brandfoot">' +
@@ -5716,7 +5716,7 @@ function viewSettings(){
     '<img class="lk-darkword" src="assets/proplan-lockup-black.png" alt="" width="864" height="491">' +
     '<span class="bf-tag">Trial</span>' +
   '</div>' +
-  '<div class="foot">ProPlan Trial · 버전 0.9 (아이디어 검증용 프로토타입)<br>모든 데이터는 이 기기에만 저장돼요</div>';
+  '<div class="foot">ProPlan Trial · 버전 0.9 (아이디어 검증용 프로토타입)<br>기록은 이 기기에 저장되고, 계정을 만들면 서버에 백업돼요</div>';
   return h;
 }
 
