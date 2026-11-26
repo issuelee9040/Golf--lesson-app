@@ -104,19 +104,25 @@ Thenable.prototype.catch = function(bad){ return this.then(null, bad); };
 
 var FAKE = {
   rpcCalls: [], signUpCalls: [], signInCalls: [], selectCalls: [], signOutCalls: 0,
+  verifyCalls: [], resendCalls: [], verifyQueue: [],
   authCb: null,
   rpcResult: { data: { ok:true }, error: null },
   signUpResult: { data: { user: { email:'a@b.c' }, session: null }, error: null },
   signInResult: { data: { session: null }, error: null },
+  verifyResult: { data: { session: null }, error: null },
+  resendResult: { data: {}, error: null },
   sessionResult: null,
   tables: {},
   reset: function(){
     FAKE.rpcCalls = []; FAKE.signUpCalls = []; FAKE.signInCalls = []; FAKE.selectCalls = [];
+    FAKE.verifyCalls = []; FAKE.resendCalls = []; FAKE.verifyQueue = [];
     FAKE.signOutCalls = 0; FAKE.authCb = null;
     FAKE.rpcResult = { data: { ok:true }, error: null };
     FAKE.tables = {}; FAKE.sessionResult = null;
     FAKE.signUpResult = { data: { user: { email:'a@b.c' }, session: null }, error: null };
     FAKE.signInResult = { data: { session: null }, error: null };
+    FAKE.verifyResult = { data: { session: null }, error: null };
+    FAKE.resendResult = { data: {}, error: null };
   }
 };
 function fakeClient(){
@@ -126,6 +132,10 @@ function fakeClient(){
       getSession: function(){ return new Thenable({ data: { session: FAKE.sessionResult } }, null); },
       signUp: function(p){ FAKE.signUpCalls.push(p); return new Thenable(FAKE.signUpResult, null); },
       signInWithPassword: function(p){ FAKE.signInCalls.push(p); return new Thenable(FAKE.signInResult, null); },
+      verifyOtp: function(p){ FAKE.verifyCalls.push(p);
+        var r = FAKE.verifyQueue.length ? FAKE.verifyQueue.shift() : FAKE.verifyResult;
+        return new Thenable(r, null); },
+      resend: function(p){ FAKE.resendCalls.push(p); return new Thenable(FAKE.resendResult, null); },
       signOut: function(){ FAKE.signOutCalls++; return new Thenable({ error: null }, null); }
     },
     rpc: function(name, args){ FAKE.rpcCalls.push({ name:name, args:args }); return new Thenable(FAKE.rpcResult, null); },
@@ -153,6 +163,10 @@ globalThis.__api = {
   cloudOnAuthFail: cloudOnAuthFail, cloudSignedIn: cloudSignedIn, cloudSignedOut: cloudLogout,
   cloudLogoutAsk: cloudLogoutAsk, cloudLogout: cloudLogout, cloudAuthEvent: cloudAuthEvent,
   cloudAfterSignIn: cloudAfterSignIn, cloudRestore: cloudRestore,
+  /* 6자리 인증코드 */
+  authGoCode: authGoCode, authGoForm: authGoForm, cloudVerify: cloudVerify,
+  cloudResend: cloudResend, cloudOnResend: cloudOnResend, cloudOnVerified: cloudOnVerified,
+  onFieldChange: onFieldChange,
   /* 동기화 */
   cloudBoot: cloudBoot, cloudTouch: cloudTouch, cloudFlush: cloudFlush, cloudPush: cloudPush,
   cloudPull: cloudPull, cloudPullQuiet: cloudPullQuiet, cloudSyncNow: cloudSyncNow,
@@ -179,7 +193,8 @@ globalThis.__api = {
 };
 """
 
-CSSMAP = {'.input': rule('.input'), '.hint': rule('.hint'), '.authtab': rule('.authtab')}
+CSSMAP = {'.input': rule('.input'), '.hint': rule('.hint'), '.authtab': rule('.authtab'),
+          '.otpinput': rule('.otpinput'), '.codetext': rule('.codetext')}
 SHIM = SHIM.replace('__CSSRULE__', json.dumps(CSSMAP))
 
 ctx = quickjs.Context()
@@ -384,12 +399,14 @@ eq(F.signUpCalls.length, 1, 'B-25 가입 호출 1회');
 eq(F.signUpCalls[0].email, 'pro@example.com', 'B-26 이메일 전달');
 eq(F.signUpCalls[0].options.data.pro_name, '이시훈', 'B-27 프로 이름을 메타데이터로');
 has(String(F.signUpCalls[0].options.emailRedirectTo), '/Golf--lesson-app/', 'B-28 인증 링크가 이 앱으로 돌아옴');
-has(sheetPart(lastSheet(), '.sb'), '인증 메일을 보냈어요', 'B-29 인증 메일 안내 표시');
+has(sheetPart(lastSheet(), '.sb'), '6자리 코드', 'B-29 6자리 코드 단계로 전환');
 has(sheetPart(lastSheet(), '.sb'), 'pro@example.com', 'B-30 받을 주소 표시');
 has(sheetPart(lastSheet(), '.sb'), '스팸함', 'B-31 메일이 없을 때 안내');
-eq(A.authCtx().mode, 'login', 'B-32 인증 뒤엔 로그인 칸');
+eq(A.authCtx().step, 'code', 'B-32 인증 뒤엔 6자리 코드 칸');
+eq(A.authCtx().mode, 'signup', 'B-32b 코드 단계는 가입 흐름');
+eq(sheetTitle(lastSheet()), '이메일 인증', 'B-32c 시트 제목이 인증으로');
 ok(!C.user, 'B-33 아직 로그인 아님');
-eq(EL('auEmail').value, 'pro@example.com', 'B-34 이메일 남아 있음');
+has(sheetPart(lastSheet(), '.sb'), 'pro@example.com', 'B-34 이메일 남아 있음');
 
 /* ══════════ C. 로그인 성공 · 실패 문구 ══════════ */
 fresh();
@@ -750,6 +767,162 @@ eq(F.rpcCalls.length, 1, 'I-7 앱을 다시 열면 대기분을 먼저 올림');
 fresh();
 A.cloudAuthEvent('SIGNED_IN', session('new@example.com'));
 ok(!!C.user, 'I-8 인증 링크 복귀로 로그인');
+/* ══════════ J. 이메일 6자리 인증코드 ══════════ */
+function clickAct(a){
+  A.onClick({ target:{ closest: function(){ return { getAttribute:function(n){ return n === 'data-act' ? a : null; },
+    closest:function(){ return null; } }; } } });
+}
+/* 가입 제출 → 세션 없음 → 6자리 코드 단계까지 */
+function toCodeStep(email){
+  var em = email || 'pro@example.com';
+  fresh();
+  A.openAuthSheet('signup');
+  EL('auEmail').value = em; EL('auPw').value = 'secret123'; EL('auName').value = '이시훈';
+  EL('auCode').value = '';
+  F.signUpResult = { data: { user: { email: em }, session: null }, error: null };
+  A.cloudSubmit();
+  return em;
+}
+
+/* 시트 구성 · 16px · 다시 보내기 · 돌아가기 */
+toCodeStep('pro@example.com');
+var jsh = lastSheet(), jbd = sheetPart(jsh, '.sb'), jft = sheetPart(jsh, '.sf');
+eq(A.authCtx().step, 'code', 'J-1 가입 직후 6자리 코드 단계');
+eq(A.authCtx().sentTo, 'pro@example.com', 'J-2 코드를 보낸 주소 보관');
+has(jbd, 'pro@example.com', 'J-3 받을 주소를 그대로 보여줌');
+has(jbd, '6자리 코드를 입력해 주세요', 'J-4 무엇을 하면 되는지');
+has(jbd, 'id="auCode"', 'J-5 코드 입력칸');
+has(jbd, 'inputmode="numeric"', 'J-6 숫자 키보드');
+has(jbd, 'autocomplete="one-time-code"', 'J-7 아이폰 코드 자동 채우기');
+has(jbd, 'maxlength="6"', 'J-8 여섯 자리까지만');
+has(jbd, 'placeholder="6자리 숫자 입력"', 'J-9 칸 안내 글자');
+has(jbd, 'class="input otpinput"', 'J-10 앱 공통 입력 클래스');
+hasNot(jbd, 'id="auPw"', 'J-11 코드 단계엔 비밀번호 칸 없음');
+hasNot(jbd, 'authtabs', 'J-12 코드 단계엔 로그인·가입 탭 없음');
+ok(CSSRULE['.otpinput'].indexOf('font-size:16px') >= 0, 'J-13 코드 칸 16px(사파리 확대 방지)', CSSRULE['.otpinput']);
+has(jft, 'data-act="cloud-verify"', 'J-14 인증 확인 버튼');
+has(jft, '인증 확인', 'J-15 확인 버튼 글자');
+has(jft, 'data-act="cloud-resend"', 'J-16 인증코드 다시 보내기 자리');
+has(jft, '인증코드 다시 보내기', 'J-17 다시 보내기 글자');
+has(jft, 'data-act="cloud-otp-back"', 'J-18 이메일 다시 입력 자리');
+has(jft, '이메일 다시 입력', 'J-19 이메일 다시 입력 글자');
+has(sheetPart(jsh, '.sb'), '인증 링크를 눌러도', 'J-20 링크로도 되는 길 안내');
+/* 다섯 자리만 넣으면 서버를 부르지 않음 */
+EL('auCode').value = '12345';
+A.cloudVerify();
+eq(F.verifyCalls.length, 0, 'J-21 짧은 코드는 호출 없음');
+has(EL('auMsg').innerHTML, '6자리 숫자', 'J-22 짧은 코드 안내');
+/* 다시 보내기 */
+F.resendResult = { data: {}, error: null };
+A.cloudResend();
+eq(F.resendCalls.length, 1, 'J-23 다시 보내기 호출');
+eq(F.resendCalls[0].type, 'signup', 'J-24 다시 보내기는 가입 확인 종류');
+eq(F.resendCalls[0].email, 'pro@example.com', 'J-25 같은 주소로');
+has(String(F.resendCalls[0].options && F.resendCalls[0].options.emailRedirectTo), '/Golf--lesson-app/', 'J-26 돌아올 주소');
+has(EL('auMsg').innerHTML, '인증코드를 다시 보냈어요', 'J-27 다시 보냈다는 안내');
+ok(!A.authCtx().busy, 'J-28 끝나면 다시 누를 수 있음');
+/* 429 — 너무 자주 */
+F.resendResult = { data: null, error: { code:'over_email_send_rate_limit', message:'email rate limit exceeded', status:429 } };
+A.cloudResend();
+has(EL('auMsg').innerHTML, '잠시 후 다시 시도해 주세요', 'J-29 제한이면 잠시 후로 안내');
+ok(!A.authCtx().busy, 'J-30 제한 뒤에도 다시 누를 수 있음');
+/* 기본 메일이 받을 수 없는 주소 */
+F.resendResult = { data: null, error: { code:'email_address_not_authorized', message:'Email address not authorized', status:422 } };
+A.cloudResend();
+has(EL('auMsg').innerHTML, '이 주소로는 메일을 보낼 수 없어요', 'J-31 주소 제한 안내');
+/* 주소를 잘못 적었을 때 돌아가기 */
+clickAct('cloud-otp-back');
+eq(A.authCtx().step, 'form', 'J-32 이메일 다시 입력으로 돌아감');
+eq(A.authCtx().mode, 'signup', 'J-33 돌아가면 가입 칸');
+has(sheetPart(lastSheet(), '.sb'), 'id="auEmail"', 'J-34 이메일 칸이 돌아옴');
+has(sheetPart(lastSheet(), '.sb'), 'value="pro@example.com"', 'J-35 적었던 주소 유지');
+
+/* 인증 확인 — verifyOtp 모양과 성공 */
+toCodeStep('pro@example.com');
+EL('auCode').value = '123456';
+F.tables = {};
+F.verifyResult = { data: { session: session('pro@example.com') }, error: null };
+A.cloudVerify();
+eq(F.verifyCalls.length, 1, 'J-36 인증 호출 1회');
+eq(F.verifyCalls[0].email, 'pro@example.com', 'J-37 이메일 전달');
+eq(F.verifyCalls[0].token, '123456', 'J-38 6자리 전달');
+eq(F.verifyCalls[0].type, 'signup', 'J-39 가입 확인 종류');
+ok(!!C.user, 'J-40 인증하면 로그인됨');
+eq(C.user.email, 'pro@example.com', 'J-41 이메일 보관');
+ok(!A.authCtx(), 'J-42 인증 시트가 닫힘');
+has(String(toastText()), '이메일 인증 완료', 'J-43 인증 완료 안내');
+ok(F.selectCalls.length === 9, 'J-44 인증 직후 서버 기록 확인', F.selectCalls.length);
+
+/* 6자리를 채우면 바로 확인 · 숫자만 남김 */
+toCodeStep('pro@example.com');
+EL('auCode').value = '12a34b56';
+F.verifyResult = { data: { session: session('pro@example.com') }, error: null };
+A.onFieldChange({ target: EL('auCode') });
+eq(EL('auCode').value, '123456', 'J-45 숫자만 여섯 자리로 정리');
+eq(F.verifyCalls.length, 1, 'J-46 자동 채우기로 들어와도 바로 확인');
+ok(!!C.user, 'J-47 자동 확인으로 로그인');
+
+/* 틀린 코드 — 다른 종류(email)로 한 번 더 시도하고 안내 */
+toCodeStep('pro@example.com');
+EL('auCode').value = '000000';
+F.verifyResult = { data: null, error: { code:'otp_expired', message:'Token has expired or is invalid', status:403 } };
+A.cloudVerify();
+eq(F.verifyCalls.length, 2, 'J-48 실패하면 다른 종류로 한 번 더');
+eq(F.verifyCalls[1].type, 'email', 'J-49 두 번째는 email 종류');
+has(EL('auMsg').innerHTML, '코드가 맞지 않거나', 'J-50 틀린 코드·지난 코드 안내');
+ok(!C.user, 'J-51 실패하면 로그인 아님');
+eq(A.authCtx().step, 'code', 'J-52 코드 칸에 머무름');
+ok(!A.authCtx().busy, 'J-53 다시 시도할 수 있음');
+eq(EL('auCode').value, '000000', 'J-54 넣은 코드는 남음');
+
+/* 다른 종류로 발급된 코드 — 두 번째 시도에서 성공 */
+toCodeStep('pro@example.com');
+EL('auCode').value = '654321';
+F.verifyQueue = [ { data: null, error: { code:'otp_expired', message:'Token has expired or is invalid' } },
+  { data: { session: session('pro@example.com') }, error: null } ];
+A.cloudVerify();
+eq(F.verifyCalls.length, 2, 'J-55 두 번 시도');
+ok(!!C.user, 'J-56 두 번째 시도로 로그인');
+ok(!A.authCtx(), 'J-57 시트 닫힘');
+
+/* 인증 전 계정으로 로그인 — 그 자리에서 코드 단계로 */
+fresh();
+A.openAuthSheet('login');
+EL('auEmail').value = 'pro@example.com'; EL('auPw').value = 'secret123';
+F.signInResult = { data: null, error: { code:'email_not_confirmed', message:'Email not confirmed', status:400 } };
+A.cloudSubmit();
+var jm = EL('auMsg').innerHTML;
+has(jm, '이메일 인증이 아직이에요', 'J-58 인증 전 로그인 안내');
+has(jm, 'data-act="cloud-otp-open"', 'J-59 6자리 코드 입력하기 버튼');
+has(jm, 'data-act="cloud-otp-resend"', 'J-60 인증코드 다시 보내기 버튼');
+has(jm, '6자리 코드 입력하기', 'J-61 버튼 글자');
+ok(!C.user, 'J-62 아직 로그인 아님');
+clickAct('cloud-otp-open');
+eq(A.authCtx().step, 'code', 'J-63 1탭으로 코드 단계');
+has(sheetPart(lastSheet(), '.sb'), 'pro@example.com', 'J-64 적었던 주소로 안내');
+/* 다시 보내기 버튼 — 코드 단계로 가면서 바로 다시 보냄 */
+fresh();
+A.openAuthSheet('login');
+EL('auEmail').value = 'pro@example.com'; EL('auPw').value = 'secret123';
+F.signInResult = { data: null, error: { code:'email_not_confirmed', message:'Email not confirmed', status:400 } };
+A.cloudSubmit();
+F.resendCalls = [];
+clickAct('cloud-otp-resend');
+eq(A.authCtx().step, 'code', 'J-65 다시 보내기 누르면 코드 단계');
+eq(F.resendCalls.length, 1, 'J-66 그 자리에서 다시 보냄');
+eq(F.resendCalls[0].email, 'pro@example.com', 'J-67 같은 주소로 다시');
+
+/* 세션이 바로 오는 설정(Confirm email 끔)도 그대로 */
+fresh();
+A.openAuthSheet('signup');
+EL('auEmail').value = 'pro@example.com'; EL('auPw').value = 'secret123'; EL('auName').value = '이시훈';
+F.signUpResult = { data: { user: { email:'pro@example.com' }, session: session('pro@example.com') }, error: null };
+F.tables = {};
+A.cloudSubmit();
+ok(!!C.user, 'J-68 세션이 바로 오면 인증 없이 로그인');
+ok(!A.authCtx(), 'J-69 그때는 시트를 닫음');
+eq(F.verifyCalls.length, 0, 'J-70 코드 확인을 거치지 않음');
+
 /* ── 결과 ── */
 globalThis.__RESULT = JSON.stringify({ log: log, fails: fails });
 """
@@ -778,6 +951,13 @@ sok('I-24 설정 안내가 계정과 어긋나지 않음', '모든 데이터는 
 sok('I-21 설계서에 계정 · 동기화 장', '클라우드 동기화' in SPEC)
 sok('I-22 설계서에 이관 함수', 'import_prototype_json' in SPEC)
 sok('I-23 설계서에 인증 메일 안내', '이메일 인증' in SPEC)
+sok('I-26 6자리 코드 확인 함수(verifyOtp)', 'verifyOtp(' in HTML)
+sok('I-27 인증코드 다시 보내기(auth.resend)', 'auth.resend(' in HTML)
+sok('I-28 아이폰 코드 자동 채우기', 'autocomplete="one-time-code"' in HTML)
+sok('I-29 숫자 키보드', 'inputmode="numeric"' in HTML)
+sok('I-30 설계서에 6자리 코드', '6자리' in SPEC)
+sok('I-31 코드 칸 16px 규칙', 'font-size:16px' in rule('.otpinput'), rule('.otpinput'))
+sok('I-32 인증 단계 전환 애니메이션', '@keyframes authstep' in HTML)
 
 for line in res['log']:
     print(line)

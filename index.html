@@ -920,6 +920,17 @@ html[data-theme="black"] .authtabs{background:#202026;border-color:rgba(255,255,
 html[data-theme="black"] .authtab.on{background:#2E2E36;box-shadow:0 1px 3px rgba(0,0,0,.5)}
 #auMsg{margin:0 3px 10px;line-height:1.5}
 #auMsg[hidden]{display:none}
+/* 이메일 6자리 인증코드 단계 */
+.authstep{animation:authstep .22s ease-out}
+@keyframes authstep{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.authstep{animation:none}}
+.codetext{font-size:12.5px;font-weight:700;color:var(--ink2);line-height:1.5;margin:2px 3px 12px;word-break:break-all}
+.codetext b{font-weight:800;color:var(--ink)}
+.otpinput{font-size:16px;font-weight:800;height:54px;text-align:center;letter-spacing:.4em;text-indent:.4em;font-variant-numeric:tabular-nums}
+.authalt{display:flex;gap:8px;margin-top:8px}
+.authalt .btn{flex:1;height:40px;padding:0 6px;font-size:12px;border-radius:12px}
+.authmsgact{display:flex;gap:8px;margin-top:9px}
+.authmsgact .btn{flex:1;height:38px;padding:0 6px;font-size:11.5px;border-radius:12px}
 .ob-acct{display:block;width:100%;margin-top:14px;padding:4px 0;border:0;background:transparent;
   font:inherit;font-size:12px;font-weight:700;letter-spacing:-.1px;color:rgba(255,255,255,.72);cursor:pointer}
 .ob-acct b{font-weight:800;color:#fff;border-bottom:1px solid rgba(255,255,255,.55);padding-bottom:1px}
@@ -7636,9 +7647,10 @@ function onClick(e){
     case 'cloud-mode': {
       if (!authCtx) break;
       var am = el.getAttribute('data-v') === 'signup' ? 'signup' : 'login';
-      if (authCtx.mode === am) break;
+      if (authCtx.mode === am && authCtx.step === 'form') break;
       authCtx.email = authVal('auEmail') || authCtx.email;
       authCtx.mode = am;
+      authCtx.step = 'form';
       authCtx.busy = false;
       authCtx.msg = '';
       authCtx.msgKind = 'ok';
@@ -7648,6 +7660,31 @@ function onClick(e){
 
     case 'cloud-submit':
       cloudSubmit();
+      break;
+
+    /* 6자리 인증코드 단계 */
+    case 'cloud-verify':
+      cloudVerify();
+      break;
+
+    case 'cloud-resend':
+      cloudResend();
+      break;
+
+    case 'cloud-otp-back':
+      authGoForm();
+      break;
+
+    case 'cloud-otp-open':
+      if (!authCtx) break;
+      authCtx.email = String(authVal('auEmail') || authCtx.email || '').trim().toLowerCase();
+      authGoCode(authCtx.email);
+      break;
+
+    case 'cloud-otp-resend':
+      if (!authCtx) break;
+      authCtx.email = String(authVal('auEmail') || authCtx.email || '').trim().toLowerCase();
+      cloudResend();
       break;
 
     case 'cloud-sync':
@@ -7706,6 +7743,14 @@ function onFieldChange(e){
   }
   var id = t && t.id;
   if (!id) return;
+  if (id === 'auCode') {
+    /* 숫자만·6자리 · 아이폰 '코드 자동 채우기'가 넣으면 바로 확인 */
+    var cv = String(t.value || '').replace(/[^0-9]/g, '').slice(0, 6);
+    if (cv !== String(t.value || '')) t.value = cv;
+    if (authCtx) authCtx.code = cv;
+    if (cv.length === 6 && authCtx && !authCtx.busy) cloudVerify();
+    return;
+  }
   if (id === 'mSearch') {
     ui.search = e.target.value;
     var box = document.getElementById('memberList');
@@ -7936,27 +7981,46 @@ function proNameGuess(){
 function cloudRedirect(){
   try { return location.origin + location.pathname; } catch(e){ return ''; }
 }
+var AUTH_SUB_FORM = '이 기기 기록을 서버에 백업하고, 다른 기기와 이어서 씁니다';
+var AUTH_SUB_CODE = '메일로 받은 6자리 코드를 넣으면 바로 시작돼요';
 function openAuthSheet(mode, email){
   var m = (mode === 'signup') ? 'signup' : 'login';
   var sh = openSheet({
     title: m === 'signup' ? '계정 만들기' : '로그인',
-    sub: '이 기기 기록을 서버에 백업하고, 다른 기기와 이어서 씁니다',
+    sub: AUTH_SUB_FORM,
     footer: ''
   });
-  authCtx = { mode: m, sh: sh, email: email || '', busy: false, msg: '', msgKind: 'ok' };
+  authCtx = { mode: m, step: 'form', sh: sh, email: email || '', code: '', sentTo: '',
+    busy: false, msg: '', msgKind: 'ok', triedEmail: false };
   sh.footer.style.display = '';      /* 제출 버튼이 있는 아래 칸을 보이게 (openSheet 는 빈 footer 를 숨김) */
   var ob = document.getElementById('onboard');
   if (ob && !ob.hidden && sh.el.classList) sh.el.classList.add('above-onboard');
   paintAuthSheet();
   return sh;
 }
-function authBodyHTML(c){
+function authTabsHTML(c){
   var signup = c.mode === 'signup';
-  var h = '<div class="authtabs" role="tablist">' +
+  return '<div class="authtabs" role="tablist">' +
     '<button class="authtab' + (signup ? '' : ' on') + '" data-act="cloud-mode" data-v="login" role="tab" aria-selected="' + (signup ? 'false' : 'true') + '">로그인</button>' +
     '<button class="authtab' + (signup ? ' on' : '') + '" data-act="cloud-mode" data-v="signup" role="tab" aria-selected="' + (signup ? 'true' : 'false') + '">회원가입</button>' +
-  '</div>' +
-  '<div id="auMsg" class="' + (c.msgKind === 'err' ? 'err' : 'ok') + '"' + (c.msg ? '' : ' hidden') + '>' + (c.msg || '') + '</div>' +
+  '</div>';
+}
+/* 6자리 코드 단계 — 받을 주소를 그대로 보여 주고, 숫자 키보드가 바로 뜨는 칸 하나 */
+function authCodeHTML(c){
+  var to = esc(c.sentTo || c.email || '');
+  return '<div class="authstep">' +
+    '<div class="codetext"><b>' + to + '</b> 으로 보낸<br>6자리 코드를 입력해 주세요</div>' +
+    '<div class="field"><label for="auCode">인증코드</label>' +
+      '<input class="input otpinput" id="auCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6자리 숫자 입력" pattern="[0-9]*" autocapitalize="off" autocorrect="off" spellcheck="false" value="' + esc(c.code || '') + '">' +
+    '</div>' +
+    '<div class="hint">메일이 안 보이면 스팸함도 확인해 주세요. 메일의 인증 링크를 눌러도 이 앱으로 돌아와 로그인됩니다.</div>' +
+  '</div>';
+}
+function authBodyHTML(c){
+  var signup = c.mode === 'signup';
+  var head = '<div id="auMsg" class="' + (c.msgKind === 'err' ? 'err' : 'ok') + '"' + (c.msg ? '' : ' hidden') + '>' + (c.msg || '') + '</div>';
+  if (c.step === 'code') return head + authCodeHTML(c);
+  var h = authTabsHTML(c) + head +
   '<div class="field"><label for="auEmail">이메일</label>' +
     '<input class="input" id="auEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@example.com" value="' + esc(c.email) + '"></div>' +
   '<div class="field"><label for="auPw">비밀번호</label>' +
@@ -7966,19 +8030,34 @@ function authBodyHTML(c){
       '<input class="input" id="auName" type="text" autocomplete="name" maxlength="20" placeholder="예: 이시훈" value="' + esc(proNameGuess()) + '"></div>';
   }
   h += '<div class="hint">' + (signup
-    ? '가입하면 적은 이메일로 인증 메일이 가요. 메일의 링크를 누르면 이 앱으로 돌아와 로그인돼요.'
+    ? '가입하면 적은 이메일로 인증 메일(6자리 코드)이 가요. 그 코드를 다음 칸에 넣으면 바로 로그인돼요.'
     : '로그인 상태는 이 기기에 저장돼, 앱을 다시 열어도 이어집니다.') + '</div>';
   return h;
 }
 function authFootHTML(c){
+  if (c.step === 'code') {
+    return '<button class="btn btn-primary btn-block" data-act="cloud-verify"' + (c.busy ? ' disabled' : '') + '>' +
+      (c.busy ? '확인 중...' : '인증 확인') + '</button>' +
+      '<div class="authalt">' +
+        '<button class="btn btn-ghost" data-act="cloud-resend">인증코드 다시 보내기</button>' +
+        '<button class="btn btn-ghost" data-act="cloud-otp-back">이메일 다시 입력</button>' +
+      '</div>';
+  }
   var signup = c.mode === 'signup';
   return '<button class="btn btn-primary btn-block" data-act="cloud-submit"' + (c.busy ? ' disabled' : '') + '>' +
     (c.busy ? '잠시만요...' : (signup ? '계정 만들기' : '로그인')) + '</button>';
 }
 function paintAuthSheet(){
   if (!authCtx) return;
-  authCtx.sh.body.innerHTML = authBodyHTML(authCtx);
-  authCtx.sh.footer.innerHTML = authFootHTML(authCtx);
+  var c = authCtx;
+  try {
+    var t = c.sh.sheet.querySelector('h3');
+    if (t) t.textContent = (c.step === 'code') ? '이메일 인증' : (c.mode === 'signup' ? '계정 만들기' : '로그인');
+    var s = c.sh.sheet.querySelector('.sub');
+    if (s) { s.innerHTML = (c.step === 'code') ? AUTH_SUB_CODE : AUTH_SUB_FORM; s.style.display = ''; }
+  } catch(e){}
+  c.sh.body.innerHTML = authBodyHTML(c);
+  c.sh.footer.innerHTML = authFootHTML(c);
 }
 function paintAuthFoot(){
   if (!authCtx) return;
@@ -8001,12 +8080,116 @@ function authVal(id){
   return el ? String(el.value || '') : '';
 }
 
+/* ---------- 이메일 6자리 인증코드 단계 ----------
+   가입 응답에 세션이 없으면(Confirm email 켜짐) 이메일로 6자리 코드가 갑니다.
+   링크를 누르지 않고 앱 안에서 코드를 넣어 바로 로그인하는 길입니다. */
+function authGoCode(email, opts){
+  if (!authCtx) return;
+  var to = String(email || authCtx.email || '').trim().toLowerCase();
+  authCtx.step = 'code';
+  authCtx.mode = 'signup';
+  authCtx.email = to;
+  authCtx.sentTo = to;
+  authCtx.code = '';
+  authCtx.busy = false;
+  authCtx.triedEmail = false;
+  if (!(opts && opts.keepMsg)) { authCtx.msg = ''; authCtx.msgKind = 'ok'; }
+  paintAuthSheet();
+  setTimeout(function(){
+    var el = document.getElementById('auCode');
+    if (el && el.focus) el.focus();
+  }, 80);
+}
+function authGoForm(){
+  if (!authCtx) return;
+  authCtx.step = 'form';
+  authCtx.mode = 'signup';
+  authCtx.busy = false;
+  authCtx.code = '';
+  authCtx.msg = '';
+  authCtx.msgKind = 'ok';
+  paintAuthSheet();
+}
+function authCodeVal(c){
+  var raw = String(authVal('auCode') || (c && c.code) || '');
+  return raw.replace(/[^0-9]/g, '').slice(0, 6);
+}
+/* 인증코드 확인 — verifyOtp(type:'signup') → 실패하면 'email' 로 한 번 더 */
+function cloudVerify(){
+  if (!authCtx || authCtx.step !== 'code' || authCtx.busy) return;
+  var c = authCtx;
+  var code = authCodeVal(c);
+  c.code = code;
+  if (code.length !== 6) { authMsg('메일로 받은 6자리 숫자를 넣어 주세요', 'err'); return; }
+  if (!cloudOnline()) { authMsg('인터넷에 연결되어 있지 않아요 · 연결한 뒤 다시 눌러 주세요', 'err'); return; }
+  var cl = cloudClient();
+  if (!cl) {
+    authMsg(CLOUD.libState === 'loading'
+      ? '서버에 연결하는 중이에요 · 2~3초 뒤 다시 눌러 주세요'
+      : '지금은 서버에 연결할 수 없어요 · 인터넷 연결을 확인해 주세요', 'err');
+    if (CLOUD.libState === 'fail') loadSupabaseLib();
+    return;
+  }
+  c.busy = true; c.msg = ''; c.msgKind = 'ok'; c.triedEmail = false;
+  paintAuthFoot();
+  cl.auth.verifyOtp({ email: c.email, token: code, type: 'signup' })
+    .then(function(res){
+      if (!res || !res.error) return cloudOnVerified(res);
+      var ec = String(res.error.code || '');
+      var em = String(res.error.message || '');
+      if (!c.triedEmail && /otp_expired|token has expired|invalid/i.test(ec + ' ' + em)) {
+        c.triedEmail = true;
+        cl.auth.verifyOtp({ email: c.email, token: code, type: 'email' })
+          .then(function(r2){ if (r2 && r2.error) cloudOnAuthFail(r2.error); else cloudOnVerified(r2); },
+                function(e){ cloudOnAuthFail(e); });
+        return;
+      }
+      cloudOnAuthFail(res.error);
+    }, function(err){ cloudOnAuthFail(err); });
+}
+function cloudOnVerified(res){
+  var s = (res && res.data) ? res.data.session : null;
+  if (!s) { cloudOnAuthFail({ message: '인증하지 못했어요 · 코드를 다시 확인해 주세요' }); return; }
+  var email = (s.user && s.user.email) || (authCtx ? authCtx.email : '');
+  cloudSignedIn(s);
+  closeAuthSheet();
+  toast('이메일 인증 완료 · 로그인했어요' + (email ? ' · ' + email : ''), { ms: 3600 });
+  cloudAfterSignIn();
+}
+/* 인증코드 다시 보내기 — 같은 주소로 'Confirm signup' 메일을 다시 */
+function cloudResend(){
+  if (!authCtx || authCtx.busy) return;
+  var c = authCtx;
+  var email = String(authVal('auEmail') || c.sentTo || c.email || '').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authMsg('이메일 주소를 다시 확인해 주세요', 'err'); return; }
+  if (!cloudOnline()) { authMsg('인터넷에 연결되어 있지 않아요 · 연결한 뒤 다시 눌러 주세요', 'err'); return; }
+  var cl = cloudClient();
+  if (!cl) { authMsg('지금은 서버에 연결할 수 없어요 · 인터넷 연결을 확인해 주세요', 'err'); return; }
+  if (c.step !== 'code') authGoCode(email, { keepMsg: true });
+  c = authCtx;
+  if (!c) return;
+  c.email = email; c.sentTo = email;
+  c.busy = true; c.msgKind = 'ok';
+  paintAuthFoot();
+  authMsg('인증코드를 다시 보내는 중...', 'ok');
+  cl.auth.resend({ type: 'signup', email: email, options: { emailRedirectTo: cloudRedirect() } })
+    .then(cloudOnResend, function(err){ cloudOnAuthFail(err); });
+}
+function cloudOnResend(res){
+  if (res && res.error) return cloudOnAuthFail(res.error);
+  if (!authCtx) { toast('인증코드를 다시 보냈어요 · 메일을 확인해 주세요'); return; }
+  authCtx.busy = false;
+  paintAuthFoot();
+  authMsg('인증코드를 다시 보냈어요 · <b>' + esc(authCtx.sentTo || authCtx.email) + '</b><br>메일이 안 보이면 스팸함도 확인해 주세요.', 'ok');
+}
+
 function openCloudAuth(mode){
   if (CLOUD.user) { toast('이미 로그인되어 있어요 · ' + (CLOUD.user.email || '')); return; }
   openAuthSheet(mode || 'login');
 }
 function cloudSubmit(){
   if (!authCtx || authCtx.busy) return;
+  if (authCtx.step === 'code') { cloudVerify(); return; }
   var c = authCtx, signup = c.mode === 'signup';
   var email = authVal('auEmail').trim().toLowerCase();
   var pw = authVal('auPw');
@@ -8043,16 +8226,13 @@ function cloudOnSignUp(res){
     cloudAfterSignIn();
     return;
   }
+  /* 세션이 없다 = 메일 인증이 남았다 → 앱 안 6자리 코드 칸으로 */
   var email = (data.user && data.user.email) || (authCtx ? authCtx.email : '');
   if (authCtx) {
-    authCtx.busy = false;
-    authCtx.mode = 'login';            /* 인증을 마친 뒤에는 로그인 칸으로 */
-    authCtx.email = email;
-    authCtx.msg = '인증 메일을 보냈어요 — <b>' + esc(email) + '</b><br>메일의 링크를 누르면 이 앱으로 돌아와 자동으로 로그인됩니다. 메일이 안 보이면 스팸함도 확인해 주세요.';
-    authCtx.msgKind = 'ok';
-    paintAuthSheet();
+    authGoCode(email);
+    authMsg('인증코드 메일을 보냈어요 · 메일이 안 보이면 스팸함도 확인해 주세요', 'ok');
   } else {
-    toast('인증 메일을 보냈어요 · 메일의 링크를 눌러 주세요', { ms: 4200 });
+    toast('인증코드 메일을 보냈어요 · 메일의 6자리 숫자를 앱에 넣어 주세요', { ms: 4200 });
   }
 }
 function cloudOnSignIn(res){
@@ -8065,25 +8245,42 @@ function cloudOnSignIn(res){
   cloudAfterSignIn();
 }
 function cloudOnAuthFail(err){
-  var code = (err && (err.code || err.error_code)) || '';
-  var msg = (err && (err.message || err.msg)) || '';
+  var ecode = String((err && (err.code || err.error_code)) || '');
+  var emsg = String((err && (err.message || err.msg)) || '');
+  var status = parseInt((err && err.status) || 0, 10) || 0;
+  var low = (ecode + ' ' + emsg).toLowerCase();
+  var inCode = !!(authCtx && authCtx.step === 'code');
   var t;
-  if (code === 'email_not_confirmed' || /email not confirmed/i.test(msg))
-    t = '이메일 인증이 아직이에요 · 받으신 메일의 인증 링크를 누른 뒤 다시 로그인해 주세요';
-  else if (code === 'invalid_credentials' || /invalid login credentials/i.test(msg))
+  if (status === 429 || /over_email_send_rate_limit|rate limit|too many requests|\b429\b/.test(low))
+    t = '잠시 후 다시 시도해 주세요 · 메일을 너무 자주 보냈어요';
+  else if (/email_address_not_authorized/.test(low))
+    t = '이 주소로는 메일을 보낼 수 없어요 · 지금 서버 메일 설정으로는 정해진 주소에만 보낼 수 있어요';
+  else if (/otp_expired|token has expired or is invalid|invalid token/.test(low))
+    t = '코드가 맞지 않거나 시간이 지났어요 · 다시 확인하거나 새 코드를 받아 주세요';
+  else if (ecode === 'email_not_confirmed' || /email not confirmed/i.test(emsg))
+    t = '이메일 인증이 아직이에요 · 받으신 6자리 코드를 넣으면 바로 시작돼요';
+  else if (ecode === 'invalid_credentials' || /invalid login credentials/i.test(emsg))
     t = '이메일이나 비밀번호가 맞지 않아요';
-  else if (code === 'user_already_exists' || /already registered/i.test(msg))
+  else if (ecode === 'user_already_exists' || /already registered/i.test(emsg))
     t = '이미 가입된 이메일이에요 · 로그인해 주세요';
-  else if (code === 'over_email_send_rate_limit' || /rate limit/i.test(msg))
-    t = '메일을 너무 자주 보냈어요 · 잠시 뒤 다시 시도해 주세요';
-  else if (code === 'weak_password' || /password should be|weak/i.test(msg))
+  else if (ecode === 'weak_password' || /password should be|weak/i.test(emsg))
     t = '비밀번호는 6자 이상으로 정해 주세요';
-  else if (/fetch|network|offline|load failed|timed out/i.test(msg))
+  else if (/fetch|network|offline|load failed|timed out/i.test(emsg))
     t = '인터넷 연결을 확인한 뒤 다시 시도해 주세요';
   else
-    t = '연결에 문제가 생겼어요' + (msg ? ' · ' + esc(msg) : '');
-  if (authCtx) { authCtx.busy = false; paintAuthFoot(); authMsg(t, 'err'); }
-  else toast(t, { ms: 3600 });
+    t = '연결에 문제가 생겼어요' + (emsg ? ' · ' + esc(emsg) : '');
+  if (!authCtx) { toast(t, { ms: 3600 }); return; }
+  authCtx.busy = false;
+  /* 인증만 남은 계정이면 — 그 자리에서 6자리 코드 칸으로 갈 수 있게 */
+  if (!inCode && (ecode === 'email_not_confirmed' || /email not confirmed/i.test(emsg))) {
+    authCtx.email = String(authVal('auEmail') || authCtx.email || '').trim().toLowerCase();
+    t += '<div class="authmsgact">' +
+      '<button class="btn btn-ghost" data-act="cloud-otp-open">6자리 코드 입력하기</button>' +
+      '<button class="btn btn-ghost" data-act="cloud-otp-resend">인증코드 다시 보내기</button>' +
+    '</div>';
+  }
+  paintAuthFoot();
+  authMsg(t, 'err');
 }
 
 function cloudSignedIn(session){
@@ -8171,6 +8368,8 @@ function cloudAuthEvent(ev, session){
   var already = !!(CLOUD.user && CLOUD.user.id === session.user.id);
   cloudSignedIn(session);
   if (ev === 'SIGNED_IN' && !already) {
+    /* 6자리 코드 확인(verifyOtp) 중이면 그 흐름이 마무리한다 (안내가 두 번 뜨지 않게) */
+    if (authCtx && authCtx.step === 'code' && authCtx.busy) return;
     /* 이메일 인증 링크로 돌아온 경우도 여기로 — 바로 서버 기록을 확인 */
     if (typeof history !== 'undefined' && history && history.replaceState && /access_token=/.test(String(location.hash || ''))) {
       try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
@@ -8767,6 +8966,10 @@ document.addEventListener('keydown', function(e){
     if (authCtx && (e.target.id === 'auEmail' || e.target.id === 'auPw' || e.target.id === 'auName')) {
       e.preventDefault();
       cloudSubmit();
+    }
+    if (authCtx && e.target.id === 'auCode') {
+      e.preventDefault();
+      cloudVerify();
     }
   }
 });
