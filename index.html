@@ -8210,15 +8210,25 @@ function cloudPlan(remote, local){
   if (!l) return 'pull';
   return 'choose';
 }
+/* 받은 기록을 화면에 반영한다.
+   · 서버에 기록이 있으면 서버를 따라간다 (기기 두 대가 같은 기록을 보게 하는 기본 동작).
+     기기가 '올릴 것 없음(pending=false)' 일 때만 부르므로, 여기서 덮어써도 잃는 기기 기록이 없다.
+   · 서버가 비었는데 기기에만 기록이 있으면 지우지 않고 '올리기' 를 안내한다. */
+function cloudAbsorb(rows, opts){
+  var remote = cloudStateFromRows(rows);
+  if (!remote.members.length && (state.members || []).length) {
+    CLOUD.offerUpload = true;
+    cloudPaint();
+    if (opts && opts.manual) openCloudChoiceSheet(remote);
+    return 'offer';
+  }
+  cloudHydrate(rows, !!(opts && opts.quiet));
+  return 'pull';
+}
 function cloudPullQuiet(){
   cloudPull(function(rows, err){
     if (err || !rows) { cloudPaint(); return; }
-    var remote = cloudStateFromRows(rows);
-    var plan = cloudPlan(remote, state);
-    if (plan === 'pull') { cloudHydrate(rows, true); return; }
-    if (plan === 'upload') { CLOUD.offerUpload = true; cloudPaint(); return; }
-    /* 양쪽에 기록이 있으면 마음대로 덮어쓰지 않습니다 (설정 › 지금 동기화에서 고름) */
-    cloudPaint();
+    cloudAbsorb(rows, { quiet: true });
   });
 }
 function cloudNormalizeState(st){
@@ -8328,10 +8338,7 @@ function cloudSyncNow(){
       toast(err === 'offline' ? '인터넷에 연결되어 있지 않아요' : '서버 기록을 받지 못했어요 · 잠시 뒤 다시 시도해 주세요', { ms: 3200 });
       return;
     }
-    var remote = cloudStateFromRows(rows);
-    var plan = cloudPlan(remote, state);
-    if (plan === 'pull' || plan === 'none') { closeAllSheets(); cloudHydrate(rows, false); return; }
-    openCloudChoiceSheet(remote);
+    cloudAbsorb(rows, { manual: true });
   });
 }
 function cloudCompareHTML(remote){

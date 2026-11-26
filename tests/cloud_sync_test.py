@@ -157,6 +157,7 @@ globalThis.__api = {
   cloudBoot: cloudBoot, cloudTouch: cloudTouch, cloudFlush: cloudFlush, cloudPush: cloudPush,
   cloudPull: cloudPull, cloudPullQuiet: cloudPullQuiet, cloudSyncNow: cloudSyncNow,
   cloudPlan: cloudPlan, cloudHydrate: cloudHydrate, cloudNormalizeState: cloudNormalizeState,
+  cloudAbsorb: cloudAbsorb,
   cloudPrepareMigrate: cloudPrepareMigrate, cloudUploadNow: cloudUploadNow, cloudTakeServer: cloudTakeServer,
   cloudPayload: cloudPayload, cloudStateFromRows: cloudStateFromRows,
   cloudStamp: cloudStamp, cloudLocalStamp: cloudLocalStamp,
@@ -631,9 +632,10 @@ has(A.cloudCardHTML(), '아직 서버에 없어요', 'H-3 카드에 백업 안�
 fresh(); signedIn();
 F.tables = dbRows();
 A.closeAllSheets();
-var bothCount = A.state().members.length;
+ok(A.state().members.length > 2, 'H-4a 시작은 기기 기록(데모)');
 A.cloudPullQuiet();
-eq(A.state().members.length, bothCount, 'H-4 양쪽 기록이 있으면 그대로 둠');
+eq(A.state().members.length, 2, 'H-4b 앱을 열면 서버 기록을 따라감(다른 기기와 같아짐)');
+eq(A.state().members[0].name, '김도현', 'H-4c 서버 회원 이름');
 /* 로그인 직후 — 서버 비었으면 올리기 선택 시트 */
 fresh();
 F.tables = {};
@@ -682,6 +684,28 @@ var mm = lastSheet();
 has(sheetPart(mm, '.sb'), 'first@example.com 계정 때', 'H-19 다른 계정이면 경고');
 var mfoot = sheetPart(mm, '.sf');
 ok(mfoot.indexOf('cloud-take-server') < mfoot.indexOf('cloud-upload'), 'H-20 서버 기록 가져오기가 먼저');
+
+/* 서버 연결 파일(CDN)을 못 받은 상태 — 앱은 그대로, 계정만 안내 */
+fresh();
+A.resetCloud();
+window.supabase = undefined;         /* CDN 을 못 받은 것과 같은 상태 */
+A.cloudBoot();
+has(A.cloudCardHTML(), '지금은 서버에 연결하지 못했어요', 'H-21 연결 파일이 없으면 카드에 안내');
+A.openAuthSheet('login');
+EL('auEmail').value = 'pro@example.com'; EL('auPw').value = 'secret123';
+A.cloudSubmit();
+has(EL('auMsg').innerHTML, '연결할 수 없어요', 'H-22 연결 없이 제출하면 안내만');
+ok(!C.user, 'H-23 로그인되지 않음');
+A.closeAuthSheet();
+/* 오프라인이어도 저장·화면은 그대로 */
+navigator.onLine = false;
+var beforeLocal = A.state().members.length;
+A.state().members.push({ id:'m-off', name:'오프라인회원', since: A.todayISO(), passHistory:[] });
+A.save();
+eq(A.state().members.length, beforeLocal + 1, 'H-24 오프라인에서도 기기 기록은 저장');
+eq(JSON.parse(localStorage.getItem(A.KEY)).members.length, beforeLocal + 1, 'H-25 localStorage 에 바로 저장');
+navigator.onLine = true;
+window.supabase = { createClient: function(){ return fakeClient(); } };   /* 연결 파일이 돌아온 상태 */
 
 /* ══════════ I. 계정 해제 · 정적 무결성 ══════════ */
 /* 로그아웃 — 기기 기록은 그대로 */
