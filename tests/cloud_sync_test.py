@@ -958,6 +958,7 @@ sok('I-29 숫자 키보드', 'inputmode="numeric"' in HTML)
 sok('I-30 설계서에 6자리 코드', '6자리' in SPEC)
 sok('I-31 코드 칸 16px 규칙', 'font-size:16px' in rule('.otpinput'), rule('.otpinput'))
 sok('I-32 인증 단계 전환 애니메이션', '@keyframes authstep' in HTML)
+sok('I-33 코드 칸 안내 글자는 자간 없이', '.otpinput::placeholder' in HTML and 'letter-spacing:normal' in HTML)
 
 for line in res['log']:
     print(line)

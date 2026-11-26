@@ -927,6 +927,8 @@ html[data-theme="black"] .authtab.on{background:#2E2E36;box-shadow:0 1px 3px rgb
 .codetext{font-size:12.5px;font-weight:700;color:var(--ink2);line-height:1.5;margin:2px 3px 12px;word-break:break-all}
 .codetext b{font-weight:800;color:var(--ink)}
 .otpinput{font-size:16px;font-weight:800;height:54px;text-align:center;letter-spacing:.4em;text-indent:.4em;font-variant-numeric:tabular-nums}
+.otpinput::placeholder{letter-spacing:normal;text-indent:0;font-weight:700;color:var(--muted);opacity:1}
+.otpinput::-webkit-input-placeholder{letter-spacing:normal;text-indent:0;font-weight:700}
 .authalt{display:flex;gap:8px;margin-top:8px}
 .authalt .btn{flex:1;height:40px;padding:0 6px;font-size:12px;border-radius:12px}
 .authmsgact{display:flex;gap:8px;margin-top:9px}
