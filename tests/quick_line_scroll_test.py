@@ -98,6 +98,9 @@ function toast(){}
 var memberCtx = null, settleCtx = null, addCtx = null, bookCtx = null, pkgCtx = null,
     qaCtx = null, priceCtx = null, renewCtx = null, pickCtx = null, dpCtx = null, tpCtx = null,
     tmCtx = null;
+/* 계정 · 클라우드 동기화 시트 컨텍스트 (closeSheetEl 이 함께 정리) */
+var authCtx = null;
+
 var voice = { kind: null };
 function stopVoice(){}
 function stopQaVoice(){}

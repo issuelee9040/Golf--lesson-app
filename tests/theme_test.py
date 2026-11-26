@@ -145,6 +145,7 @@ var state = { theme:'black', pro:{ name:'이시훈', academy:'그린필드 골�
 function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function calSettingHTML(){ return '<div id="calStub"></div>'; }
 function installCardHTML(){ return ''; }   /* 홈 화면 추가 카드는 이 검사에서 따로 봅니다 */
+function cloudCardHTML(){ return '<div id="acctStub"></div>'; }   /* 계정 카드는 클라우드 검사에서 따로 봅니다 */
 function dayRangeLabel(){ return '06:00~23:00'; }
 function dayFromMin(){ return 6 * 60; }
 function dayToMin(){ return 23 * 60; }

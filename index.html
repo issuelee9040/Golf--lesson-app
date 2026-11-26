@@ -500,6 +500,8 @@ input.chipinp::placeholder{font-size:12.5px;font-weight:800;color:var(--muted);o
   overscroll-behavior:none;overscroll-behavior-y:none;touch-action:pan-y}
 /* 닫히는 동안에는 뒤 화면을 눌러도 반응하지 않게 (두 번 닫힘·엉뚱한 탭 방지) */
 .sheetwrap.closing{pointer-events:none}
+/* 첫 실행 온보딩(9500) 위에서 로그인 시트를 열 때는 그보다 위에 */
+.sheetwrap.above-onboard{z-index:9600}
 .sheet{width:100%;max-width:430px;background:var(--bg);border-radius:22px 22px 0 0;display:flex;flex-direction:column;
   max-height:92vh;box-shadow:0 -10px 40px rgba(0,0,0,.24);animation:sheetup .24s cubic-bezier(.2,.9,.2,1);
   overscroll-behavior:contain;touch-action:pan-y}
@@ -897,6 +899,28 @@ html[data-theme="black"] .sp-lockup .lk-black{display:block}
 @keyframes spBadge{from{opacity:0;transform:scale(.86) translateY(8px)}to{opacity:1;transform:none}}
 @keyframes spUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes spFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+/* ---------- 계정 · 클라우드 동기화 ---------- */
+.acctcard{padding:14px}
+.acctrow{display:flex;align-items:center;gap:10px}
+.acctinfo{flex:1;min-width:0}
+.acctmail{font-size:13.5px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acctstat{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--muted);margin-top:4px;line-height:1.3}
+.acctdot{width:7px;height:7px;border-radius:50%;background:var(--green-solid);flex:0 0 auto;box-shadow:0 0 0 3px rgba(15,123,74,.13)}
+.acctdot.wait{background:var(--amber);box-shadow:0 0 0 3px rgba(160,95,0,.14)}
+.acctdot.err{background:var(--red);box-shadow:0 0 0 3px rgba(179,53,42,.14)}
+.acctdot.sync{background:var(--blue);box-shadow:0 0 0 3px rgba(47,111,237,.14)}
+.acctmini{height:34px;padding:0 11px;font-size:12px;border-radius:11px;flex:0 0 auto;font-weight:800}
+.acctcard .formnote{margin-bottom:11px}
+.authtabs{display:flex;gap:5px;background:var(--field);border:1px solid var(--line2);border-radius:12px;padding:4px;margin:2px 0 12px}
+.authtab{flex:1;height:33px;border:0;background:transparent;border-radius:9px;font:inherit;font-size:12.5px;font-weight:800;
+  color:var(--muted);cursor:pointer;-webkit-appearance:none;appearance:none}
+.authtab.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.12)}
+#auMsg{margin:0 3px 10px;line-height:1.5}
+#auMsg[hidden]{display:none}
+.ob-acct{display:block;width:100%;margin-top:14px;padding:4px 0;border:0;background:transparent;
+  font:inherit;font-size:12px;font-weight:700;letter-spacing:-.1px;color:rgba(255,255,255,.72);cursor:pointer}
+.ob-acct b{font-weight:800;color:#fff;border-bottom:1px solid rgba(255,255,255,.55);padding-bottom:1px}
+
 /* ---------- 체험판 시작 온보딩 — 처음 여는 프로가 자기 이름으로 바로 시작 ---------- */
 .onboard{position:fixed;inset:0;z-index:9500;display:flex;flex-direction:column;align-items:center;
   width:100%;height:100vh;height:100dvh;overflow-y:auto;color:#fff;text-align:center;
@@ -1230,8 +1254,9 @@ html[data-theme="black"] .sp-bar>i{background:linear-gradient(90deg,rgba(255,255
       <div class="ob-err" id="ozErr" role="alert">이름을 먼저 적어 주세요</div>
       <button class="ob-start" data-act="onboard-start">내 레슨 관리 시작하기</button>
       <button class="ob-demo" data-act="onboard-demo"><span>샘플 데이터로 먼저 둘러보기</span></button>
+      <button class="ob-acct" data-act="ob-login">이미 계정이 있으세요? <b>로그인</b></button>
     </div>
-    <div class="ob-foot">ProPlan Trial · 입력한 내용은 이 기기에만 저장돼요</div>
+    <div class="ob-foot">ProPlan Trial · 계정 없이 쓰면 이 기기에만 저장돼요</div>
   </div>
 </div>
 <div id="app">
@@ -1749,6 +1774,7 @@ function setTheme(t){
 function save(){
   if (obWaiting) return;            /* 온보딩에서 시작 방식을 고르기 전에는 저장하지 않음 */
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+  cloudTouch();                     /* 로그인했다면 1.6초 뒤 서버에도 올림 (화면은 기다리지 않음) */
 }
 /* 저장본이 있는지 — 있으면 온보딩을 띄우지 않습니다 (기존 사용자 데이터 보호) */
 function hasSavedState(){
@@ -2497,6 +2523,7 @@ function closeSheetEl(wrap){
   if (bookCtx && bookCtx.sh && bookCtx.sh.el === wrap) bookCtx = null;
   if (pkgCtx && pkgCtx.sh && pkgCtx.sh.el === wrap) pkgCtx = null;
   if (qaCtx && qaCtx.sh && qaCtx.sh.el === wrap) { stopQaVoice(); qaCtx = null; }
+  if (authCtx && authCtx.sh && authCtx.sh.el === wrap) authCtx = null;
   if (priceCtx && priceCtx.sh && priceCtx.sh.el === wrap) priceCtx = null;
   if (renewCtx && renewCtx.sh && renewCtx.sh.el === wrap) renewCtx = null;
   if (pickCtx && pickCtx.sh && pickCtx.sh.el === wrap) pickCtx = null;
@@ -5645,6 +5672,8 @@ function viewSettings(){
   var h = '';
   calSaved = false;   /* 설정 화면을 새로 열면 '저장됨' 표시는 한 번만 */
 
+  h += cloudCardHTML();
+
   h += '<div class="sec"><h2>화면 테마</h2><span class="aside">앱 전체에 바로 적용</span></div><div class="card">' +
     '<div class="themegrid">' + themeCardHTML('green') + themeCardHTML('black') + '</div>' +
     '<div class="hint">고른 테마는 이 브라우저에 저장되고, 앱을 다시 열어도 깜빡임 없이 그대로 이어져요.</div>' +
@@ -7592,6 +7621,54 @@ function onClick(e){
       finishOnboarding(true);
       break;
 
+    case 'ob-login':
+      openAuthSheet('login');
+      break;
+
+    /* ---------- 계정 · 클라우드 동기화 ---------- */
+    case 'cloud-auth':
+      openCloudAuth('login');
+      break;
+
+    case 'cloud-mode': {
+      if (!authCtx) break;
+      var am = el.getAttribute('data-v') === 'signup' ? 'signup' : 'login';
+      if (authCtx.mode === am) break;
+      authCtx.email = authVal('auEmail') || authCtx.email;
+      authCtx.mode = am;
+      authCtx.busy = false;
+      authCtx.msg = '';
+      authCtx.msgKind = 'ok';
+      paintAuthSheet();
+      break;
+    }
+
+    case 'cloud-submit':
+      cloudSubmit();
+      break;
+
+    case 'cloud-sync':
+      cloudSyncNow();
+      break;
+
+    case 'cloud-migrate':
+      cloudPrepareMigrate();
+      break;
+
+    case 'cloud-upload':
+      closeSheetEl(el.closest('.sheetwrap'));
+      cloudUploadNow();
+      break;
+
+    case 'cloud-take-server':
+      closeSheetEl(el.closest('.sheetwrap'));
+      cloudTakeServer();
+      break;
+
+    case 'cloud-logout':
+      cloudLogoutAsk();
+      break;
+
     default:
       break;
   }
@@ -7719,6 +7796,897 @@ function startSplash(){
 }
 
 /* =========================================================
+   계정 · 클라우드 동기화 (Supabase)
+
+   · 계정을 만들지 않아도 앱은 지금처럼 이 브라우저(localStorage)에서 그대로 동작합니다.
+     (서버에 못 붙어도 화면·기능은 하나도 멈추지 않습니다)
+   · 로그인하면 이 기기의 회원 · 수강권 · 레슨 · 차트 · 정산 · 설정을 서버에 백업하고,
+     앱을 열 때마다 서버 기록을 받아 옵니다. 기기 두 대가 같은 기록을 보게 됩니다.
+   · 저장은 save() 한 곳을 지나므로, 무엇을 고치든 1.6초 뒤 한 번만 서버로 올립니다.
+     연달아 고쳐도 마지막 상태 하나만 올라가고, 화면은 서버를 기다리지 않습니다.
+   · 서버에는 로그인한 계정의 기록 전체가 한 번에 들어갑니다(import_prototype_json).
+     기기 두 대에서 같은 시각에 고치면 마지막에 올린 쪽이 남으므로, 앱을 다시 열거나
+     '지금 동기화'를 누를 때 서버 기록을 먼저 확인해 어긋남을 줄입니다.
+   ========================================================= */
+var SUPABASE_URL = 'https://vqhwinjyiiqocvrglfqu.supabase.co';
+/* anon(공개) 키입니다. 앱에 넣는 것이 정상이고, 실제 데이터 보호는 서버의 RLS(본인 행만)가 합니다. */
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxaHdpbmp5aWlxb2N2cmdsZnF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2Njk3NTMsImV4cCI6MjExMTI0NTc1M30.07oQoj3iDYaheIhgQiizYaL_qED_32mQPACgnIj1oog';
+var SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
+var CLOUD_STORE_KEY = 'golfLessonApp.cloud';
+var CLOUD_AUTH_KEY = 'proplan.auth.v1';
+var CLOUD_DEBOUNCE = 1600;                 /* 연달아 고칠 때 서버로 보내는 간격 */
+var CLOUD_TABLES = ['profiles', 'members', 'passes', 'lessons', 'lesson_charts',
+  'cancel_logs', 'settlements', 'renewal_logs', 'lesson_templates'];
+
+var CLOUD = {
+  client: null, user: null, booted: false, libState: 'idle',   /* idle · loading · ok · fail */
+  busy: false, pending: false, dirty: false, offerUpload: false,
+  lastOk: 0, lastErr: '', rev: 0, timer: null, applying: false, afterFor: '',
+  owner: ''   /* 이 기기 기록을 마지막으로 올린/받은 계정 */
+};
+
+/* ---------- 이 기기에 남기는 동기화 상태 ---------- */
+function cloudLoadPrefs(){
+  try {
+    var raw = localStorage.getItem(CLOUD_STORE_KEY);
+    if (!raw) return;
+    var o = JSON.parse(raw);
+    if (o && typeof o === 'object') {
+      CLOUD.pending = !!o.pending;
+      CLOUD.lastOk = +o.lastOk || 0;
+      CLOUD.owner = o.owner || '';
+    }
+  } catch(e){}
+}
+function cloudSavePrefs(){
+  try {
+    localStorage.setItem(CLOUD_STORE_KEY, JSON.stringify({ pending: !!CLOUD.pending, lastOk: CLOUD.lastOk || 0, owner: CLOUD.owner || '' }));
+  } catch(e){}
+}
+/* 이 기기 기록이 어느 계정의 것인지 — 다른 계정으로 로그인했을 때 남의 기록을 올리지 않게 */
+function cloudSetOwner(){
+  if (!CLOUD.user) return;
+  CLOUD.owner = CLOUD.user.email || '';
+  cloudSavePrefs();
+}
+function cloudAccountMismatch(){
+  if (!CLOUD.user || !CLOUD.owner) return false;
+  return String(CLOUD.owner).toLowerCase() !== String(CLOUD.user.email || '').toLowerCase();
+}
+function cloudOnline(){ return navigator.onLine !== false; }
+
+/* ---------- 상태 문구 ---------- */
+function cloudPhase(){
+  if (!CLOUD.user) return 'signedout';
+  if (CLOUD.busy) return 'syncing';
+  if (CLOUD.pending) return 'pending';
+  if (CLOUD.lastErr && !CLOUD.lastOk) return 'error';
+  return 'synced';
+}
+function cloudAgo(ts){
+  var s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  if (s < 45) return '방금';
+  var m = Math.round(s / 60);
+  if (m < 60) return m + '분 전';
+  var h = Math.round(m / 60);
+  if (h < 24) return h + '시간 전';
+  return Math.round(h / 24) + '일 전';
+}
+function cloudStatusText(){
+  var p = cloudPhase();
+  if (p === 'syncing') return '동기화 중...';
+  if (p === 'pending') return CLOUD.lastOk ? '오프라인 대기 · ' + cloudAgo(CLOUD.lastOk) + ' 동기화' : '아직 서버에 올리지 못했어요';
+  if (p === 'error') return '연결에 문제가 있어요 · 잠시 뒤 다시 시도해 주세요';
+  if (p === 'synced') return CLOUD.lastOk ? '동기화됨 · ' + cloudAgo(CLOUD.lastOk) : '동기화 준비됨';
+  return '';
+}
+function cloudDotCls(){
+  var p = cloudPhase();
+  if (p === 'syncing') return 'sync';
+  if (p === 'pending') return 'wait';
+  if (p === 'error') return 'err';
+  return 'ok';
+}
+function cloudLibNote(){
+  if (CLOUD.libState === 'fail') return '지금은 서버에 연결하지 못했어요 · 인터넷이 연결되면 다시 시도할게요. 계정 없이도 이 기기에서 모두 쓸 수 있어요.';
+  if (CLOUD.libState === 'loading') return '서버에 연결하는 중...';
+  return '이메일과 비밀번호만 있으면 되고, 카드 정보는 받지 않아요.';
+}
+
+/* ---------- 설정 탭 맨 위 카드 ---------- */
+function cloudCardHTML(){
+  var h = '<div class="sec"><h2>내 계정 · 클라우드 동기화</h2><span class="aside">' +
+    (CLOUD.user ? '연결됨' : '선택') + '</span></div><div class="card acctcard">';
+  if (!CLOUD.user) {
+    h += '<div class="formnote">계정을 만들면 <b>이 기기의 회원 · 레슨 기록이 서버에 백업</b>되고, 새 아이폰이나 노트북에서 로그인해 그대로 이어 쓸 수 있어요.<br>계정 없이 지금처럼 이 기기에만 써도 모든 기능이 똑같이 동작합니다.</div>' +
+      '<button class="btn btn-primary btn-block" data-act="cloud-auth">로그인 / 회원가입</button>' +
+      '<div class="hint">' + cloudLibNote() + '</div>';
+    return h + '</div>';
+  }
+  h += '<div class="acctrow"><div class="acctinfo">' +
+      '<div class="acctmail">' + esc(CLOUD.user.email || '내 계정') + '</div>' +
+      '<div class="acctstat"><span class="acctdot ' + cloudDotCls() + '" aria-hidden="true"></span>' + esc(cloudStatusText()) + '</div>' +
+    '</div>' +
+    '<button class="btn btn-ghost acctmini" data-act="cloud-sync">지금 동기화</button></div>';
+  if (CLOUD.offerUpload && !CLOUD.pending) {
+    h += '<div class="formnote" style="margin-top:10px">이 기기 기록이 아직 서버에 없어요. 지금 올려 두면 다른 기기에서도 그대로 보여요.</div>';
+  }
+  h += '<div class="divider"></div>' +
+    '<button class="btn btn-outline btn-block" data-act="cloud-migrate">현재 기기 기록 서버로 백업(이관)</button>' +
+    '<div class="hint">이 기기에만 있던 기록을 서버 계정으로 올려요. 같은 이름 회원은 기존 회원에 이어 붙고, 겹치지 않는 기록은 새로 추가돼요.</div>' +
+    '<div style="height:8px"></div>' +
+    '<button class="btn btn-ghost btn-block" data-act="cloud-logout">로그아웃</button>';
+  return h + '</div>';
+}
+
+/* ---------- 로그인 · 회원가입 시트 ---------- */
+var authCtx = null;
+function proNameGuess(){
+  var nm = state && state.pro ? String(state.pro.name || '') : '';
+  return (nm && nm !== '프로') ? nm : '';
+}
+function cloudRedirect(){
+  try { return location.origin + location.pathname; } catch(e){ return ''; }
+}
+function openAuthSheet(mode, email){
+  var m = (mode === 'signup') ? 'signup' : 'login';
+  var sh = openSheet({
+    title: m === 'signup' ? '계정 만들기' : '로그인',
+    sub: '이 기기 기록을 서버에 백업하고, 다른 기기와 이어서 씁니다',
+    footer: ''
+  });
+  authCtx = { mode: m, sh: sh, email: email || '', busy: false, msg: '', msgKind: 'ok' };
+  var ob = document.getElementById('onboard');
+  if (ob && !ob.hidden && sh.el.classList) sh.el.classList.add('above-onboard');
+  paintAuthSheet();
+  return sh;
+}
+function authBodyHTML(c){
+  var signup = c.mode === 'signup';
+  var h = '<div class="authtabs" role="tablist">' +
+    '<button class="authtab' + (signup ? '' : ' on') + '" data-act="cloud-mode" data-v="login" role="tab" aria-selected="' + (signup ? 'false' : 'true') + '">로그인</button>' +
+    '<button class="authtab' + (signup ? ' on' : '') + '" data-act="cloud-mode" data-v="signup" role="tab" aria-selected="' + (signup ? 'true' : 'false') + '">회원가입</button>' +
+  '</div>' +
+  '<div id="auMsg" class="' + (c.msgKind === 'err' ? 'err' : 'ok') + '"' + (c.msg ? '' : ' hidden') + '>' + (c.msg || '') + '</div>' +
+  '<div class="field"><label for="auEmail">이메일</label>' +
+    '<input class="input" id="auEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@example.com" value="' + esc(c.email) + '"></div>' +
+  '<div class="field"><label for="auPw">비밀번호</label>' +
+    '<input class="input" id="auPw" type="password" autocomplete="' + (signup ? 'new-password' : 'current-password') + '" placeholder="' + (signup ? '6자 이상' : '비밀번호') + '"></div>';
+  if (signup) {
+    h += '<div class="field"><label for="auName">프로 이름</label>' +
+      '<input class="input" id="auName" type="text" autocomplete="name" maxlength="20" placeholder="예: 이시훈" value="' + esc(proNameGuess()) + '"></div>';
+  }
+  h += '<div class="hint">' + (signup
+    ? '가입하면 적은 이메일로 인증 메일이 가요. 메일의 링크를 누르면 이 앱으로 돌아와 로그인돼요.'
+    : '로그인 상태는 이 기기에 저장돼, 앱을 다시 열어도 이어집니다.') + '</div>';
+  return h;
+}
+function authFootHTML(c){
+  var signup = c.mode === 'signup';
+  return '<button class="btn btn-primary btn-block" data-act="cloud-submit"' + (c.busy ? ' disabled' : '') + '>' +
+    (c.busy ? '잠시만요...' : (signup ? '계정 만들기' : '로그인')) + '</button>';
+}
+function paintAuthSheet(){
+  if (!authCtx) return;
+  authCtx.sh.body.innerHTML = authBodyHTML(authCtx);
+  authCtx.sh.footer.innerHTML = authFootHTML(authCtx);
+}
+function paintAuthFoot(){
+  if (!authCtx) return;
+  authCtx.sh.footer.innerHTML = authFootHTML(authCtx);
+}
+function closeAuthSheet(){
+  var sh = authCtx ? authCtx.sh : null;
+  authCtx = null;
+  if (sh) sh.close();
+}
+function authMsg(t, kind){
+  if (!authCtx) return;
+  authCtx.msg = t;
+  authCtx.msgKind = (kind === 'err') ? 'err' : 'ok';
+  var el = document.getElementById('auMsg');
+  if (el) { el.className = authCtx.msgKind; el.hidden = false; el.innerHTML = t; }
+}
+function authVal(id){
+  var el = document.getElementById(id);
+  return el ? String(el.value || '') : '';
+}
+
+function openCloudAuth(mode){
+  if (CLOUD.user) { toast('이미 로그인되어 있어요 · ' + (CLOUD.user.email || '')); return; }
+  openAuthSheet(mode || 'login');
+}
+function cloudSubmit(){
+  if (!authCtx || authCtx.busy) return;
+  var c = authCtx, signup = c.mode === 'signup';
+  var email = authVal('auEmail').trim().toLowerCase();
+  var pw = authVal('auPw');
+  var name = signup ? authVal('auName').trim() : '';
+  c.email = email;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { authMsg('이메일 주소를 다시 확인해 주세요', 'err'); return; }
+  if (pw.length < 6) { authMsg('비밀번호는 6자 이상으로 정해 주세요', 'err'); return; }
+  if (signup && !name) { authMsg('프로 이름을 적어 주세요', 'err'); return; }
+  if (!cloudOnline()) { authMsg('인터넷에 연결되어 있지 않아요 · 연결한 뒤 다시 눌러 주세요', 'err'); return; }
+  var cl = cloudClient();
+  if (!cl) {
+    authMsg(CLOUD.libState === 'loading'
+      ? '서버에 연결하는 중이에요 · 2~3초 뒤 다시 눌러 주세요'
+      : '지금은 서버에 연결할 수 없어요 · 인터넷 연결을 확인해 주세요', 'err');
+    if (CLOUD.libState === 'fail') loadSupabaseLib();
+    return;
+  }
+  c.busy = true; c.msg = ''; c.msgKind = 'ok';
+  paintAuthFoot();
+  if (signup) {
+    cl.auth.signUp({ email: email, password: pw, options: { data: { pro_name: name }, emailRedirectTo: cloudRedirect() } })
+      .then(cloudOnSignUp, cloudOnAuthFail);
+  } else {
+    cl.auth.signInWithPassword({ email: email, password: pw }).then(cloudOnSignIn, cloudOnAuthFail);
+  }
+}
+function cloudOnSignUp(res){
+  if (res && res.error) return cloudOnAuthFail(res.error);
+  var data = (res && res.data) || {};
+  if (data.session) {
+    cloudSignedIn(data.session);
+    closeAuthSheet();
+    toast('계정을 만들었어요 · ' + ((CLOUD.user && CLOUD.user.email) || ''));
+    cloudAfterSignIn();
+    return;
+  }
+  var email = (data.user && data.user.email) || (authCtx ? authCtx.email : '');
+  if (authCtx) {
+    authCtx.busy = false;
+    authCtx.mode = 'login';            /* 인증을 마친 뒤에는 로그인 칸으로 */
+    authCtx.email = email;
+    authCtx.msg = '인증 메일을 보냈어요 — <b>' + esc(email) + '</b><br>메일의 링크를 누르면 이 앱으로 돌아와 자동으로 로그인됩니다. 메일이 안 보이면 스팸함도 확인해 주세요.';
+    authCtx.msgKind = 'ok';
+    paintAuthSheet();
+  } else {
+    toast('인증 메일을 보냈어요 · 메일의 링크를 눌러 주세요', { ms: 4200 });
+  }
+}
+function cloudOnSignIn(res){
+  if (res && res.error) return cloudOnAuthFail(res.error);
+  var s = res && res.data ? res.data.session : null;
+  if (!s) { cloudOnAuthFail({ message: '로그인하지 못했어요 · 다시 시도해 주세요' }); return; }
+  cloudSignedIn(s);
+  closeAuthSheet();
+  toast('로그인했어요 · ' + ((s.user && s.user.email) || ''));
+  cloudAfterSignIn();
+}
+function cloudOnAuthFail(err){
+  var code = (err && (err.code || err.error_code)) || '';
+  var msg = (err && (err.message || err.msg)) || '';
+  var t;
+  if (code === 'email_not_confirmed' || /email not confirmed/i.test(msg))
+    t = '이메일 인증이 아직이에요 · 받으신 메일의 인증 링크를 누른 뒤 다시 로그인해 주세요';
+  else if (code === 'invalid_credentials' || /invalid login credentials/i.test(msg))
+    t = '이메일이나 비밀번호가 맞지 않아요';
+  else if (code === 'user_already_exists' || /already registered/i.test(msg))
+    t = '이미 가입된 이메일이에요 · 로그인해 주세요';
+  else if (code === 'over_email_send_rate_limit' || /rate limit/i.test(msg))
+    t = '메일을 너무 자주 보냈어요 · 잠시 뒤 다시 시도해 주세요';
+  else if (code === 'weak_password' || /password should be|weak/i.test(msg))
+    t = '비밀번호는 6자 이상으로 정해 주세요';
+  else if (/fetch|network|offline|load failed|timed out/i.test(msg))
+    t = '인터넷 연결을 확인한 뒤 다시 시도해 주세요';
+  else
+    t = '연결에 문제가 생겼어요' + (msg ? ' · ' + esc(msg) : '');
+  if (authCtx) { authCtx.busy = false; paintAuthFoot(); authMsg(t, 'err'); }
+  else toast(t, { ms: 3600 });
+}
+
+function cloudSignedIn(session){
+  var u = session && session.user ? session.user : null;
+  if (!u) return;
+  CLOUD.user = { id: u.id, email: u.email || (u.user_metadata && u.user_metadata.email) || '' };
+  CLOUD.lastErr = '';
+  cloudPaint();
+}
+
+/* ---------- 클라이언트 · 부팅 ---------- */
+function cloudClient(){
+  if (CLOUD.client) return CLOUD.client;
+  if (!window.supabase || typeof window.supabase.createClient !== 'function') return null;
+  try {
+    CLOUD.client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { storageKey: CLOUD_AUTH_KEY, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
+  } catch(e) {
+    CLOUD.client = null;
+    CLOUD.libState = 'fail';
+    return null;
+  }
+  return CLOUD.client;
+}
+function appendScript(src, onload, onerror){
+  try {
+    var s = document.createElement('script');
+    s.src = src; s.async = true; s.crossOrigin = 'anonymous';
+    s.onload = onload; s.onerror = onerror;
+    var host = document.head || document.documentElement;
+    if (!host || typeof host.appendChild !== 'function') return false;
+    host.appendChild(s);
+    return true;
+  } catch(e) { return false; }
+}
+function loadSupabaseLib(){
+  if (CLOUD.libState === 'loading' || CLOUD.libState === 'ok') return;
+  CLOUD.libState = 'loading';
+  var ok = appendScript(SUPABASE_CDN, function(){
+    CLOUD.libState = (window.supabase && typeof window.supabase.createClient === 'function') ? 'ok' : 'fail';
+    if (CLOUD.libState === 'ok') cloudBoot(); else cloudPaint();
+  }, function(){
+    CLOUD.libState = 'fail';
+    cloudPaint();
+  });
+  if (!ok) CLOUD.libState = 'fail';
+}
+function cloudBoot(){
+  if (CLOUD.booted) return;
+  cloudLoadPrefs();
+  var cl = cloudClient();
+  if (!cl) { loadSupabaseLib(); return; }
+  CLOUD.libState = 'ok';
+  CLOUD.booted = true;
+  try {
+    cl.auth.onAuthStateChange(function(ev, session){ cloudAuthEvent(ev, session); });
+  } catch(e){}
+  cl.auth.getSession().then(function(res){
+    var s = res && res.data ? res.data.session : null;
+    if (s) cloudRestore(s); else cloudPaint();
+  }, function(){ cloudPaint(); });
+}
+function bindCloudEvents(){
+  try {
+    window.addEventListener('online', function(){
+      if (!CLOUD.user) return;
+      if (CLOUD.pending) cloudPush('replace');
+      else cloudPaint();
+    });
+    document.addEventListener('visibilitychange', function(){
+      if (!CLOUD.user || document.hidden) return;
+      if (CLOUD.pending) { cloudPush('replace'); return; }
+      if (Date.now() - CLOUD.lastOk > 60000) cloudPullQuiet();
+    });
+  } catch(e){}
+}
+function cloudAuthEvent(ev, session){
+  if (ev === 'SIGNED_OUT') {
+    CLOUD.user = null; CLOUD.afterFor = '';
+    cloudPaint();
+    return;
+  }
+  if (!session || !session.user) return;
+  var already = !!(CLOUD.user && CLOUD.user.id === session.user.id);
+  cloudSignedIn(session);
+  if (ev === 'SIGNED_IN' && !already) {
+    /* 이메일 인증 링크로 돌아온 경우도 여기로 — 바로 서버 기록을 확인 */
+    if (typeof history !== 'undefined' && history && history.replaceState && /access_token=/.test(String(location.hash || ''))) {
+      try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+    }
+    toast('로그인됐어요 · 서버 기록을 확인할게요');
+    cloudAfterSignIn();
+  }
+}
+function cloudRestore(session){
+  cloudSignedIn(session);
+  if (CLOUD.pending) cloudPush('replace', null);
+  else cloudPullQuiet();
+}
+
+/* ---------- 서버에서 받기 ---------- */
+function cloudPull(done){
+  var cl = CLOUD.client;
+  if (!cl || !CLOUD.user) { if (done) done(null, 'signedout'); return false; }
+  if (!cloudOnline()) { if (done) done(null, 'offline'); return false; }
+  var rows = {}, i = 0, ended = false;
+  function finish(data, err){ if (ended) return; ended = true; if (done) done(data, err); }
+  function step(){
+    if (i >= CLOUD_TABLES.length) { finish(rows, null); return; }
+    var t = CLOUD_TABLES[i++];
+    cl.from(t).select('*').then(function(res){
+      if (res && res.error) { CLOUD.lastErr = (res.error.message || 'select 실패'); finish(null, res.error); return; }
+      rows[t] = (res && res.data) || [];
+      step();
+    }, function(err){
+      CLOUD.lastErr = (err && err.message) || 'select 실패';
+      finish(null, err);
+    });
+  }
+  step();
+  return true;
+}
+function cloudPlan(remote, local){
+  var r = (remote && remote.members) ? remote.members.length : 0;
+  var l = (local && local.members) ? local.members.length : 0;
+  if (!r && !l) return 'none';
+  if (!r) return 'upload';
+  if (!l) return 'pull';
+  return 'choose';
+}
+function cloudPullQuiet(){
+  cloudPull(function(rows, err){
+    if (err || !rows) { cloudPaint(); return; }
+    var remote = cloudStateFromRows(rows);
+    var plan = cloudPlan(remote, state);
+    if (plan === 'pull') { cloudHydrate(rows, true); return; }
+    if (plan === 'upload') { CLOUD.offerUpload = true; cloudPaint(); return; }
+    /* 양쪽에 기록이 있으면 마음대로 덮어쓰지 않습니다 (설정 › 지금 동기화에서 고름) */
+    cloudPaint();
+  });
+}
+function cloudNormalizeState(st){
+  if (!isArr(st.notes)) st.notes = [];
+  if (!isArr(st.renewalLog)) st.renewalLog = [];
+  if (!isArr(st.cancelLog)) st.cancelLog = [];
+  if (!isArr(st.settlements)) st.settlements = [];
+  if (!isArr(st.members)) st.members = [];
+  if (!isArr(st.packages)) st.packages = [];
+  if (!isArr(st.sessions)) st.sessions = [];
+  if (!isArr(st.templates) || !st.templates.length) st.templates = defaultTemplates();
+  if (!st.hours) st.hours = { fromMin: DEF_FROM, toMin: DEF_TO };
+  if (st.theme !== 'black' && st.theme !== 'green') st.theme = 'green';
+  if (!st.pro) st.pro = { name: '프로', title: '프로', academy: '' };
+  if (!st.calendarSync) st.calendarSync = { enabled: false, target: 'both' };
+  st.members.forEach(function(m){ if (!isArr(m.passHistory)) m.passHistory = []; });
+  st.migExcused = 1;
+  delete st.freshStart;
+  return st;
+}
+function cloudHydrate(rows, quiet){
+  var st = cloudNormalizeState(cloudStateFromRows(rows));
+  var sort = state ? state.memberSort : '';
+  CLOUD.applying = true;
+  state = st;
+  if (sort) state.memberSort = sort;
+  save();
+  CLOUD.applying = false;
+  cloudSetOwner();
+  applyTheme(state.theme);
+  try { render(true); } catch(e){}
+  if (!quiet) toast('서버 기록을 가져왔어요 · 회원 ' + state.members.length + '명');
+  cloudPaint();
+}
+
+/* ---------- 서버로 올리기 ---------- */
+function cloudSchedule(){
+  if (CLOUD.timer) { clearTimeout(CLOUD.timer); }
+  CLOUD.timer = setTimeout(function(){
+    CLOUD.timer = null;
+    cloudPush('replace');
+  }, CLOUD_DEBOUNCE);
+}
+/* save() 가 부르는 곳 — 로그인했을 때만 서버로 올릴 준비를 합니다 */
+function cloudTouch(){
+  if (CLOUD.applying) return;
+  CLOUD.rev++;
+  if (!CLOUD.user) return;
+  CLOUD.pending = true;
+  cloudSavePrefs();
+  cloudSchedule();
+}
+function cloudPush(mode, done){
+  var cl = CLOUD.client;
+  function finish(r){ if (typeof done === 'function') done(r); }
+  if (!cl || !CLOUD.user) { finish(false); return false; }
+  if (CLOUD.busy) { CLOUD.dirty = true; CLOUD.pending = true; cloudSavePrefs(); cloudPaint(); finish(false); return false; }
+  if (!cloudOnline()) { CLOUD.pending = true; cloudSavePrefs(); cloudPaint(); finish(false); return false; }
+  var revAt = CLOUD.rev;
+  var payload = cloudPayload(state);
+  CLOUD.busy = true;
+  cloudPaint();
+  cl.rpc('import_prototype_json', { payload: payload, p_mode: (mode === 'merge' ? 'merge' : 'replace') })
+    .then(function(res){
+      CLOUD.busy = false;
+      if (res && res.error) { cloudPushFail(res.error); finish(false); return; }
+      CLOUD.pending = false; CLOUD.lastOk = Date.now(); CLOUD.lastErr = ''; CLOUD.offerUpload = false;
+      cloudSetOwner();
+      cloudSavePrefs();
+      cloudPaint();
+      finish(true);
+      if (CLOUD.rev !== revAt || CLOUD.dirty) { CLOUD.dirty = false; cloudPush('replace'); }
+    }, function(err){
+      CLOUD.busy = false;
+      cloudPushFail(err);
+      finish(false);
+    });
+  return true;
+}
+function cloudPushFail(err){
+  CLOUD.pending = true;
+  CLOUD.lastErr = (err && (err.message || err.msg)) || '동기화 실패';
+  cloudSavePrefs();
+  cloudPaint();
+}
+function cloudFlush(){
+  if (CLOUD.timer) { clearTimeout(CLOUD.timer); CLOUD.timer = null; }
+  if (!CLOUD.user) return false;
+  if (!CLOUD.pending && !CLOUD.dirty) return false;   /* 올릴 것이 없으면 서버를 부르지 않음 */
+  return cloudPush('replace');
+}
+
+/* ---------- 사용자가 누르는 동작 ---------- */
+function cloudSyncNow(){
+  if (!CLOUD.user) { openAuthSheet('login'); return; }
+  if (!cloudOnline()) { toast('인터넷에 연결되어 있지 않아요 · 연결되면 이어서 동기화할게요', { ms: 3200 }); return; }
+  if (CLOUD.pending) {
+    toast('이 기기 변경을 서버로 올리는 중...');
+    cloudPush('replace', function(ok){
+      toast(ok ? '서버에 저장했어요' : '아직 서버에 올리지 못했어요 · 잠시 뒤 다시 시도해 주세요', { ms: 3000 });
+    });
+    return;
+  }
+  toast('서버 기록을 확인하는 중...');
+  cloudPull(function(rows, err){
+    if (err || !rows) {
+      toast(err === 'offline' ? '인터넷에 연결되어 있지 않아요' : '서버 기록을 받지 못했어요 · 잠시 뒤 다시 시도해 주세요', { ms: 3200 });
+      return;
+    }
+    var remote = cloudStateFromRows(rows);
+    var plan = cloudPlan(remote, state);
+    if (plan === 'pull' || plan === 'none') { closeAllSheets(); cloudHydrate(rows, false); return; }
+    openCloudChoiceSheet(remote);
+  });
+}
+function cloudCompareHTML(remote){
+  var lm = state.members.length, ls = state.sessions.length;
+  var rm = remote.members.length, rs = remote.sessions.length;
+  return '<div class="kpis">' +
+      kpi('green', lm, '이 기기 회원', '명') + kpi('', ls, '이 기기 레슨', '건') +
+      kpi('blue', rm, '서버 회원', '명') + kpi('', rs, '서버 레슨', '건') +
+    '</div>';
+}
+function openCloudChoiceSheet(remote){
+  var upFirst = remote.members.length === 0;
+  var other = cloudAccountMismatch();     /* 이 기기 기록이 다른 계정 것일 수 있음 */
+  var body = cloudCompareHTML(remote) +
+    (other ? '<div class="formnote" style="margin-top:11px"><b>이 기기의 기록은 ' + esc(CLOUD.owner) + ' 계정 때 만든 것이에요.</b> 다른 사람 기록일 수 있으니 <b>서버 기록 가져오기</b>를 먼저 살펴보세요. 기기 기록이 내 것이 맞다면 그대로 올려도 됩니다.</div>' : '') +
+    '<div class="formnote" style="margin-top:11px">' + (upFirst
+      ? '<b>서버 계정에는 아직 기록이 없어요.</b> 지금 이 기기의 회원 · 레슨을 그대로 올려 두면, 다른 기기에서 로그인해도 똑같이 보여요.'
+      : '기기와 서버의 기록이 달라요. <b>한쪽을 고르면 이 기기 화면이 그 기록으로 바뀝니다.</b> 필요하면 먼저 데이터 내보내기(JSON)로 백업해 두세요.') +
+    '</div>';
+  var upBtn = '<button class="btn ' + (other ? 'btn-outline' : 'btn-primary') + ' btn-block" data-act="cloud-upload">' +
+    (upFirst ? '이 기기 기록을 서버로 올리기' : '이 기기 기록을 서버에 합치기') + '</button>';
+  var downBtn = '<button class="btn ' + (other || !upFirst ? 'btn-primary' : 'btn-outline') + ' btn-block" data-act="cloud-take-server">서버 기록 가져오기</button>';
+  var foot = upFirst && !other
+    ? upBtn + '<div style="height:8px"></div>' + downBtn
+    : downBtn + '<div style="height:8px"></div>' + upBtn;
+  openSheet({ title: upFirst && !other ? '이 기기 기록을 서버에 올릴까요?' : '어느 기록으로 맞출까요?', sub: '계정과 기기의 기록이 달라요', body: body, footer: foot });
+}
+function cloudPrepareMigrate(){
+  if (!CLOUD.user) { openAuthSheet('signup'); return; }
+  if (!cloudOnline()) { toast('인터넷에 연결되어 있지 않아요 · 연결한 뒤 다시 시도해 주세요', { ms: 3200 }); return; }
+  toast('서버 기록을 확인하는 중...');
+  cloudPull(function(rows, err){
+    if (err || !rows) { toast('서버 기록을 확인하지 못했어요 · 잠시 뒤 다시 시도해 주세요', { ms: 3200 }); return; }
+    openCloudChoiceSheet(cloudStateFromRows(rows));
+  });
+}
+function cloudUploadNow(){
+  var cnt = state.members.length;
+  toast('서버로 올리는 중...');
+  cloudPush('merge', function(ok){
+    toast(ok ? '서버에 백업했어요 · 회원 ' + cnt + '명 · 레슨 ' + state.sessions.length + '건'
+             : '아직 올리지 못했어요 · 잠시 뒤 다시 시도해 주세요', { ms: 3400 });
+  });
+}
+function cloudTakeServer(){
+  toast('서버 기록을 가져오는 중...');
+  cloudPull(function(rows, err){
+    if (err || !rows) { toast('서버 기록을 받지 못했어요 · 잠시 뒤 다시 시도해 주세요', { ms: 3200 }); return; }
+    closeAllSheets();
+    cloudHydrate(rows, false);
+  });
+}
+function cloudLogoutAsk(){
+  askConfirm('로그아웃', '이 기기에서만 로그아웃해요. <b>서버에 백업된 기록은 그대로 남고</b>, 이 기기에 있는 기록도 지워지지 않아요.', '로그아웃', cloudLogout);
+}
+function cloudLogout(){
+  var cl = CLOUD.client;
+  CLOUD.user = null; CLOUD.pending = false; CLOUD.lastOk = 0; CLOUD.lastErr = '';
+  CLOUD.offerUpload = false; CLOUD.afterFor = ''; CLOUD.dirty = false;
+  /* owner 는 지우지 않는다 — 이 기기 기록이 누구 것인지 남겨, 다음에 다른 계정이 로그인하면 알린다 */
+  if (CLOUD.timer) { clearTimeout(CLOUD.timer); CLOUD.timer = null; }
+  cloudSavePrefs();
+  cloudPaint();
+  if (cl && cl.auth && cl.auth.signOut) cl.auth.signOut().then(function(){}, function(){});
+  toast('로그아웃했어요 · 이 기기 기록은 그대로 있어요');
+}
+/* 로그인 · 가입 직후: 서버 기록과 이 기기 기록을 어떻게 맞출지 정합니다 */
+function cloudAfterSignIn(){
+  if (!CLOUD.user) return;
+  if (CLOUD.afterFor === CLOUD.user.id) return;
+  CLOUD.afterFor = CLOUD.user.id;
+  var ob = document.getElementById('onboard');
+  if (ob && !ob.hidden) finishOnboardingFromAccount();
+  CLOUD.busy = true;
+  cloudPaint();
+  cloudPull(function(rows, err){
+    CLOUD.busy = false;
+    if (err || !rows) {
+      toast('서버 기록을 확인하지 못했어요 · 설정 › 지금 동기화를 눌러 주세요', { ms: 3600 });
+      cloudPaint();
+      return;
+    }
+    var remote = cloudStateFromRows(rows);
+    var plan = cloudPlan(remote, state);
+    if (plan === 'none') { cloudPaint(); return; }
+    if (plan === 'pull') { cloudHydrate(rows, false); return; }
+    openCloudChoiceSheet(remote);
+  });
+}
+/* 체험판 온보딩 위에서 로그인한 경우: 빈 상태로 앱에 들어간 뒤 서버 기록을 받습니다 */
+function finishOnboardingFromAccount(){
+  var nm = authVal('ozPro').trim() || proNameGuess() || ((CLOUD.user && CLOUD.user.email) || '').split('@')[0] || '프로';
+  var academy = authVal('ozAcademy').trim();
+  var keepTheme = themeOf();
+  obWaiting = false;
+  state = blankState(nm, academy);
+  state.theme = keepTheme;
+  save();
+  hideOnboarding();
+  ui.tab = 'today'; ui.date = todayISO(); ui.month = todayISO().slice(0, 7); ui.search = '';
+  applyTheme(keepTheme);
+  render();
+}
+function cloudPaint(){
+  try {
+    if (ui.tab !== 'settings') return;
+    var ae = document.activeElement;
+    if (ae && ae.tagName === 'INPUT') return;      /* 타이핑 중이면 화면을 건드리지 않음 */
+    if (sheetStack.length) return;                  /* 시트 위에서 뒤 화면을 다시 그리지 않음 */
+    render(true);
+  } catch(e){}
+}
+
+/* ---------- 기기 상태 → 백업 JSON (prototype 내보내기와 같은 모양) ---------- */
+function cloudDate(v){
+  var s = String(v || '').trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : '';
+}
+function cloudOffset(){
+  var off = -new Date().getTimezoneOffset();
+  var sign = off >= 0 ? '+' : '-';
+  off = Math.abs(off);
+  return sign + pad(Math.floor(off / 60)) + ':' + pad(off % 60);
+}
+/* 이 기기의 'YYYY-MM-DDTHH:MM:SS' → 서버에 넣어도 시각이 밀리지 않는 오프셋 표기 */
+function cloudStamp(v){
+  var s = String(v || '').trim();
+  if (!s) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) s += 'T00:00:00';
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(s)) return s + cloudOffset();
+  return s;
+}
+/* 서버 시각 → 이 기기 표기 */
+function cloudLocalStamp(v){
+  if (!v) return '';
+  var d = new Date(v);
+  if (!d || isNaN(d.getTime())) return String(v).replace(/\.\d+/, '').slice(0, 19);
+  return iso(d) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+}
+function cloudPayload(st){
+  st = st || state;
+  var out = {
+    version: 2,
+    pro: { name: (st.pro && st.pro.name) || '프로', title: (st.pro && st.pro.title) || '프로',
+           academy: (st.pro && st.pro.academy) || '' },
+    hours: { fromMin: (st.hours && st.hours.fromMin) || DEF_FROM, toMin: (st.hours && st.hours.toMin) || DEF_TO },
+    theme: st.theme === 'black' ? 'black' : 'green',
+    calendarSync: {
+      enabled: !!(st.calendarSync && st.calendarSync.enabled),
+      target: (st.calendarSync && ['both', 'apple', 'google'].indexOf(st.calendarSync.target) >= 0) ? st.calendarSync.target : 'both'
+    },
+    members: [], packages: [], sessions: [], notes: [], settlements: [],
+    renewalLog: [], cancelLog: [], templates: []
+  };
+  (st.members || []).forEach(function(m){
+    if (!m || !String(m.name || '').trim()) return;
+    out.members.push({
+      id: m.id, name: String(m.name).trim(), phone: m.phone || '',
+      gender: (m.gender === 'male' || m.gender === 'female') ? m.gender : '',
+      region: m.region || '', level: m.level || '', memo: m.memo || '',
+      isVisitor: !!m.isVisitor, fromSeparate: !!m.fromSeparate,
+      since: cloudDate(m.since) || todayISO(),
+      passHistory: isArr(m.passHistory) ? m.passHistory : []
+    });
+  });
+  (st.packages || []).forEach(function(p){
+    if (!p || !p.memberId) return;
+    out.packages.push({
+      id: p.id, memberId: p.memberId,
+      durationMinutes: +p.durationMinutes || 55,
+      totalSessions: +p.totalSessions || 0,
+      remainingSessions: Math.max(0, +p.remainingSessions || 0),
+      price: Math.max(0, +p.price || 0),
+      startDate: cloudDate(p.startDate) || todayISO(),
+      expiryDate: cloudDate(p.expiryDate) || '',
+      note: p.note || '', renewal: !!p.renewal
+    });
+  });
+  (st.sessions || []).forEach(function(s){
+    if (!s || !cloudDate(s.date)) return;
+    var o = {
+      id: s.id, memberId: s.memberId || '', packageId: s.packageId || '',
+      date: s.date, startTime: hhmm(minOf(s.startTime)),
+      durationMinutes: +s.durationMinutes || 55,
+      status: STATUS[s.status] ? s.status : 'scheduled',
+      memo: s.memo || '', location: s.location || '',
+      settledAt: cloudStamp(s.settledAt)
+    };
+    if (isSep(s)) {
+      o.separatePay = true;
+      o.lessonKind = sepKind(s);
+      o.guestName = s.guestName || '';
+      o.fee = sepFee(s);
+      o.charged = !!s.charged;
+    }
+    out.sessions.push(o);
+  });
+  (st.notes || []).forEach(function(n){
+    if (!n || !n.memberId || !String(n.text || '').trim()) return;
+    out.notes.push({
+      id: n.id, memberId: n.memberId,
+      date: cloudDate(n.date) || todayISO(),
+      text: n.text,
+      tags: isArr(n.tags) ? n.tags : detectGolfTags(n.text || ''),
+      source: (n.source === 'voice' || n.source === 'import') ? n.source : 'text',
+      createdAt: cloudStamp(n.createdAt)
+    });
+  });
+  (st.settlements || []).forEach(function(r){
+    if (!r || !cloudDate(r.date)) return;
+    out.settlements.push({
+      date: r.date, settledAt: cloudStamp(r.settledAt),
+      counts: (r.counts && typeof r.counts === 'object') ? r.counts : {},
+      deducted: Math.max(0, +r.deducted || 0)
+    });
+  });
+  (st.renewalLog || []).forEach(function(r){
+    if (!r || typeof r !== 'object') return;
+    out.renewalLog.push({
+      memberId: r.memberId || '', name: r.name || '', kind: r.kind === 'new' ? 'new' : 'renewal',
+      pkgId: r.pkgId || '', date: cloudDate(r.date) || todayISO(), at: cloudStamp(r.at),
+      sessions: +r.sessions || 0, durationMinutes: +r.durationMinutes || 55, amount: Math.max(0, +r.amount || 0)
+    });
+  });
+  (st.cancelLog || []).forEach(function(c){
+    if (!c || typeof c !== 'object') return;
+    out.cancelLog.push({ date: cloudDate(c.date) || todayISO(), memberId: c.memberId || '', at: cloudStamp(c.at) });
+  });
+  (st.templates || []).forEach(function(t){
+    if (!t || !String(t.name || '').trim()) return;
+    out.templates.push({
+      id: t.id, name: String(t.name).trim(),
+      durationMinutes: +t.durationMinutes || 55,
+      sessions: +t.sessions || 10,
+      price: Math.max(0, +t.price || 0)
+    });
+  });
+  return out;
+}
+
+/* ---------- 서버 행 → 이 기기 상태 ---------- */
+function cloudStatusFromDb(s){
+  if (s === 'done') return 'completed';
+  if (s === 'noshow') return 'no_show';
+  return STATUS[s] ? s : 'scheduled';
+}
+function cloudStateFromRows(rows){
+  rows = rows || {};
+  var st = {
+    version: 2,
+    pro: { name: '프로', title: '프로', academy: '' },
+    templates: [], members: [], packages: [], sessions: [], settlements: [], notes: [],
+    renewalLog: [], cancelLog: [],
+    hours: { fromMin: DEF_FROM, toMin: DEF_TO },
+    theme: 'green',
+    calendarSync: { enabled: false, target: 'both' }
+  };
+  var pf = (rows.profiles || [])[0];
+  if (pf) {
+    st.pro = { name: pf.pro_name || '프로', title: pf.pro_title || '프로', academy: pf.academy || '' };
+    st.theme = pf.theme === 'black' ? 'black' : 'green';
+    if (pf.lesson_start_hour !== null && pf.lesson_start_hour !== undefined) st.hours.fromMin = pf.lesson_start_hour * 60;
+    if (pf.lesson_end_hour !== null && pf.lesson_end_hour !== undefined) st.hours.toMin = pf.lesson_end_hour * 60;
+    st.calendarSync = {
+      enabled: !!pf.calendar_sync_enabled,
+      target: (['both', 'apple', 'google'].indexOf(pf.calendar_target) >= 0) ? pf.calendar_target : 'both'
+    };
+  }
+  var names = {};
+  (rows.members || []).forEach(function(m){
+    names[m.id] = m.name;
+    var o = {
+      id: m.id, name: m.name || '', phone: m.phone || '',
+      gender: (m.gender === 'male' || m.gender === 'female') ? m.gender : '',
+      region: m.region || '', level: m.level || '', since: m.since || todayISO(), memo: m.memo || '',
+      passHistory: isArr(m.pass_history) ? m.pass_history : []
+    };
+    if (m.from_separate) o.fromSeparate = true;
+    if (m.is_visitor) o.isVisitor = true;
+    st.members.push(o);
+  });
+  (rows.passes || []).forEach(function(p){
+    st.packages.push({
+      id: p.id, memberId: p.member_id,
+      durationMinutes: +p.duration_min || 55,
+      totalSessions: +p.total_count || 0,
+      remainingSessions: Math.max(0, +p.remaining_count || 0),
+      startDate: p.started_at || todayISO(),
+      expiryDate: p.expires_at || '',
+      price: Math.max(0, +p.total_price || 0),
+      note: p.note || '', renewal: !!p.renewal
+    });
+  });
+  (rows.lessons || []).forEach(function(s){
+    var o = {
+      id: s.id, memberId: s.member_id || '', packageId: s.pass_id || '',
+      date: s.lesson_date, startTime: hhmm(minOf(s.start_time)),
+      durationMinutes: +s.duration_min || 55,
+      location: s.location || '',
+      status: cloudStatusFromDb(s.status),
+      deducted: !!s.deducted,
+      memo: s.memo || '',
+      settledAt: cloudLocalStamp(s.settled_at),
+      source: 'cloud'
+    };
+    if (s.kind && s.kind !== 'regular') {
+      o.separatePay = true;
+      o.lessonKind = (['field', 'shortgame', 'onepoint'].indexOf(s.kind) >= 0) ? s.kind : 'field';
+      o.guestName = s.guest_name || '';
+      o.fee = Math.max(0, +s.separate_price || 0);
+      o.charged = !!s.charged;
+    } else if (s.guest_name) {
+      o.guestName = s.guest_name;
+    }
+    st.sessions.push(o);
+  });
+  (rows.lesson_charts || []).forEach(function(n){
+    st.notes.push({
+      id: n.id, memberId: n.member_id, date: n.chart_date, text: n.content,
+      createdAt: cloudLocalStamp(n.created_at) || (String(n.chart_date) + 'T20:00:00'),
+      source: (n.source === 'voice' || n.source === 'import') ? n.source : 'text',
+      tags: isArr(n.tags) ? n.tags : detectGolfTags(n.content || '')
+    });
+  });
+  (rows.cancel_logs || []).forEach(function(c){
+    st.cancelLog.push({ date: c.lesson_date, memberId: c.member_id || '', at: cloudLocalStamp(c.created_at) });
+  });
+  (rows.settlements || []).forEach(function(r){
+    st.settlements.push({
+      date: r.settle_date, settledAt: cloudLocalStamp(r.settled_at),
+      counts: (r.counts && typeof r.counts === 'object') ? r.counts : {},
+      deducted: Math.max(0, +r.deducted || 0)
+    });
+  });
+  st.settlements.sort(function(a, b){ return a.date < b.date ? 1 : -1; });
+  (rows.renewal_logs || []).forEach(function(r){
+    st.renewalLog.push({
+      memberId: r.member_id || '', name: names[r.member_id] || '',
+      kind: r.kind === 'new' ? 'new' : 'renewal', pkgId: r.pass_id || '',
+      date: r.renewed_on, at: cloudLocalStamp(r.created_at),
+      sessions: +r.total_count || 0, durationMinutes: +r.duration_min || 55,
+      amount: Math.max(0, +r.amount || 0)
+    });
+  });
+  (rows.lesson_templates || []).slice().sort(function(a, b){
+    return (+a.sort_order || 0) - (+b.sort_order || 0);
+  }).forEach(function(t){
+    st.templates.push({
+      id: t.id, name: t.name,
+      durationMinutes: +t.duration_min || 55,
+      sessions: +t.total_count || 10,
+      price: Math.max(0, +t.price || 0)
+    });
+  });
+  st.notes.sort(function(a, b){ return a.date < b.date ? 1 : (a.date > b.date ? -1 : 0); });
+  return st;
+}
+
+/* =========================================================
    시작
    ========================================================= */
 function init(){
@@ -7755,6 +8723,9 @@ function init(){
     showOnboarding();
     setTimeout(focusOnboarding, SPLASH_MS + SPLASH_FADE + 120);
   }
+  /* 계정 · 클라우드 동기화 — 인터넷이 없거나 계정이 없으면 이 기기에서만 씁니다 */
+  bindCloudEvents();
+  cloudBoot();
 }
 
 document.addEventListener('click', onClick);
@@ -7766,6 +8737,10 @@ document.addEventListener('keydown', function(e){
   if (e.key === 'Enter') {
     var ob = document.getElementById('onboard');
     if (ob && !ob.hidden && (e.target.id === 'ozPro' || e.target.id === 'ozAcademy')) finishOnboarding(false);
+    if (authCtx && (e.target.id === 'auEmail' || e.target.id === 'auPw' || e.target.id === 'auName')) {
+      e.preventDefault();
+      cloudSubmit();
+    }
   }
 });
 /* 앱을 떠날 때는 마이크를 확실히 반납합니다 */
