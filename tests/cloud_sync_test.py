@@ -685,6 +685,23 @@ has(sheetPart(mm, '.sb'), 'first@example.com 계정 때', 'H-19 다른 계정이
 var mfoot = sheetPart(mm, '.sf');
 ok(mfoot.indexOf('cloud-take-server') < mfoot.indexOf('cloud-upload'), 'H-20 서버 기록 가져오기가 먼저');
 
+/* 다른 계정 기록은 저절로 올라가지 않는다 (시트에서 고른 뒤에만) */
+A.closeAllSheets();
+F.rpcCalls = [];
+A.save();
+eq(F.rpcCalls.length, 0, 'H-26a 다른 계정 기록은 서버로 안 올림');
+ok(!C.pending, 'H-26b 대기 표시도 만들지 않음');
+has(A.cloudStatusText(), '계정 확인 필요', 'H-26c 카드 상태 문구');
+has(A.cloudCardHTML(), '계정 때 만든 것이에요', 'H-26d 카드 안내');
+A.cloudUploadNow();                      /* 이 기기 기록을 지금 계정 것으로 올리기 */
+eq(F.rpcCalls.length, 1, 'H-27a 올리기 버튼이면 올라감');
+eq(F.rpcCalls[0].args.p_mode, 'merge', 'H-27b 이관은 merge');
+eq(C.owner, 'second@example.com', 'H-27c 이제 이 계정 기록');
+ok(!A.CLOUD().owner || !(A.CLOUD().owner === 'first@example.com'), 'H-27d 이전 계정 표시 해제');
+A.save();
+A.cloudFlush();
+ok(F.rpcCalls.length >= 2, 'H-28 확인 뒤에는 정상 동기화');
+
 /* 서버 연결 파일(CDN)을 못 받은 상태 — 앱은 그대로, 계정만 안내 */
 fresh();
 A.resetCloud();

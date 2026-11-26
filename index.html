@@ -7861,6 +7861,7 @@ function cloudOnline(){ return navigator.onLine !== false; }
 /* ---------- 상태 문구 ---------- */
 function cloudPhase(){
   if (!CLOUD.user) return 'signedout';
+  if (cloudAccountMismatch() && (state.members || []).length) return 'owner';
   if (CLOUD.busy) return 'syncing';
   if (CLOUD.pending) return 'pending';
   if (CLOUD.lastErr && !CLOUD.lastOk) return 'error';
@@ -7877,6 +7878,7 @@ function cloudAgo(ts){
 }
 function cloudStatusText(){
   var p = cloudPhase();
+  if (p === 'owner') return '계정 확인 필요 · 이 기기 기록이 다른 계정 것이에요';
   if (p === 'syncing') return '동기화 중...';
   if (p === 'pending') return CLOUD.lastOk ? '오프라인 대기 · ' + cloudAgo(CLOUD.lastOk) + ' 동기화' : '아직 서버에 올리지 못했어요';
   if (p === 'error') return '연결에 문제가 있어요 · 잠시 뒤 다시 시도해 주세요';
@@ -7885,6 +7887,7 @@ function cloudStatusText(){
 }
 function cloudDotCls(){
   var p = cloudPhase();
+  if (p === 'owner') return 'wait';
   if (p === 'syncing') return 'sync';
   if (p === 'pending') return 'wait';
   if (p === 'error') return 'err';
@@ -7911,7 +7914,9 @@ function cloudCardHTML(){
       '<div class="acctstat"><span class="acctdot ' + cloudDotCls() + '" aria-hidden="true"></span>' + esc(cloudStatusText()) + '</div>' +
     '</div>' +
     '<button class="btn btn-ghost acctmini" data-act="cloud-sync">지금 동기화</button></div>';
-  if (CLOUD.offerUpload && !CLOUD.pending) {
+  if (cloudAccountMismatch() && (state.members || []).length) {
+    h += '<div class="formnote" style="margin-top:10px"><b>이 기기 기록은 ' + esc(CLOUD.owner) + ' 계정 때 만든 것이에요.</b> 그 계정으로 올리지 않도록 동기화를 잠시 멈췄어요. 아래 <b>현재 기기 기록 서버로 백업(이관)</b>을 누르면 이 기록을 지금 계정 것으로 올리고, <b>지금 동기화</b>를 누르면 서버 기록을 받아 와요.</div>';
+  } else if (CLOUD.offerUpload && !CLOUD.pending) {
     h += '<div class="formnote" style="margin-top:10px">이 기기 기록이 아직 서버에 없어요. 지금 올려 두면 다른 기기에서도 그대로 보여요.</div>';
   }
   h += '<div class="divider"></div>' +
@@ -8277,6 +8282,7 @@ function cloudTouch(){
   if (CLOUD.applying) return;
   CLOUD.rev++;
   if (!CLOUD.user) return;
+  if (cloudAccountMismatch() && (state.members || []).length) { cloudPaint(); return; }
   CLOUD.pending = true;
   cloudSavePrefs();
   cloudSchedule();
@@ -8285,6 +8291,8 @@ function cloudPush(mode, done){
   var cl = CLOUD.client;
   function finish(r){ if (typeof done === 'function') done(r); }
   if (!cl || !CLOUD.user) { finish(false); return false; }
+  /* 다른 계정 때 만든 기기 기록은 그 계정에 올리지 않습니다 (계정 시트에서 고른 뒤에만) */
+  if (cloudAccountMismatch() && (state.members || []).length) { cloudPaint(); finish(false); return false; }
   if (CLOUD.busy) { CLOUD.dirty = true; CLOUD.pending = true; cloudSavePrefs(); cloudPaint(); finish(false); return false; }
   if (!cloudOnline()) { CLOUD.pending = true; cloudSavePrefs(); cloudPaint(); finish(false); return false; }
   var revAt = CLOUD.rev;
@@ -8377,6 +8385,7 @@ function cloudPrepareMigrate(){
 }
 function cloudUploadNow(){
   var cnt = state.members.length;
+  cloudSetOwner();                   /* 이 기기 기록을 지금 계정 것으로 정한 뒤 올린다 */
   toast('서버로 올리는 중...');
   cloudPush('merge', function(ok){
     toast(ok ? '서버에 백업했어요 · 회원 ' + cnt + '명 · 레슨 ' + state.sessions.length + '건'
