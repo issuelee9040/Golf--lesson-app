@@ -7936,6 +7936,7 @@ function openAuthSheet(mode, email){
     footer: ''
   });
   authCtx = { mode: m, sh: sh, email: email || '', busy: false, msg: '', msgKind: 'ok' };
+  sh.footer.style.display = '';      /* 제출 버튼이 있는 아래 칸을 보이게 (openSheet 는 빈 footer 를 숨김) */
   var ob = document.getElementById('onboard');
   if (ob && !ob.hidden && sh.el.classList) sh.el.classList.add('above-onboard');
   paintAuthSheet();

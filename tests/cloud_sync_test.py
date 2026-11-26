@@ -352,6 +352,7 @@ hasNot(bd, 'id="auName"', 'B-9 로그인에는 프로 이름 없음');
 has(bd, 'autocomplete="email"', 'B-10 이메일 자동완성');
 has(bd, 'autocomplete="current-password"', 'B-11 로그인 비밀번호 자동완성');
 has(ft, 'data-act="cloud-submit"', 'B-12 제출 버튼');
+eq(lastSheet().children[0].querySelector('.sf').style.display, '', 'B-12b 제출 칸이 보임');
 has(ft, '로그인', 'B-13 제출 버튼 글자');
 hasNot(bd, 'font-size', 'B-14 입력칸에 임의 글자 크기 없음');
 /* 회원가입 탭 */
