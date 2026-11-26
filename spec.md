@@ -1167,6 +1167,8 @@ PNG를 21px로 줄여 쓰던 `.brandbar`를 **인라인 SVG**로 바꿨습니다
 
 올릴 때는 반대로 26장 백업 JSON 과 **같은 모양**을 만듭니다(`members` · `packages` · `sessions` · `notes` · `settlements` · `renewalLog` · `cancelLog` · `templates` · `pro` · `hours` · `theme` · `calendarSync`). 그래서 이관 함수가 손댈 것 없이 그대로 읽고, 정산·차트 작성 시각은 `+09:00` 같은 **오프셋을 붙여** 보내 왕복에서 시각이 밀리지 않습니다.
 
+**값 보정**: 서버 표에는 검사 범위가 있습니다(`passes.duration_min` 10~600분 · `total_count` 1~1000, `lessons.duration_min` 5~600분 등). 앱의 직접 입력칸은 그보다 넓은 값을 받을 수 있어(예: 소요시간 3분·900분), 올릴 때 `cloudClamp()` 로 범위 안으로 자릅니다. 한 건이라도 범위를 벗어나면 이관 함수 전체가 거절되어 동기화가 통째로 멈추기 때문입니다.
+
 **부딪힘 규칙 — 기기 기록을 함부로 지우지 않습니다**:
 
 - 기기 0건 · 서버 0건 → 그대로.

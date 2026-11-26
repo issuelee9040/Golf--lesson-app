@@ -468,6 +468,19 @@ eq(pay.cancelLog.length, 1, 'D-24 일반취소 기록 포함');
 eq(pay.renewalLog.length, 1, 'D-25 재등록 기록 포함');
 eq(pay.templates.length, A.state().templates.length, 'D-26 상품 템플릿 포함');
 
+/* 범위를 벗어난 값도 서버 표의 검사 범위 안으로 (한 건 때문에 동기화가 멈추지 않게) */
+var odd = A.buildDemo();
+odd.packages[0].durationMinutes = 3;
+odd.packages[0].totalSessions = 5000;
+odd.sessions[0].durationMinutes = 2;
+odd.sessions[1].durationMinutes = 900;
+var oddPay = A.cloudPayload(odd);
+ok(oddPay.packages[0].durationMinutes >= 10 && oddPay.packages[0].durationMinutes <= 600,
+   'D-27 수강권 소요시간 범위 보정', oddPay.packages[0].durationMinutes);
+ok(oddPay.packages[0].totalSessions === 1000, 'D-28 총 횟수 상한 보정', oddPay.packages[0].totalSessions);
+ok(oddPay.sessions[0].durationMinutes === 5, 'D-29 레슨 소요시간 하한 보정', oddPay.sessions[0].durationMinutes);
+ok(oddPay.sessions[1].durationMinutes === 600, 'D-30 레슨 소요시간 상한 보정', oddPay.sessions[1].durationMinutes);
+
 /* ══════════ E. 서버 행 → 기기 상태 ══════════ */
 var remote = A.cloudStateFromRows(dbRows());
 eq(remote.pro.name, '이시훈', 'E-1 프로 이름');

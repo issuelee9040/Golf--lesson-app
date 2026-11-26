@@ -8450,6 +8450,13 @@ function cloudDate(v){
   var s = String(v || '').trim();
   return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : '';
 }
+/* 서버 표의 검사 범위(passes·lessons 의 duration_min, total_count)에 맞춰 자릅니다.
+   한 건이라도 범위를 벗어나면 이관 함수 전체가 거절되어 동기화가 멈추기 때문입니다. */
+function cloudClamp(v, lo, hi, def){
+  var n = Math.round(+v);
+  if (!isFinite(n) || n <= 0) n = def;
+  return Math.max(lo, Math.min(hi, n));
+}
 function cloudOffset(){
   var off = -new Date().getTimezoneOffset();
   var sign = off >= 0 ? '+' : '-';
@@ -8501,8 +8508,8 @@ function cloudPayload(st){
     if (!p || !p.memberId) return;
     out.packages.push({
       id: p.id, memberId: p.memberId,
-      durationMinutes: +p.durationMinutes || 55,
-      totalSessions: +p.totalSessions || 0,
+      durationMinutes: cloudClamp(p.durationMinutes, 10, 600, 55),   /* passes: 10~600분 */
+      totalSessions: cloudClamp(p.totalSessions, 1, 1000, 1),
       remainingSessions: Math.max(0, +p.remainingSessions || 0),
       price: Math.max(0, +p.price || 0),
       startDate: cloudDate(p.startDate) || todayISO(),
@@ -8515,7 +8522,7 @@ function cloudPayload(st){
     var o = {
       id: s.id, memberId: s.memberId || '', packageId: s.packageId || '',
       date: s.date, startTime: hhmm(minOf(s.startTime)),
-      durationMinutes: +s.durationMinutes || 55,
+      durationMinutes: cloudClamp(s.durationMinutes, 5, 600, 55),    /* lessons: 5~600분 */
       status: STATUS[s.status] ? s.status : 'scheduled',
       memo: s.memo || '', location: s.location || '',
       settledAt: cloudStamp(s.settledAt)
